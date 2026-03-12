@@ -17,7 +17,7 @@ class StartMenuWindow;
 class Window {
 public:
     int x, y, width, height;
-    bool visible = true, focused = false, isMoving = false, isMinimized = false;
+    bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false;
     std::string title;
     Window(std::string t, int w, int h) : title(t), width(w), height(h) {
         x = (getConsoleWidth() - w) / 2;
@@ -25,32 +25,45 @@ public:
         if (x < 0) x = 0;
         if (y < 0) y = 0;
     }
+        std::string headerColor(){
+            if (isResizing == true) {
+                return "\033[95;45m";
+            }
+            else if (isMoving == true) {
+                return "\033[93;43m";
+            }
+            else {
+                if (focused == true) {
+                    return "\033[97;44m";
+                }
+                else {
+                    return "\033[37;100m";
+                }
+            }
+        }
     virtual void Draw(std::ostream& buffer) {
         if (!visible || isMinimized) return;
         int innerWidth = width - 2;
         const int iconVisualWidth = 11;
         std::string blueHeader = "\033[97;44m";
         std::string silverBody = "\033[38;2;0;0;0;48;2;192;192;192m";
-        std::string headerColor =
-            isMoving ? "\033[93;43m"
-            : (focused ? blueHeader : "\033[37;100m");
-        std::string reset = "\033[0m";
+        std::string resetStyle = "\033[0m";
         auto drawLine = [&](int len) {
             std::string line;
             for (int i = 0; i < len; i++) line += "─";
             return line;
             };
-        buffer << "\033[" << (y + 1) << ";" << (x + 1) << "H" << headerColor << "┌" << drawLine(innerWidth) << "┐" << reset;
-        buffer << "\033[" << (y + 2) << ";" << (x + 1) << "H" << headerColor << "│ ";
+        buffer << "\033[" << (y + 1) << ";" << (x + 1) << "H" << headerColor() << "┌" << drawLine(innerWidth) << "┐" << resetStyle;
+        buffer << "\033[" << (y + 2) << ";" << (x + 1) << "H" << headerColor() << "│ ";
         std::string titleText = title;
         int spacing = innerWidth - (int)titleText.length() - iconVisualWidth - 1;
-        buffer << titleText << std::string((std::max)(0, spacing), ' ') << "[─] [O] [╳]│" << reset;
-        buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor << "├" << drawLine(innerWidth) << "┤" << reset;
+        buffer << titleText << std::string((std::max)(0, spacing), ' ') << "[─] [O] [╳]│" << resetStyle;
+        buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
 
         for (int i = 3; i < height - 1; ++i) {
-            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << reset;
+            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
         }
-        buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "└" << drawLine(innerWidth) << "┘" << reset;
+        buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "└" << drawLine(innerWidth) << "┘" << resetStyle;
     }
     virtual void HandleInput(InputType input) = 0;
     virtual ~Window() = default;
@@ -179,47 +192,50 @@ public:
                 }
             }
             else if (top) {
-                if (top->isMoving) {
+                if (top->isMoving == true) {
                     switch (input) {
                     case InputType::MoveUp:    top->y--; break;
                     case InputType::MoveDown:  top->y++; break;
                     case InputType::MoveRight: top->x++; break;
                     case InputType::MoveLeft:  top->x--; break;
-
                     case InputType::E:
                     case InputType::Enter:
                         top->isMoving = false;
                         break;
-
                     case InputType::Escape:
                         top->isMoving = false;
                         CycleWindow();
                         break;
-
                     default:
                         break;
                     }
                 }
+                else if (top->isResizing == true) {
+                    switch (input) {
+                    case InputType::MoveUp:    if (top->height > 3) top->height--; break;
+                    case InputType::MoveDown:  top->height++; break;
+                    case InputType::MoveRight: top->width++; break;
+                    case InputType::MoveLeft:  if (top->width > 4) top->width--; break;
+                    case InputType::R: case InputType::Enter: top->isResizing = false; break;
+                    case InputType::Escape:    top->isResizing = false; CycleWindow(); break;
+                    default: break;
+                    }
+                }
                 else {
                     switch (input) {
-
                     case InputType::Escape:
                         CycleWindow();
                         break;
-
                     case InputType::X:
                         RemoveWindow(top);
                         break;
-
                     case InputType::E:
                         top->isMoving = true;
                         break;
-
                     case InputType::Q:
                         top->isMinimized = true;
                         CycleWindow();
                         break;
-
                     default:
                         top->HandleInput(input);
                         break;

@@ -22,7 +22,7 @@ enum class InputType {
     X,
     Q,
     C,
-    Mouse
+    R
 };
 InputType GetPlayerInput();
 int readKey();
