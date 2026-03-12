@@ -114,12 +114,18 @@ public:
             int sh = getConsoleHeight();
             Window* top = nullptr;
             for (int i = (int)windows.size() - 1; i >= 0; --i) {
+                // Keep position inside screen
                 if (windows[i]->x < 0) windows[i]->x = 0;
                 if (windows[i]->x + windows[i]->width > sw)
                     windows[i]->x = sw - windows[i]->width;
                 if (windows[i]->y < 0) windows[i]->y = 0;
                 if (windows[i]->y + windows[i]->height > sh - 1)
                     windows[i]->y = (sh - 1) - windows[i]->height;
+
+                // Prevent windows from being larger than the console
+                if (windows[i]->width > sw) windows[i]->width = sw;
+                if (windows[i]->height > (sh - 1)) windows[i]->height = sh - 1;
+
                 windows[i]->focused = false;
                 if (!top && windows[i]->visible && !windows[i]->isMinimized) {
                     top = windows[i];
@@ -166,9 +172,7 @@ public:
             std::cout << frame.str() << std::flush;
             InputType input = GetPlayerInput();
             if (input == InputType::C && startMenu) {
-
                 startMenu->visible = !startMenu->visible;
-
                 if (startMenu->visible) {
                     if (std::find(windows.begin(), windows.end(), startMenu) == windows.end())
                         windows.push_back(startMenu);
@@ -176,7 +180,6 @@ public:
                 else {
                     windows.erase(std::remove(windows.begin(), windows.end(), startMenu), windows.end());
                 }
-
                 continue;
             }
             if (input >= InputType::Top1 && input <= InputType::Top9) {
@@ -198,6 +201,12 @@ public:
                     case InputType::MoveDown:  top->y++; break;
                     case InputType::MoveRight: top->x++; break;
                     case InputType::MoveLeft:  top->x--; break;
+                    case InputType::R:
+                        if (top != startMenu) {
+                            top->isMoving = false;
+                            top->isResizing = true;
+                        }
+                        break;
                     case InputType::E:
                     case InputType::Enter:
                         top->isMoving = false;
@@ -211,13 +220,31 @@ public:
                     }
                 }
                 else if (top->isResizing == true) {
+                    int minHeight = 3;
+                    int minWidth = 4;
+                    int maxHeight = sh - top->y - 1;
+                    int maxWidth = sw - top->x;
+                    if (maxHeight < minHeight) maxHeight = minHeight;
+                    if (maxWidth < minWidth) maxWidth = minWidth;
                     switch (input) {
-                    case InputType::MoveUp:    if (top->height > 3) top->height--; break;
-                    case InputType::MoveDown:  top->height++; break;
-                    case InputType::MoveRight: top->width++; break;
-                    case InputType::MoveLeft:  if (top->width > 4) top->width--; break;
-                    case InputType::R: case InputType::Enter: top->isResizing = false; break;
-                    case InputType::Escape:    top->isResizing = false; CycleWindow(); break;
+                    case InputType::MoveUp:
+                        if (top->height > minHeight) top->height--;
+                        break;
+                    case InputType::MoveDown:
+                        if (top->height < maxHeight) top->height++;
+                        else top->height = maxHeight;
+                        break;
+                    case InputType::MoveRight:
+                        if (top->width < maxWidth) top->width++;
+                        else top->width = maxWidth;
+                        break;
+                    case InputType::MoveLeft:
+                        if (top->width > minWidth) top->width--;
+                        break;
+                    case InputType::R: case InputType::Enter:
+                        top->isResizing = false; break;
+                    case InputType::Escape:
+                        top->isResizing = false; CycleWindow(); break;
                     default: break;
                     }
                 }
@@ -235,6 +262,13 @@ public:
                     case InputType::Q:
                         top->isMinimized = true;
                         CycleWindow();
+                        break;
+                    case InputType::R:
+                        // don't allow resizing of the start menu
+                        if (top != startMenu) {
+                            top->isResizing = true;
+                            CycleWindow();
+                        }
                         break;
                     default:
                         top->HandleInput(input);
