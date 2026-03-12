@@ -2,6 +2,9 @@
 #include "Window.hpp"
 #include "init.hpp"
 #include "StartMenu.hpp"
+#include "Button.hpp"
+#include "Label.hpp"
+#include "console.hpp"
 #include <iostream>
 #include <functional>
 
@@ -20,7 +23,7 @@ public:
         }
         buffer << "\033[0m";
     }
-    void HandleInput(InputType input) override {
+    void HandleInput(InputType input) {
         if (input == InputType::MoveUp) selection = (selection > 0) ? selection - 1 : 2;
         if (input == InputType::MoveDown) selection = (selection < 2) ? selection + 1 : 0;
         if (input == InputType::Enter) {
@@ -34,6 +37,15 @@ public:
                 break;
             }
         }
+    }
+};
+class InfoWindow : public Window {
+public:
+    InfoWindow() : Window("Info", 40, 10) {
+        AddWidget(new Label(2, 2, "System is running smoothly!"));
+        AddWidget(new Button(2, 5, "Close", [this]() {
+            visible = false;
+            }));
     }
 };
 class TextWindow : public Window {
@@ -50,7 +62,7 @@ public:
         buffer << "[ Press Enter to Close ]";
         buffer << "\033[0m";
     }
-    void HandleInput(InputType input) override {
+    void HandleInput(InputType input) {
         if (input == InputType::Enter) {
             this->visible = false;
         }
@@ -76,7 +88,12 @@ int main() {
     start.AddItem("Malware", []() {
         return new TextWindow("wana decript", "Oh no! your files have been encripted! pay me", 60, 10);
         });
-
+    start.AddItem("info", []() {
+        return new InfoWindow();
+        });
+    start.AddItem("Terminal", []() {
+        return new TerminalWindow();
+        });
     wm.SetStartMenu(&start);
     wm.AddWindow(&start);
     TextWindow malware = TextWindow("wana decript", "Oh no! your files have been encripted! pay me", 60, 10);

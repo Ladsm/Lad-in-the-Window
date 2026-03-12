@@ -1,14 +1,14 @@
 #pragma once
 #include "Window.hpp"
+#include "Button.hpp"
 #include <vector>
-#include <string>
 #include <functional>
+
 class WindowManager;
+
 class StartMenuWindow : public Window {
 public:
     std::vector<std::function<Window* ()>> factories;
-    std::vector<std::string> labels;
-    int selection = 0;
     WindowManager* wm;
     StartMenuWindow(WindowManager* manager)
         : Window("Start", 30, 10), wm(manager)
@@ -16,32 +16,30 @@ public:
         visible = false;
     }
     void AddItem(const std::string& name, std::function<Window* ()> factory) {
-        labels.push_back(name);
+        int index = widgets.size();
         factories.push_back(factory);
+        AddWidget(new Button(
+            2,
+            1 + index,
+            name,
+            [this, index]() {
+                Window* w = factories[index]();
+                wm->AddWindow(w);
+                visible = false;
+            }
+        ));
     }
-    void Draw(std::ostream& buffer) override {
+    void Draw(std::ostream& buffer) {
         x = getConsoleWidth() - width;
         y = getConsoleHeight() - height - 1;
+
         Window::Draw(buffer);
-        buffer << "\033[38;2;0;0;0;48;2;192;192;192m";
-        for (size_t i = 0; i < labels.size(); i++) {
-            buffer << "\033[" << (y + 4 + i) << ";" << (x + 3) << "H";
-            buffer << (selection == i ? "-> " : "   ") << labels[i];
-        }
-        buffer << "\033[0m";
     }
-    void HandleInput(InputType input) override {
-        if (input == InputType::MoveUp)
-            selection = (selection > 0) ? selection - 1 : labels.size() - 1;
-        if (input == InputType::MoveDown)
-            selection = (selection < (int)labels.size() - 1) ? selection + 1 : 0;
-        if (input == InputType::Enter) {
-            Window* w = factories[selection]();
-            wm->AddWindow(w);
-            visible = false;
-        }
+    void HandleInput(InputType input) {
         if (input == InputType::Escape) {
             visible = false;
+            return;
         }
+        Window::HandleInput(input);
     }
 };

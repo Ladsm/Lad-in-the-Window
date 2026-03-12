@@ -1,6 +1,7 @@
 #pragma once
 #include "getwh.hpp"
 #include "userinput.hpp"
+#include "Widget.hpp"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -17,6 +18,16 @@ class StartMenuWindow;
 
 class Window {
 public:
+    int focusedWidget = -1;
+    std::vector<Widget*> widgets;
+    void AddWidget(Widget* w) {
+        height = std::max(height, (int)widgets.size() + 5);
+        widgets.push_back(w);
+        if (focusedWidget == -1) {
+            focusedWidget = 0;
+            widgets[0]->focused = true;
+        }
+    }
     int x, y, width, height;
     bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false;
     std::string title;
@@ -80,9 +91,32 @@ public:
             buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
         }
         buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "└" << drawLine(innerWidth) << "┘" << resetStyle;
+        for (auto* w : widgets) {
+            w->Draw(buffer, x + 1, y + 3);
+        }
     }
-    virtual void HandleInput(InputType input) = 0;
-    virtual ~Window() = default;
+    void HandleInput(InputType input) {
+        if (widgets.empty()) return;
+        if (input == InputType::MoveDown) {
+            widgets[focusedWidget]->focused = false;
+            focusedWidget = (focusedWidget + 1) % widgets.size();
+            widgets[focusedWidget]->focused = true;
+            return;
+        }
+        if (input == InputType::MoveUp) {
+            widgets[focusedWidget]->focused = false;
+            focusedWidget--;
+            if (focusedWidget < 0) focusedWidget = widgets.size() - 1;
+            widgets[focusedWidget]->focused = true;
+            return;
+        }
+
+        widgets[focusedWidget]->HandleInput(input);
+    }
+    virtual ~Window() {
+        for (auto* w : widgets)
+            delete w;
+    }
     bool ContainsPoint(int px, int py) const {
         return px >= x && px < x + width && py >= y && py < y + height;
     }
