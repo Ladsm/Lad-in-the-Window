@@ -263,13 +263,6 @@ public:
                         top->isMinimized = true;
                         CycleWindow();
                         break;
-                    case InputType::R:
-                        // don't allow resizing of the start menu
-                        if (top != startMenu) {
-                            top->isResizing = true;
-                            CycleWindow();
-                        }
-                        break;
                     default:
                         top->HandleInput(input);
                         break;
