@@ -59,7 +59,6 @@ public:
         int spacing = innerWidth - (int)titleText.length() - iconVisualWidth - 1;
         buffer << titleText << std::string((std::max)(0, spacing), ' ') << "[─] [O] [╳]│" << resetStyle;
         buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
-
         for (int i = 3; i < height - 1; ++i) {
             buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
         }
@@ -68,7 +67,6 @@ public:
     virtual void HandleInput(InputType input) = 0;
     virtual ~Window() = default;
 };
-
 class WindowManager {
     std::vector<Window*> windows;
     int windowCount = 0;
@@ -114,18 +112,14 @@ public:
             int sh = getConsoleHeight();
             Window* top = nullptr;
             for (int i = (int)windows.size() - 1; i >= 0; --i) {
-                // Keep position inside screen
                 if (windows[i]->x < 0) windows[i]->x = 0;
                 if (windows[i]->x + windows[i]->width > sw)
                     windows[i]->x = sw - windows[i]->width;
                 if (windows[i]->y < 0) windows[i]->y = 0;
                 if (windows[i]->y + windows[i]->height > sh - 1)
                     windows[i]->y = (sh - 1) - windows[i]->height;
-
-                // Prevent windows from being larger than the console
                 if (windows[i]->width > sw) windows[i]->width = sw;
                 if (windows[i]->height > (sh - 1)) windows[i]->height = sh - 1;
-
                 windows[i]->focused = false;
                 if (!top && windows[i]->visible && !windows[i]->isMinimized) {
                     top = windows[i];
