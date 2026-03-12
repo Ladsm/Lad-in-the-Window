@@ -73,6 +73,7 @@ InputType GetPlayerInput() {
     case 'e': case 'E': return InputType::E;
     case 'x': case 'X': return InputType::X;
     case 'q': case 'Q': return InputType::Q;
+    case 'c': case 'C': return InputType::C;
     }
     return InputType::None;
 }

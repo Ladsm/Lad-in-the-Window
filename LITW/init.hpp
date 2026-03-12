@@ -28,5 +28,8 @@ inline void init() {
 	SetConsoleCP(CP_UTF8);
 #endif
 	std::cout << "\033[?25l";
+	std::cout << "\033[?1000h";
+	std::cout << "\033[?1002h";
+	std::cout << "\033[?1006h";
 	std::cout.flush();
 }

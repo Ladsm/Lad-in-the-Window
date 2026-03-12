@@ -133,6 +133,7 @@
   <ItemGroup>
     <ClInclude Include="getwh.hpp" />
     <ClInclude Include="init.hpp" />
+    <ClInclude Include="StartMenu.hpp" />
     <ClInclude Include="userinput.hpp" />
     <ClInclude Include="Window.hpp" />
   </ItemGroup>

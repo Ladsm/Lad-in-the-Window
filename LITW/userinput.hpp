@@ -20,7 +20,9 @@ enum class InputType {
     Escape,
     E,
     X,
-    Q
+    Q,
+    C,
+    Mouse
 };
 InputType GetPlayerInput();
 int readKey();

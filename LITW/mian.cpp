@@ -1,7 +1,9 @@
 #include "getwh.hpp"
 #include "Window.hpp"
 #include "init.hpp"
+#include "StartMenu.hpp"
 #include <iostream>
+#include <functional>
 
 class MenuWindow : public Window {
 public:
@@ -56,14 +58,28 @@ public:
 };
 
 int main() {
+
     init();
+
     WindowManager wm;
-    MenuWindow menu;
-    TextWindow status("System status", "System is running smoothly!");
-    TextWindow malware("wana decript", "Oh no! your files have been encripted! pay me", 60, 10);
-    wm.AddWindow(&menu);
-    wm.AddWindow(&status);
+
+    StartMenuWindow start(&wm);
+
+    start.AddItem("Main Menu", []() {
+        return new MenuWindow();
+        });
+
+    start.AddItem("System Status", []() {
+        return new TextWindow("System status", "System is running smoothly!");
+        });
+
+    start.AddItem("Malware", []() {
+        return new TextWindow("wana decript", "Oh no! your files have been encripted! pay me", 60, 10);
+        });
+
+    wm.SetStartMenu(&start);
+    wm.AddWindow(&start);
+    TextWindow malware = TextWindow("wana decript", "Oh no! your files have been encripted! pay me", 60, 10);
     wm.AddWindow(&malware);
     wm.Run();
-    return 0;
 }
