@@ -2,10 +2,13 @@
 #include "userinput.hpp"
 #if defined(_WIN32)
 #include <conio.h>
-#endif
-#if defined(__linux__)
+#include <windows.h>
+#else
 #include <unistd.h>
 #include <termios.h>
+#endif
+
+#if defined(__linux__)
 int getchThred() {
     struct termios old_settings, new_settings;
     int ch;
@@ -18,6 +21,13 @@ int getchThred() {
     return ch;
 }
 #endif
+
+static int g_mouseX = 0;
+static int g_mouseY = 0;
+
+int getMouseX() { return g_mouseX; }
+int getMouseY() { return g_mouseY; }
+
 /*
 +-------+   0   1   2   3   4   5   6   7   8   9
 |   2   |  10  11  12  13  14  15  16  17  18  19
@@ -26,44 +36,152 @@ int getchThred() {
 +-------+
 */
 InputType GetPlayerInput() {
-    int ch =
-#ifdef _WIN32
-        _getch();
-#else
-        getchThred();
-#endif
-#ifdef _WIN32
-    if (ch == 13) return InputType::Enter;
-    if (ch == 27) return InputType::Escape;
-    if (ch == 0 || ch == 0xE0) {
-        switch (_getch()) {
-        case 72: return InputType::MoveUp;
-        case 80: return InputType::MoveDown;
-        case 75: return InputType::MoveLeft;
-        case 77: return InputType::MoveRight;
+#if defined(_WIN32)
+    static bool consoleInitialized = false;
+    static DWORD originalMode = 0;
+    HANDLE hIn = GetStdHandle(STD_INPUT_HANDLE);
+    if (!consoleInitialized) {
+        if (GetConsoleMode(hIn, &originalMode)) {
+            DWORD mode = originalMode;
+            mode &= ~(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT);
+            mode |= ENABLE_WINDOW_INPUT | ENABLE_MOUSE_INPUT;
+            SetConsoleMode(hIn, mode);
         }
-        return InputType::None;
+        consoleInitialized = true;
+    }
+    INPUT_RECORD ir;
+    DWORD read = 0;
+    static DWORD prevMouseButtons = 0;
+    while (true) {
+        if (!ReadConsoleInput(hIn, &ir, 1, &read)) {
+            int ch = _getch();
+            if (ch == 13) return InputType::Enter;
+            if (ch == 27) return InputType::Escape;
+            if (ch >= '0' && ch <= '9') {
+                return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
+            }
+            switch (ch) {
+            case 'w': case 'W': return InputType::MoveUp;
+            case 's': case 'S': return InputType::MoveDown;
+            case 'a': case 'A': return InputType::MoveLeft;
+            case 'd': case 'D': return InputType::MoveRight;
+            case 'e': case 'E': return InputType::E;
+            case 'x': case 'X': return InputType::X;
+            case 'q': case 'Q': return InputType::Q;
+            case 'c': case 'C': return InputType::C;
+            case 'r': case 'R': return InputType::R;
+            default: return InputType::None;
+            }
+        }
+        if (ir.EventType == KEY_EVENT) {
+            auto& ke = ir.Event.KeyEvent;
+            if (!ke.bKeyDown) continue;
+            char ch = (char)ke.uChar.AsciiChar;
+            if (ch == 13) return InputType::Enter;
+            if (ch == 27) return InputType::Escape;
+            switch (ke.wVirtualKeyCode) {
+            case VK_UP: return InputType::MoveUp;
+            case VK_DOWN: return InputType::MoveDown;
+            case VK_LEFT: return InputType::MoveLeft;
+            case VK_RIGHT: return InputType::MoveRight;
+            }
+            if (ch >= '0' && ch <= '9') {
+                return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
+            }
+            switch (ch) {
+            case 'w': case 'W': return InputType::MoveUp;
+            case 's': case 'S': return InputType::MoveDown;
+            case 'a': case 'A': return InputType::MoveLeft;
+            case 'd': case 'D': return InputType::MoveRight;
+            case 'e': case 'E': return InputType::E;
+            case 'x': case 'X': return InputType::X;
+            case 'q': case 'Q': return InputType::Q;
+            case 'c': case 'C': return InputType::C;
+            case 'r': case 'R': return InputType::R;
+            default: return InputType::None;
+            }
+        }
+        else if (ir.EventType == MOUSE_EVENT) {
+            auto& me = ir.Event.MouseEvent;
+            g_mouseX = me.dwMousePosition.X;
+            g_mouseY = me.dwMousePosition.Y;
+            DWORD btns = me.dwButtonState;
+            if (me.dwEventFlags == MOUSE_MOVED) {
+                prevMouseButtons = btns;
+                return InputType::MouseMove;
+            }
+            DWORD leftMask = FROM_LEFT_1ST_BUTTON_PRESSED;
+            bool prevLeft = (prevMouseButtons & leftMask) != 0;
+            bool curLeft = (btns & leftMask) != 0;
+            prevMouseButtons = btns;
+            if (!prevLeft && curLeft) {
+                return InputType::MouseLeftDown;
+            }
+            if (prevLeft && !curLeft) {
+                return InputType::MouseLeftUp;
+            }
+            return InputType::MouseMove;
+        }
     }
 #else
-    if (ch == 10 || ch == 13) return InputType::Enter;
+    static bool consoleInitialized = false;
+    static struct termios originalTermios;
+    if (!consoleInitialized) {
+        tcgetattr(STDIN_FILENO, &originalTermios);
+        struct termios raw = originalTermios;
+        raw.c_lflag &= ~(ICANON | ECHO);
+        raw.c_iflag &= ~(IXON | ICRNL);
+        tcsetattr(STDIN_FILENO, TCSANOW, &raw);
+        std::cout << "\033[?1000h\033[?1006h" << std::flush;
+        consoleInitialized = true;
+    }
+    int ch = getchThred();
     if (ch == 27) {
-        int next = getchThred();
-        if (next == 91) {
-            switch (getchThred()) {
-            case 'A': return InputType::MoveUp;
-            case 'B': return InputType::MoveDown;
-            case 'C': return InputType::MoveRight;
-            case 'D': return InputType::MoveLeft;
+        int n1 = getchThred();
+        if (n1 == '[') {
+            int n2 = getchThred();
+            if (n2 == '<') {
+                int cb = 0, cx = 0, cy = 0;
+                int c;
+                while ((c = getchThred()) >= '0' && c <= '9') { cb = cb * 10 + (c - '0'); }
+                if (c == ';') {
+                    while ((c = getchThred()) >= '0' && c <= '9') { cx = cx * 10 + (c - '0'); }
+                    if (c == ';') {
+                        while ((c = getchThred()) >= '0' && c <= '9') { cy = cy * 10 + (c - '0'); }
+                        if (c == 'M' || c == 'm') {
+                            g_mouseX = cx > 0 ? cx - 1 : 0;
+                            g_mouseY = cy > 0 ? cy - 1 : 0;
+                            bool isMotion = (cb & 32) != 0;
+                            int button = cb & 0b11;
+                            if (isMotion) {
+                                return InputType::MouseMove;
+                            }
+                            if (c == 'M') {
+                                if (button == 0) return InputType::MouseLeftDown;
+                                return InputType::MouseMove;
+                            }
+                            else {
+                                if (button == 0 || button == 3) return InputType::MouseLeftUp;
+                                return InputType::MouseMove;
+                            }
+                        }
+                    }
+                }
+                return InputType::None;
             }
-            return InputType::None;
+            else {
+                if (n2 == 'A') return InputType::MoveUp;
+                if (n2 == 'B') return InputType::MoveDown;
+                if (n2 == 'C') return InputType::MoveRight;
+                if (n2 == 'D') return InputType::MoveLeft;
+                return InputType::None;
+            }
         }
         return InputType::Escape;
     }
-#endif
+    if (ch == 10 || ch == 13) return InputType::Enter;
     if (ch >= '0' && ch <= '9') {
-        return static_cast<InputType>(
-            static_cast<int>(InputType::Top0) + (ch - '0')
-            );
+        return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
     }
     switch (ch) {
     case 'w': case 'W': return InputType::MoveUp;
@@ -77,8 +195,8 @@ InputType GetPlayerInput() {
     case 'r': case 'R': return InputType::R;
     }
     return InputType::None;
+#endif
 }
-//simpler key reader, not made for menuing
 #if defined(_WIN32)
 int readKey() {
     int ch = _getch();

@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 enum class InputType {
     None,
     MoveUp,
@@ -22,7 +21,14 @@ enum class InputType {
     X,
     Q,
     C,
-    R
+    R,
+    MouseMove,
+    MouseLeftDown,
+    MouseLeftUp,
+    MouseRightDown,
+    MouseRightUp
 };
 InputType GetPlayerInput();
 int readKey();
+int getMouseX();
+int getMouseY();

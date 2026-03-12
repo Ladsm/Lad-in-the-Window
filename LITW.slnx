@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="LITW/LITW.vcxproj" />
+  <Project Path="LITW/LITW.vcxproj" Id="943a2bd1-d4c4-4511-a705-23071553db5a" />
 </Solution>
