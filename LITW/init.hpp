@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include "getwh.hpp"
 #if defined(_WIN32)
 #include <Windows.h>
 #endif
@@ -31,5 +32,16 @@ inline void init() {
 	std::cout << "\033[?1000h";
 	std::cout << "\033[?1002h";
 	std::cout << "\033[?1006h";
+	std::cout << "\033[2J\033[H";
+	std::cout << "\033[?1049h";
+	std::cout << "\033[?25l";
+	std::cout.flush();
+	//wallpaper
+	std::cout << "\033[H";
+	std::cout << "\033[48;5;30m";
+	for (int i = 1; i <= getConsoleHeight(); i++) {
+		std::cout << "\033[" << i << ";1H"
+			<< std::string(getConsoleWidth(), ' ');
+	}
 	std::cout.flush();
 }

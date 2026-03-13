@@ -62,4 +62,7 @@ int main() {
     wm.SetStartMenu(&start);
     wm.AddWindow(&start);
     wm.Run();
+    std::cout << "\033[?1000l\033[?1002l\033[?1006l";
+    std::cout << "\033[?25h\033[0m\033[2J\033[H";
+    std::cout << "\033[?1049l" << std::flush;
 }
