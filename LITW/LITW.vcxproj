@@ -137,6 +137,7 @@
     <ClInclude Include="init.hpp" />
     <ClInclude Include="Label.hpp" />
     <ClInclude Include="StartMenu.hpp" />
+    <ClInclude Include="TextInput.hpp" />
     <ClInclude Include="userinput.hpp" />
     <ClInclude Include="Widget.hpp" />
     <ClInclude Include="Window.hpp" />

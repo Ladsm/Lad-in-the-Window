@@ -4,9 +4,16 @@
 #include "StartMenu.hpp"
 #include "Button.hpp"
 #include "Label.hpp"
+#include "TextInput.hpp"
 #include <iostream>
 #include <functional>
 
+class Textinputer : public Window {
+public:
+    Textinputer() : Window("ghuwahgjd", 40, 10) {
+        AddWidget(new TextInput(2, 2, 10));
+    }
+};
 class MenuWindow : public Window {
 public:
     MenuWindow(std::string title) : Window(title, 40, 10) {
@@ -58,6 +65,9 @@ int main() {
         });
     start.AddItem("README", []() {
         return new README();
+        });
+    start.AddItem("text", []() {
+        return new Textinputer();
         });
     wm.SetStartMenu(&start);
     wm.AddWindow(&start);
