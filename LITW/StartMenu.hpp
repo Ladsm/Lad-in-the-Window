@@ -16,7 +16,7 @@ public:
         visible = false;
     }
     void AddItem(const std::string& name, std::function<Window* ()> factory) {
-        int index = widgets.size();
+        size_t index = widgets.size();
         factories.push_back(factory);
         AddWidget(new Button(
             2,
