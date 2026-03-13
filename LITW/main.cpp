@@ -8,10 +8,15 @@
 #include <iostream>
 #include <functional>
 #include <cstdlib>
+
+std::string title = "text entering demo";
 class Textinputer : public Window {
 public:
-    Textinputer() : Window("text entering demo", 40, 10) {
-        AddWidget(new TextInput(2, 2));
+    Textinputer() : Window("title", 40, 10) {
+        AddWidget(new TextInput(2, 2, 25, title));
+        AddWidget(new Button(2, 3, "Exit", []() {
+            std::exit(0);
+        }));
     }
 };
 class MenuWindow : public Window {
