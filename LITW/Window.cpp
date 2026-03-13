@@ -190,7 +190,6 @@ void WindowManager::Run() {
                 }
                 for (auto* ww : windows) ww->focused = false;
                 windows.back()->focused = true;
-
                 const int iconVisualWidth = 11;
                 int iconsStartX = w->x + w->width - 1 - iconVisualWidth;
                 int topRow = w->y;
@@ -216,7 +215,6 @@ void WindowManager::Run() {
                 bool onRight = (mx == w->x + w->width - 1);
                 bool onTop = (my == topRow);
                 bool onBottom = (my == bottomRow);
-
                 if ((onLeft && onTop)) rf = Window::RF_Left | Window::RF_Top;
                 else if ((onRight && onTop)) rf = Window::RF_Right | Window::RF_Top;
                 else if ((onLeft && onBottom)) rf = Window::RF_Left | Window::RF_Bottom;
