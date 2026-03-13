@@ -12,4 +12,6 @@ public:
     virtual void Draw(std::ostream& buffer, int parentX, int parentY) = 0;
     virtual void HandleInput(InputType input) {}
     virtual ~Widget() = default;
+    virtual bool WantsRawInput() { return false; }
+    virtual void HandleRawInput() {}
 };

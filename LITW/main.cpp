@@ -7,37 +7,38 @@
 #include "TextInput.hpp"
 #include <iostream>
 #include <functional>
-
+#include <cstdlib>
 class Textinputer : public Window {
 public:
-    Textinputer() : Window("ghuwahgjd", 40, 10) {
-        AddWidget(new TextInput(2, 2, 10));
+    Textinputer() : Window("text entering demo", 40, 10) {
+        AddWidget(new TextInput(2, 2));
     }
 };
 class MenuWindow : public Window {
 public:
     MenuWindow(std::string title) : Window(title, 40, 10) {
-        AddWidget(new Button(2, 2, "Exit", [this]() {
+        AddWidget(new Button(2, 2, "Exit", []() {
             std::exit(0);
-            }
-        ));
+        }));
     }
 };
+
 class TextWindow : public Window {
 public:
-    TextWindow(std::string title, std::string msg) : Window(title, 40, 10) {
+    TextWindow(std::string title, std::string msg)
+        : Window(title, 40, 10) {
         AddWidget(new Label(2, 2, msg));
         AddWidget(new Button(2, 5, "Close", [this]() {
             visible = false;
-            }
-        ));
+        }));
     }
-    TextWindow(std::string title, std::string msg, int w, int h) : Window(title, w, h) {
+
+    TextWindow(std::string title, std::string msg, int w, int h)
+        : Window(title, w, h) {
         AddWidget(new Label(2, 2, msg));
         AddWidget(new Button(2, 5, "Close", [this]() {
             visible = false;
-            }
-        ));
+        }));
     }
 };
 class README : public Window {
@@ -46,13 +47,11 @@ public:
         AddWidget(new Label(2, 2, "Lad in the Window, Ladsm 2026"));
         AddWidget(new Label(2, 3, "-----------------------------"));
         AddWidget(new Label(2, 4, "uhhhhh... enjoy the GUI in a TUI."));
-        AddWidget(new Button(2, 5, "Close", [this]() {
+        AddWidget(new Button(2, 6, "Close", [this]() {
             visible = false;
-            }
-        ));
+        }));
     }
 };
-
 int main() {
     init();
     WindowManager wm;
@@ -66,7 +65,7 @@ int main() {
     start.AddItem("README", []() {
         return new README();
         });
-    start.AddItem("text", []() {
+    start.AddItem("Text Input Demo", []() {
         return new Textinputer();
         });
     wm.SetStartMenu(&start);
@@ -75,4 +74,5 @@ int main() {
     std::cout << "\033[?1000l\033[?1002l\033[?1006l";
     std::cout << "\033[?25h\033[0m\033[2J\033[H";
     std::cout << "\033[?1049l" << std::flush;
+    return 0;
 }

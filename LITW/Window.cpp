@@ -170,6 +170,17 @@ void WindowManager::Run() {
         int clockPos = sw - (int)clockStr.length() + 1;
         frame << "\033[" << sh << ";" << clockPos << "H" << clockStr << "\033[0m";
         std::cout << frame.str() << std::flush;
+        if (top && top->focusedWidget >= 0 &&
+            top->focusedWidget < (int)top->widgets.size()) {
+
+            Widget* w = top->widgets[top->focusedWidget];
+
+            if (w->WantsRawInput()) {
+                w->HandleRawInput();
+                std::this_thread::sleep_for(std::chrono::milliseconds(16));
+                continue;
+            }
+        }
         InputType input = GetPlayerInput();
         if (input == InputType::MouseLeftDown) {
             int mx = getMouseX();
