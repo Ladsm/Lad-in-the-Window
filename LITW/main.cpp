@@ -4,7 +4,6 @@
 #include "StartMenu.hpp"
 #include "Button.hpp"
 #include "Label.hpp"
-#include "console.hpp"
 #include <iostream>
 #include <functional>
 
@@ -90,9 +89,6 @@ int main() {
         });
     start.AddItem("info", []() {
         return new InfoWindow();
-        });
-    start.AddItem("Terminal", []() {
-        return new TerminalWindow();
         });
     wm.SetStartMenu(&start);
     wm.AddWindow(&start);
