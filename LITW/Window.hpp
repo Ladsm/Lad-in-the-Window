@@ -14,6 +14,7 @@ public:
     int focusedWidget = -1;
     std::vector<Widget*> widgets;
     int x, y, width, height;
+    int startWidth, startHeight;
     bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false;
     std::string title;
     int dragOffsetX = 0;

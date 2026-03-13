@@ -4,7 +4,7 @@
 #include <algorithm>
 #include <thread>
 
-Window::Window(std::string t, int w, int h) : title(t), width(w), height(h) {
+Window::Window(std::string t, int w, int h) : title(t), width(w), height(h), startWidth(w), startHeight(h) {
     x = (getConsoleWidth() - w) / 2;
     y = (getConsoleHeight() - h) / 2;
     if (x < 0) x = 0;
@@ -261,50 +261,46 @@ void WindowManager::Run() {
                     continue;
                 }
                 if (w->isResizing && w->resizeFlags != Window::RF_None) {
-                    const int minWidth = 4;
-                    const int minHeight = 3;
-
                     int dx = mx - w->resizeStartMouseX;
                     int dy = my - w->resizeStartMouseY;
-
                     int newX = w->resizeStartX;
                     int newY = w->resizeStartY;
                     int newW = w->resizeStartWidth;
                     int newH = w->resizeStartHeight;
                     if (w->resizeFlags & Window::RF_Right) {
                         newW = w->resizeStartWidth + dx;
-                        if (newW < minWidth) newW = minWidth;
+                        if (newW < w->startWidth) newW = w->startWidth;
                         if (newX + newW > sw) newW = sw - newX;
                     }
                     if (w->resizeFlags & Window::RF_Left) {
                         newW = w->resizeStartWidth - dx;
                         newX = w->resizeStartX + dx;
-                        if (newW < minWidth) {
-                            newX = w->resizeStartX + (w->resizeStartWidth - minWidth);
-                            newW = minWidth;
+                        if (newW < w->startWidth) {
+                            newX = w->resizeStartX + (w->resizeStartWidth - w->startWidth);
+                            newW = w->startWidth;
                         }
                         if (newX < 0) {
                             newW += newX;
                             newX = 0;
-                            if (newW < minWidth) newW = minWidth;
+                            if (newW < w->startWidth) newW = w->startWidth;
                         }
                     }
                     if (w->resizeFlags & Window::RF_Bottom) {
                         newH = w->resizeStartHeight + dy;
-                        if (newH < minHeight) newH = minHeight;
+                        if (newH < w->startHeight) newH = w->startHeight;
                         if (newY + newH > sh - 1) newH = (sh - 1) - newY;
                     }
                     if (w->resizeFlags & Window::RF_Top) {
                         newH = w->resizeStartHeight - dy;
                         newY = w->resizeStartY + dy;
-                        if (newH < minHeight) {
-                            newY = w->resizeStartY + (w->resizeStartHeight - minHeight);
-                            newH = minHeight;
+                        if (newH < w->startHeight) {
+                            newY = w->resizeStartY + (w->resizeStartHeight - w->startHeight);
+                            newH = w->startHeight;
                         }
                         if (newY < 0) {
                             newH += newY;
                             newY = 0;
-                            if (newH < minHeight) newH = minHeight;
+                            if (newH < w->startHeight) newH = w->startHeight;
                         }
                     }
                     w->x = newX;
@@ -315,7 +311,6 @@ void WindowManager::Run() {
                     if (w->y < 0) w->y = 0;
                     if (w->width > sw) w->width = sw;
                     if (w->height > sh - 1) w->height = sh - 1;
-
                     continue;
                 }
             }
@@ -387,7 +382,7 @@ void WindowManager::Run() {
                 if (maxWidth < minWidth) maxWidth = minWidth;
                 switch (input) {
                 case InputType::MoveUp:
-                    if (top->height > minHeight) top->height--;
+                    if (top->height > top->startHeight) top->height--;
                     break;
                 case InputType::MoveDown:
                     if (top->height < maxHeight) top->height++;
@@ -398,7 +393,7 @@ void WindowManager::Run() {
                     else top->width = maxWidth;
                     break;
                 case InputType::MoveLeft:
-                    if (top->width > minWidth) top->width--;
+                    if (top->width > top->startWidth) top->width--;
                     break;
                 case InputType::R: case InputType::Enter:
                     top->isResizing = false; break;
