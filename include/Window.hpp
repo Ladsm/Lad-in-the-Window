@@ -46,6 +46,7 @@ class WindowManager {
     int windowCount = 0;
     Window* startMenu = nullptr;
 public:
+    void Alert(std::string message);
     void SetStartMenu(Window* sm);
     void AddWindow(Window* w);
     void RemoveWindow(Window* w);

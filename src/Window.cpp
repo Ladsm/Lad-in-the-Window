@@ -1,4 +1,5 @@
 #include "Window.hpp"
+#include <windows/AlertWindow.hpp>
 #include <sstream>
 #include <ctime>
 #include <algorithm>
@@ -79,6 +80,12 @@ Window::~Window() {
     for (auto* w : widgets)
         delete w;
 }
+void WindowManager::Alert(std::string message) {
+    Window* alert = new AlertWindow(message, this);
+    AddWindow(alert);
+    alert->x = (getConsoleWidth() - alert->width) / 2;
+    alert->y = (getConsoleHeight() - alert->height) / 2;
+}
 void WindowManager::SetStartMenu(Window* sm) {
     startMenu = sm;
 }
@@ -97,6 +104,7 @@ void WindowManager::AddWindow(Window* w) {
 void WindowManager::RemoveWindow(Window* w) {
     auto it = std::find(windows.begin(), windows.end(), w);
     if (it != windows.end()) {
+        delete* it;
         windows.erase(it);
         windowCount--;
     }
