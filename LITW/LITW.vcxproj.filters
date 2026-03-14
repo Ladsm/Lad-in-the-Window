@@ -56,5 +56,11 @@
     <ClInclude Include="Button.hpp">
       <Filter>widgets</Filter>
     </ClInclude>
+    <ClInclude Include="LargeTextbox.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="TextInput.hpp">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

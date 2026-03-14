@@ -5,7 +5,7 @@
 #include "Button.hpp"
 #include "Label.hpp"
 #include "TextInput.hpp"
-#include "LargeTextBox.hpp"
+#include "LargeTextbox.hpp"
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -60,14 +60,14 @@ class README : public Window {
         "Hello, Ladsm here.",
         "This program is a demo of the Lad in a Window TUI",
         "framework. This TUI is made to look like",
-        "a GUI."
+        "a GUI.",
         "LITW is made more as a art project then a real",
         "TUI framework,"
     };
 public:
-    README() : Window("README", 55, 18) {
+    README() : Window("README", 55, 20) {
         AddWidget(new TextBox(2, 2, text));
-        AddWidget(new Button(2, 14, "Close", [this]() {
+        AddWidget(new Button(2, 16, "Close", [this]() {
             visible = false;
         }));
     }

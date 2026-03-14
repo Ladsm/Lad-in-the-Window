@@ -35,8 +35,11 @@ public:
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
-        if (isWriting) buffer << "\033[38;2;0;0;0;48;2;255;255;255m";
-        else buffer << "\033[38;2;0;0;0;48;2;192;192;192m";
+        if (isWriting) {
+            buffer << "\033[38;2;0;0;0;48;2;255;255;255m";
+            buffer << "\033[?25h";
+        }
+        else { buffer << "\033[38;2;0;0;0;48;2;192;192;192m"; buffer << "\033[?25l"; }
         buffer << target << " \033[0m";
     }
 };
