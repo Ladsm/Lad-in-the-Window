@@ -2,10 +2,10 @@
 #include "Window.hpp"
 #include "init.hpp"
 #include "StartMenu.hpp"
-#include "Button.hpp"
-#include "Label.hpp"
-#include "TextInput.hpp"
-#include "LargeTextbox.hpp"
+#include <widgets/Button.hpp>
+#include <widgets/Label.hpp>
+#include <widgets/TextInput.hpp>
+#include <widgets/LargeTextbox.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
