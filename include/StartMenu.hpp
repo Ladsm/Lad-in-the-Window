@@ -1,29 +1,30 @@
 #pragma once
 #include "Window.hpp"
 #include "Button.hpp"
+#include "userinput.hpp"
 #include <vector>
 #include <functional>
+#include <memory>
 
 class WindowManager;
-
 class StartMenuWindow : public Window {
 public:
-    std::vector<std::function<Window* ()>> factories;
+    std::vector<std::function<std::shared_ptr<Window>()>> factories;
     WindowManager* wm;
     StartMenuWindow(WindowManager* manager)
         : Window("Start", 30, 10), wm(manager)
     {
         visible = false;
     }
-    void AddItem(const std::string& name, std::function<Window* ()> factory) {
+    void AddItem(const std::string& name, std::function<std::shared_ptr<Window>()> factory) {
         size_t index = widgets.size();
         factories.push_back(factory);
-        AddWidget(new Button(
+        AddWidget(std::make_unique<Button>(
             2,
             1 + index,
             name,
             [this, index]() {
-                Window* w = factories[index]();
+                auto w = factories[index]();
                 wm->AddWindow(w);
                 visible = false;
             }

@@ -9,30 +9,31 @@
 #include <iostream>
 #include <functional>
 #include <cstdlib>
+#include <memory>
 
 std::string title = "text entering demo";
 WindowManager wm;
 class Textinputer : public Window {
 public:
     Textinputer() : Window("title", 40, 10) {
-        AddWidget(new TextInput(2, 2, 25, title));
-        AddWidget(new Button(2, 3, "Exit", []() {
+        AddWidget(std::make_unique<TextInput>(2, 2, 25, title));
+        AddWidget(std::make_unique<Button>(2, 3, "Exit", []() {
             std::cout << "\033[?1000l\033[?1002l\033[?1006l";
             std::cout << "\033[?25h\033[0m\033[2J\033[H";
             std::cout << "\033[?1049l" << std::flush;
             std::exit(0);
-        }));
+            }));
     }
 };
 class MenuWindow : public Window {
 public:
     MenuWindow(std::string title) : Window(title, 40, 10) {
-        AddWidget(new Button(2, 2, "Exit", []() {
+        AddWidget(std::make_unique<Button>(2, 2, "Exit", []() {
             std::cout << "\033[?1000l\033[?1002l\033[?1006l";
             std::cout << "\033[?25h\033[0m\033[2J\033[H";
             std::cout << "\033[?1049l" << std::flush;
             std::exit(0);
-        }));
+            }));
     }
 };
 
@@ -40,18 +41,18 @@ class TextWindow : public Window {
 public:
     TextWindow(std::string title, std::string msg)
         : Window(title, 40, 10) {
-        AddWidget(new Label(2, 2, msg));
-        AddWidget(new Button(2, 5, "Close", [this]() {
+        AddWidget(std::make_unique<Label>(2, 2, msg));
+        AddWidget(std::make_unique<Button>(2, 5, "Close", [this]() {
             visible = false;
-        }));
+            }));
     }
 
     TextWindow(std::string title, std::string msg, int w, int h)
         : Window(title, w, h) {
-        AddWidget(new Label(2, 2, msg));
-        AddWidget(new Button(2, 5, "Close", [this]() {
+        AddWidget(std::make_unique<Label>(2, 2, msg));
+        AddWidget(std::make_unique<Button>(2, 5, "Close", [this]() {
             visible = false;
-        }));
+            }));
     }
 };
 class README : public Window {
@@ -73,30 +74,30 @@ class README : public Window {
     };
 public:
     README() : Window("README", 55, 20) {
-        AddWidget(new TextBox(2, 2, text));
-        AddWidget(new Button(2, 16, "Close", [this]() {
+        AddWidget(std::make_unique<TextBox>(2, 2, text));
+        AddWidget(std::make_unique<Button>(2, 16, "Close", [this]() {
             visible = false;
             wm.Alert("This is an alert");
-        }));
+            }));
     }
 };
 int main() {
     init();
-    StartMenuWindow start(&wm);
-    start.AddItem("Main Menu", []() {
-        return new MenuWindow("main menu");
+    auto start = std::make_shared<StartMenuWindow>(&wm);
+    start->AddItem("Main Menu", []() {
+        return std::make_shared<MenuWindow>("main menu");
         });
-    start.AddItem("System Status", []() {
-        return new TextWindow("System status", "System is running smoothly!");
+    start->AddItem("System Status", []() {
+        return std::make_shared<TextWindow>("System status", "System is running smoothly!");
         });
-    start.AddItem("README", []() {
-        return new README();
+    start->AddItem("README", []() {
+        return std::make_shared<README>();
         });
-    start.AddItem("Text Input Demo", []() {
-        return new Textinputer();
+    start->AddItem("Text Input Demo", []() {
+        return std::make_shared<Textinputer>();
         });
-    wm.SetStartMenu(&start);
-    wm.AddWindow(&start);
+    wm.SetStartMenu(start);
+    wm.AddWindow(start);
     wm.Run();
     std::cout << "\033[?1000l\033[?1002l\033[?1006l";
     std::cout << "\033[?25h\033[0m\033[2J\033[H";

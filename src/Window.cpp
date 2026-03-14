@@ -4,6 +4,7 @@
 #include <ctime>
 #include <algorithm>
 #include <thread>
+#include <memory>
 
 Window::Window(std::string t, int w, int h) : title(t), width(w), height(h), startWidth(w), startHeight(h) {
     x = (getConsoleWidth() - w) / 2;
@@ -11,9 +12,9 @@ Window::Window(std::string t, int w, int h) : title(t), width(w), height(h), sta
     if (x < 0) x = 0;
     if (y < 0) y = 0;
 }
-void Window::AddWidget(Widget* w) {
+void Window::AddWidget(std::unique_ptr<Widget> w) {
     height = std::max(height, (int)widgets.size() + 5);
-    widgets.push_back(w);
+    widgets.push_back(std::move(w));
 
     if (focusedWidget == -1) {
         focusedWidget = 0;
@@ -49,7 +50,7 @@ void Window::Draw(std::ostream& buffer) {
         buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
     }
     buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "└" << drawLine(innerWidth) << "┘" << resetStyle;
-    for (auto* w : widgets)
+    for (auto& w : widgets)
         w->Draw(buffer, x + 1, y + 3);
 }
 
@@ -76,20 +77,16 @@ bool Window::ContainsPoint(int px, int py) const {
     return px >= x && px < x + width &&
         py >= y && py < y + height;
 }
-Window::~Window() {
-    for (auto* w : widgets)
-        delete w;
-}
 void WindowManager::Alert(std::string message) {
-    Window* alert = new AlertWindow(message, this);
+    auto alert = std::make_shared<AlertWindow>(message, this);
     AddWindow(alert);
     alert->x = (getConsoleWidth() - alert->width) / 2;
     alert->y = (getConsoleHeight() - alert->height) / 2;
 }
-void WindowManager::SetStartMenu(Window* sm) {
+void WindowManager::SetStartMenu(std::shared_ptr<Window> sm) {
     startMenu = sm;
 }
-void WindowManager::AddWindow(Window* w) {
+void WindowManager::AddWindow(std::shared_ptr<Window> w) {
     int offsetIndex = windows.size() % 10;
     int offsetX = offsetIndex * 4;
     int offsetY = offsetIndex * 2;
@@ -101,17 +98,24 @@ void WindowManager::AddWindow(Window* w) {
     windows.back()->focused = true;
     windowCount++;
 }
-void WindowManager::RemoveWindow(Window* w) {
+void WindowManager::RemoveWindow(std::shared_ptr<Window> w) {
     auto it = std::find(windows.begin(), windows.end(), w);
     if (it != windows.end()) {
-        delete* it;
+        windows.erase(it);
+        windowCount--;
+    }
+}
+void WindowManager::RemoveWindow(Window* w) {
+    auto it = std::find_if(windows.begin(), windows.end(),
+        [w](const std::shared_ptr<Window>& ptr) { return ptr.get() == w; });
+    if (it != windows.end()) {
         windows.erase(it);
         windowCount--;
     }
 }
 void WindowManager::CycleWindow() {
     if (windows.size() < 2) return;
-    Window* top = windows.back();
+    auto top = windows.back();
     top->isMoving = false;
     windows.pop_back();
     windows.insert(windows.begin(), top);
@@ -125,7 +129,7 @@ void WindowManager::Run() {
     while (running) {
         int sw = getConsoleWidth();
         int sh = getConsoleHeight();
-        Window* top = nullptr;
+        std::shared_ptr<Window> top = nullptr;
         for (int i = (int)windows.size() - 1; i >= 0; --i) {
             if (windows[i]->x < 0) windows[i]->x = 0;
             if (windows[i]->x + windows[i]->width > sw)
@@ -147,7 +151,7 @@ void WindowManager::Run() {
         for (int i = 1; i <= sh; i++) {
             frame << "\033[" << i << ";1H\033[K";
         }
-        for (auto* w : windows) {
+        for (auto& w : windows) {
             if (w->visible && !w->isMinimized)
                 w->Draw(frame);
         }
@@ -181,7 +185,7 @@ void WindowManager::Run() {
         if (top && top->focusedWidget >= 0 &&
             top->focusedWidget < (int)top->widgets.size()) {
 
-            Widget* w = top->widgets[top->focusedWidget];
+            Widget* w = top->widgets[top->focusedWidget].get();
 
             if (w->WantsRawInput()) {
                 w->HandleRawInput();
@@ -202,12 +206,13 @@ void WindowManager::Run() {
                 }
             }
             if (found != -1) {
-                Window* w = windows[found];
+                auto wptr = windows[found];
+                Window* w = wptr.get();
                 if (found != (int)windows.size() - 1) {
                     windows.erase(windows.begin() + found);
-                    windows.push_back(w);
+                    windows.push_back(wptr);
                 }
-                for (auto* ww : windows) ww->focused = false;
+                for (auto& ww : windows) ww->focused = false;
                 windows.back()->focused = true;
                 const int iconVisualWidth = 11;
                 int iconsStartX = w->x + w->width - 1 - iconVisualWidth;
@@ -217,7 +222,7 @@ void WindowManager::Run() {
                 if (my == headerContentY && mx >= iconsStartX && mx < iconsStartX + iconVisualWidth) {
                     int relx = mx - iconsStartX;
                     if (relx >= 8 && relx <= 10) {
-                        RemoveWindow(w);
+                        RemoveWindow(wptr);
                         continue;
                     }
                     else if (relx >= 4 && relx <= 6) {
@@ -267,7 +272,8 @@ void WindowManager::Run() {
             int mx = getMouseX();
             int my = getMouseY();
             if (!windows.empty()) {
-                Window* w = windows.back();
+                auto wptr = windows.back();
+                Window* w = wptr.get();
                 if (w->isMoving) {
                     w->x = mx - w->dragOffsetX;
                     w->y = my - w->dragOffsetY;
@@ -333,7 +339,7 @@ void WindowManager::Run() {
             }
         }
         else if (input == InputType::MouseLeftUp) {
-            for (auto* w : windows) {
+            for (auto& w : windows) {
                 if (w->isMoving) w->isMoving = false;
                 if (w->isResizing) {
                     w->isResizing = false;
@@ -360,7 +366,7 @@ void WindowManager::Run() {
             if (targetIdx < (int)windows.size() &&
                 windows[targetIdx]->visible) {
                 windows[targetIdx]->isMinimized = false;
-                Window* selected = windows[targetIdx];
+                auto selected = windows[targetIdx];
                 windows.erase(windows.begin() + targetIdx);
                 windows.push_back(selected);
             }
@@ -373,7 +379,7 @@ void WindowManager::Run() {
                 case InputType::MoveRight: top->x++; break;
                 case InputType::MoveLeft:  top->x--; break;
                 case InputType::R:
-                    if (top != startMenu) {
+                    if (top.get() != startMenu.get()) {
                         top->isMoving = false;
                         top->isResizing = true;
                     }
@@ -425,7 +431,7 @@ void WindowManager::Run() {
                     CycleWindow();
                     break;
                 case InputType::X:
-                    RemoveWindow(top);
+                    RemoveWindow(top.get());
                     break;
                 case InputType::E:
                     top->isMoving = true;

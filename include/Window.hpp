@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <iostream>
+#include <memory>
 #ifdef max
 #undef max
 #endif
@@ -12,7 +13,7 @@ class StartMenuWindow;
 class Window {
 public:
     int focusedWidget = -1;
-    std::vector<Widget*> widgets;
+    std::vector<std::unique_ptr<Widget>> widgets;
     int x, y, width, height;
     int startWidth, startHeight;
     bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false;
@@ -34,21 +35,22 @@ public:
     int resizeStartX = 0;
     int resizeStartY = 0;
     Window(std::string t, int w, int h);
-    void AddWidget(Widget* w);
+    void AddWidget(std::unique_ptr<Widget> w);
     std::string headerColor();
     virtual void Draw(std::ostream& buffer);
     void HandleInput(InputType input);
     bool ContainsPoint(int px, int py) const;
-    virtual ~Window();
+    virtual ~Window() = default;
 };
 class WindowManager {
-    std::vector<Window*> windows;
+    std::vector<std::shared_ptr<Window>> windows;
     int windowCount = 0;
-    Window* startMenu = nullptr;
+    std::shared_ptr<Window> startMenu = nullptr;
 public:
     void Alert(std::string message);
-    void SetStartMenu(Window* sm);
-    void AddWindow(Window* w);
+    void SetStartMenu(std::shared_ptr<Window> sm);
+    void AddWindow(std::shared_ptr<Window> w);
+    void RemoveWindow(std::shared_ptr<Window> w);
     void RemoveWindow(Window* w);
     void CycleWindow();
     void Run();
