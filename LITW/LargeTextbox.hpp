@@ -1,0 +1,20 @@
+#pragma once
+#include "Widget.hpp"
+#include <vector>
+
+class TextBox : public Widget {
+public:
+    std::vector<std::string> text;
+    TextBox(int x, int y, const std::vector<std::string>& t)
+        : text(t)
+    {
+        this->x = x;
+        this->y = y;
+    }
+    void Draw(std::ostream& buffer, int px, int py) override {
+        for (size_t i = 0; i < text.size(); ++i) {
+            buffer << "\033[" << (py + y + static_cast<int>(i)) << ";" << (px + x) << "H";
+            buffer << "\033[38;2;0;0;0;48;2;192;192;192m" << text[i] << "\033[0m";
+        }
+    }
+};

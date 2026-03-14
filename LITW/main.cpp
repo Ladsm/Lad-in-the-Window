@@ -5,6 +5,7 @@
 #include "Button.hpp"
 #include "Label.hpp"
 #include "TextInput.hpp"
+#include "LargeTextBox.hpp"
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -47,12 +48,26 @@ public:
     }
 };
 class README : public Window {
+    std::vector<std::string> text = {
+        "Lad in the Window, Ladsm 2026",
+        "-----------------------------",
+        "Hot keys:",
+        "WASD and Arrow keys: Movement",
+        "Q: Minimize window  X: Close window",
+        "E: Edit window position  R: Resize window",
+        "C: Start menu",
+        "",
+        "Hello, Ladsm here.",
+        "This program is a demo of the Lad in a Window TUI",
+        "framework. This TUI is made to look like",
+        "a GUI."
+        "LITW is made more as a art project then a real",
+        "TUI framework,"
+    };
 public:
-    README() : Window("README", 40, 10) {
-        AddWidget(new Label(2, 2, "Lad in the Window, Ladsm 2026"));
-        AddWidget(new Label(2, 3, "-----------------------------"));
-        AddWidget(new Label(2, 4, "uhhhhh... enjoy the GUI in a TUI."));
-        AddWidget(new Button(2, 6, "Close", [this]() {
+    README() : Window("README", 55, 18) {
+        AddWidget(new TextBox(2, 2, text));
+        AddWidget(new Button(2, 14, "Close", [this]() {
             visible = false;
         }));
     }
