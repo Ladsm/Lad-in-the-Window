@@ -5,11 +5,11 @@
 class TextBox : public Widget {
 public:
     std::vector<std::string> text;
-    TextBox(int x, int y, const std::vector<std::string>& t)
-        : text(t)
-    {
+    TextBox(int x, int y, const std::vector<std::string>& t) {
         this->x = x;
         this->y = y;
+        this->text = t;
+        this->focusable = false;
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         for (size_t i = 0; i < text.size(); ++i) {

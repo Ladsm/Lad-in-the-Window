@@ -58,19 +58,27 @@ void Window::HandleInput(InputType input) {
     if (widgets.empty()) return;
     if (input == InputType::MoveDown) {
         widgets[focusedWidget]->focused = false;
-        focusedWidget = (focusedWidget + 1) % widgets.size();
+        int start = focusedWidget;
+        do {
+            focusedWidget = (focusedWidget + 1) % widgets.size();
+        } 
+        while (!widgets[focusedWidget]->focusable && focusedWidget != start);
         widgets[focusedWidget]->focused = true;
         return;
     }
     if (input == InputType::MoveUp) {
         widgets[focusedWidget]->focused = false;
-        focusedWidget--;
-        if (focusedWidget < 0)
-            focusedWidget = widgets.size() - 1;
+        int start = focusedWidget;
+        do {
+            focusedWidget--;
+            if (focusedWidget < 0) focusedWidget = widgets.size() - 1;
+        } while (!widgets[focusedWidget]->focusable && focusedWidget != start);
         widgets[focusedWidget]->focused = true;
         return;
     }
-    widgets[focusedWidget]->HandleInput(input);
+    if (widgets[focusedWidget]->focusable) {
+        widgets[focusedWidget]->HandleInput(input);
+    }
 }
 
 bool Window::ContainsPoint(int px, int py) const {

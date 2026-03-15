@@ -6,7 +6,8 @@ public:
     Label(int x, int y, std::string t) {
         this->x = x;
         this->y = y;
-        text = t;
+        this->text = t;
+        this->focusable = false;
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
