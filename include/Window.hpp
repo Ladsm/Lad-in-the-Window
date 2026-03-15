@@ -40,6 +40,7 @@ public:
     virtual void Draw(std::ostream& buffer);
     void HandleInput(InputType input);
     bool ContainsPoint(int px, int py) const;
+    void Resize(int newW, int newH);
     virtual ~Window() = default;
 };
 class WindowManager {

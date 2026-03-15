@@ -54,6 +54,14 @@ void Window::Draw(std::ostream& buffer) {
         w->Draw(buffer, x + 1, y + 3);
 }
 
+void Window::Resize(int newW, int newH) {
+    this->width = newW;
+    this->height = newH;
+    for (auto& w : widgets) {
+        w->OnResize(this->width, this->height);
+    }
+}
+
 void Window::HandleInput(InputType input) {
     if (widgets.empty()) return;
     if (input == InputType::MoveDown) {

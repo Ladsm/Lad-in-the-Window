@@ -7,6 +7,7 @@
 #include <widgets/TextInput.hpp>
 #include <widgets/LargeTextbox.hpp>
 #include <widgets/Checkbox.hpp>
+#include <widgets/Bar.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -20,7 +21,8 @@ public:
     Textinputer() : Window(::title, 40, 10) {
         AddWidget(std::make_unique<TextInput>(2, 2, 20, &::title));
         AddWidget(std::make_unique<CheckBox>(2, 3, "global state?", globlestate));
-        AddWidget(std::make_unique<Button>(2, 4, "Exit", []() {
+        AddWidget(std::make_unique<Separator>(0, 4, 40));
+        AddWidget(std::make_unique<Button>(2, 5, "Exit", []() {
             std::cout << "\033[?1000l\033[?1002l\033[?1006l";
             std::cout << "\033[?25h\033[0m\033[2J\033[H";
             std::cout << "\033[?1049l" << std::flush;
