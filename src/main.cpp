@@ -14,7 +14,7 @@
 #include <cstdlib>
 #include <memory>
 
-std::string title = "text entering demo";
+std::string title = "Text Entering Demo";
 bool globlestate = false;
 WindowManager wm;
 class Textinputer : public Window {
@@ -81,9 +81,7 @@ class README : public Window {
         "Hello, Ladsm here.",
         "This program is a demo of the Lad in a Window TUI",
         "framework. This TUI is made to look like",
-        "a GUI.",
-        "LITW is made more as a art project then a real",
-        "TUI framework."
+        "a GUI."
     };
 public:
     README() : Window("README", 55, 20) {
