@@ -55,7 +55,7 @@ InputType GetPlayerInput() {
     while (true) {
         if (!ReadConsoleInput(hIn, &ir, 1, &read)) {
             int ch = _getch();
-            if (ch == 13) return InputType::Enter;
+            if (ch == 13 || ch == ' ') return InputType::Enter;
             if (ch == 27) return InputType::Escape;
             if (ch >= '0' && ch <= '9') {
                 return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
@@ -77,7 +77,7 @@ InputType GetPlayerInput() {
             auto& ke = ir.Event.KeyEvent;
             if (!ke.bKeyDown) continue;
             char ch = (char)ke.uChar.AsciiChar;
-            if (ch == 13) return InputType::Enter;
+            if (ch == 13 || ch == ' ') return InputType::Enter;
             if (ch == 27) return InputType::Escape;
             switch (ke.wVirtualKeyCode) {
             case VK_UP: return InputType::MoveUp;
@@ -179,7 +179,7 @@ InputType GetPlayerInput() {
         }
         return InputType::Escape;
     }
-    if (ch == 10 || ch == 13) return InputType::Enter;
+    if (ch == 10 || ch == 13 || ch == ' ') return InputType::Enter;
     if (ch >= '0' && ch <= '9') {
         return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
     }

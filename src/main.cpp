@@ -6,23 +6,32 @@
 #include <widgets/Label.hpp>
 #include <widgets/TextInput.hpp>
 #include <widgets/LargeTextbox.hpp>
+#include <widgets/Checkbox.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
 #include <memory>
 
 std::string title = "text entering demo";
+bool globlestate = false;
 WindowManager wm;
 class Textinputer : public Window {
 public:
-    Textinputer() : Window("title", 40, 10) {
-        AddWidget(std::make_unique<TextInput>(2, 2, 25, title));
-        AddWidget(std::make_unique<Button>(2, 3, "Exit", []() {
+    Textinputer() : Window(::title, 40, 10) {
+        AddWidget(std::make_unique<TextInput>(2, 2, 20, &::title));
+        AddWidget(std::make_unique<CheckBox>(2, 3, "global state?", globlestate));
+        AddWidget(std::make_unique<Button>(2, 4, "Exit", []() {
             std::cout << "\033[?1000l\033[?1002l\033[?1006l";
             std::cout << "\033[?25h\033[0m\033[2J\033[H";
             std::cout << "\033[?1049l" << std::flush;
             std::exit(0);
-            }));
+        }));
+    }
+    void Draw(std::ostream& buffer) override {
+        if (this->title != ::title) {
+            this->title = ::title;
+        }
+        Window::Draw(buffer);
     }
 };
 class MenuWindow : public Window {
