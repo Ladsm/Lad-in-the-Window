@@ -8,6 +8,7 @@
 #include <widgets/LargeTextbox.hpp>
 #include <widgets/Checkbox.hpp>
 #include <widgets/Bar.hpp>
+#include <widgets/table.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -89,7 +90,20 @@ public:
         AddWidget(std::make_unique<Button>(2, 16, "Close", [this]() {
             visible = false;
             wm.Alert("This is an alert");
-            }));
+        }));
+    }
+};
+class Users : public Window {
+public:
+    Users() : Window("List of Users", 40, 12) {
+        auto table = std::make_unique<Table>(2, 2,
+            std::vector<std::string>{"ID", "Name", "Status"},
+            std::vector<int>{4, 15, 10}
+        );
+        table->AddRow({ "01", "Ladsm", "Online" });
+        table->AddRow({ "02", "Guest", "Offline" });
+        AddWidget(std::move(table));
+        AddWidget(std::make_unique<Button>(2, 8, "Close", [this]() { visible = false; }));
     }
 };
 int main() {
@@ -106,6 +120,9 @@ int main() {
         });
     start->AddItem("Text Input Demo", []() {
         return std::make_shared<Textinputer>();
+        });
+    start->AddItem("Table of Users", []() {
+        return std::make_shared<Users>();
         });
     wm.SetStartMenu(start);
     wm.AddWindow(start);
