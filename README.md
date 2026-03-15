@@ -41,10 +41,11 @@ mkdir build
 cd build
 cmake ..
 cmake --build .
+#where binary is stored
 #linux
-./LITW
+build/LITW
 #Windows
-Debug\LITW.exe
+build\Debug\LITW.exe
 ```
 
 > *Note*
