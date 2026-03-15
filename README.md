@@ -16,6 +16,8 @@ A window, is a object that holds widgets.
 An object inside a window.  
 The base of interaction in LITW.
 
-## Demo image:
+## Demos :
 
-<img src="./images/LITWDemo.png" alt="Alt text" width="500" height="300">
+<img src="./images/LITWDemo.png" alt="Demo Image" width="500" height="300">
+
+![Demo Gif](./images/LITWDemo.gif)
