@@ -55,11 +55,16 @@ InputType GetPlayerInput() {
     while (true) {
         if (!ReadConsoleInput(hIn, &ir, 1, &read)) {
             int ch = _getch();
+            if (ch == 9) return InputType::Tab;
             if (ch == 13 || ch == ' ') return InputType::Enter;
             if (ch == 27) return InputType::Escape;
-            if (ch >= '0' && ch <= '9') {
-                return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
+            if (ch == 0 || ch == 224) {
+                int ex = _getch();
+                if (ex >= 59 && ex <= 68) return static_cast<InputType>((int)InputType::F1 + (ex - 59));
+                if (ex == 133) return InputType::F11;
+                if (ex == 134) return InputType::F12;
             }
+            if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
             switch (ch) {
             case 'w': case 'W': return InputType::MoveUp;
             case 's': case 'S': return InputType::MoveDown;
@@ -76,6 +81,10 @@ InputType GetPlayerInput() {
         if (ir.EventType == KEY_EVENT) {
             auto& ke = ir.Event.KeyEvent;
             if (!ke.bKeyDown) continue;
+            if (ke.wVirtualKeyCode == VK_TAB) return InputType::Tab;
+            if (ke.wVirtualKeyCode >= VK_F1 && ke.wVirtualKeyCode <= VK_F12) {
+                return static_cast<InputType>((int)InputType::F1 + (ke.wVirtualKeyCode - VK_F1));
+            }
             char ch = (char)ke.uChar.AsciiChar;
             if (ch == 13 || ch == ' ') return InputType::Enter;
             if (ch == 27) return InputType::Escape;
@@ -85,9 +94,7 @@ InputType GetPlayerInput() {
             case VK_LEFT: return InputType::MoveLeft;
             case VK_RIGHT: return InputType::MoveRight;
             }
-            if (ch >= '0' && ch <= '9') {
-                return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
-            }
+            if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
             switch (ch) {
             case 'w': case 'W': return InputType::MoveUp;
             case 's': case 'S': return InputType::MoveDown;
@@ -136,6 +143,7 @@ InputType GetPlayerInput() {
         consoleInitialized = true;
     }
     int ch = getchThred();
+    if (ch == 9) return InputType::Tab;
     if (ch == 27) {
         int n1 = getchThred();
         if (n1 == '[') {
@@ -167,22 +175,37 @@ InputType GetPlayerInput() {
                         }
                     }
                 }
-                return InputType::None;
-            }
             else {
                 if (n2 == 'A') return InputType::MoveUp;
                 if (n2 == 'B') return InputType::MoveDown;
                 if (n2 == 'C') return InputType::MoveRight;
                 if (n2 == 'D') return InputType::MoveLeft;
-                return InputType::None;
+                if (n2 >= '0' && n2 <= '9') {
+                    int num = n2 - '0';
+                    int next;
+                    while ((next = getchThred()) >= '0' && next <= '9') num = num * 10 + (next - '0');
+                    if (num == 15) return InputType::F5;
+                    if (num == 17) return InputType::F6;
+                    if (num == 18) return InputType::F7;
+                    if (num == 19) return InputType::F8;
+                    if (num == 20) return InputType::F9;
+                    if (num == 21) return InputType::F10;
+                    if (num == 23) return InputType::F11;
+                    if (num == 24) return InputType::F12;
+                }
             }
+        }
+        else if (n1 == 'O') {
+            int n2 = getchThred();
+            if (n2 == 'P') return InputType::F1;
+            if (n2 == 'Q') return InputType::F2;
+            if (n2 == 'R') return InputType::F3;
+            if (n2 == 'S') return InputType::F4;
         }
         return InputType::Escape;
     }
     if (ch == 10 || ch == 13 || ch == ' ') return InputType::Enter;
-    if (ch >= '0' && ch <= '9') {
-        return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
-    }
+    if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
     switch (ch) {
     case 'w': case 'W': return InputType::MoveUp;
     case 's': case 'S': return InputType::MoveDown;
