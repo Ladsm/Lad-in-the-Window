@@ -75,7 +75,8 @@ class README : public Window {
         "WASD and Arrow keys: Movement",
         "Q: Minimize window  X: Close window",
         "E: Edit window position  R: Resize window",
-        "C: Start menu",
+        "C: Start menu  Escape: Cycle windows",
+        "1-9: Change window by window number(taskbar number)"
         "",
         "Hello, Ladsm here.",
         "This program is a demo of the Lad in a Window TUI",
