@@ -9,6 +9,7 @@
 #include <widgets/Checkbox.hpp>
 #include <widgets/Bar.hpp>
 #include <widgets/table.hpp>
+#include <widgets/Scrollable.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -72,21 +73,24 @@ class README : public Window {
         "Lad in the Window, Ladsm 2026",
         "-----------------------------",
         "Hot keys:",
+        "Space: Scroll Down on scrollables",
+        "Tab: Scroll up on scrollables",
+        "Enter: confirm input and tick check box",
         "WASD and Arrow keys: Movement",
         "Q: Minimize window  X: Close window",
         "E: Edit window position  R: Resize window",
         "C: Start menu  Escape: Cycle windows",
-        "1-9: Change window by window number(taskbar number)"
-        "",
+        "1-9: Change window by window number(taskbar number)",
+        "---------------------------------------------------",
         "Hello, Ladsm here.",
         "This program is a demo of the Lad in a Window TUI",
         "framework. This TUI is made to look like",
         "a GUI."
     };
 public:
-    README() : Window("README", 55, 20) {
-        AddWidget(std::make_unique<TextBox>(2, 2, text));
-        AddWidget(std::make_unique<Button>(2, 16, "Close", [this]() {
+    README() : Window("README", 60, 18) {
+        AddWidget(std::make_unique<ScrollableTextBox>(2, 2, 10, 54, text));
+        AddWidget(std::make_unique<Button>(2, 13, "Close", [this]() {
             visible = false;
             wm.Alert("This is an alert");
         }));
