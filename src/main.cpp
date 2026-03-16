@@ -10,6 +10,7 @@
 #include <widgets/Bar.hpp>
 #include <widgets/table.hpp>
 #include <widgets/Scrollable.hpp>
+#include <widgets/ShellWidget.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -103,6 +104,17 @@ public:
         AddWidget(std::make_unique<Button>(2, 8, "Close", [this]() { visible = false; }));
     }
 };
+class ShellWindow : public Window {
+public:
+    ShellWindow() : Window("Terminal", 80, 24) {}
+    static std::shared_ptr<ShellWindow> Create() {
+        auto win = std::make_shared<ShellWindow>();
+        win->AddWidget(
+            std::make_unique<ShellWidget>(1, 1, 76, 20, win)
+        );
+        return win;
+    }
+};
 int main() {
     init();
     auto start = std::make_shared<StartMenuWindow>(&wm);
@@ -120,6 +132,9 @@ int main() {
         });
     start->AddItem("Table of Users", []() {
         return std::make_shared<Users>();
+        });
+    start->AddItem("Terminal", []() {
+        return ShellWindow::Create();
         });
     wm.SetStartMenu(start);
     wm.AddWindow(start);
