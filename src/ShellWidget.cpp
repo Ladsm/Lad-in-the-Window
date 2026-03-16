@@ -32,7 +32,7 @@ void ShellWidget::Draw(std::ostream& bufferStream, int parentX, int parentY) {
         bufferStream << "\033[" << parentY + y + i << ";" << parentX + x << "H";
         bufferStream << "\033[38;2;0;0;0;48;2;192;192;192m" << line;
     }
-    std::string prompt = std::filesystem::current_path().string() + "LITW> " + currentInput;
+    std::string prompt = "LITW " + std::filesystem::current_path().string() + "> " + currentInput;
     if (prompt.length() > width - 2)
         prompt = prompt.substr(prompt.length() - (width - 2));
     bufferStream << "\033[" << parentY + y + height - 1 << ";" << parentX + x << "H";
@@ -41,7 +41,7 @@ void ShellWidget::Draw(std::ostream& bufferStream, int parentX, int parentY) {
         bufferStream << "_";
 }
 void ShellWidget::HandleRawInput() {
-    std::string prompt = std::filesystem::current_path().string() + "LITW> " + currentInput;
+    std::string prompt = "LITW " + std::filesystem::current_path().string() + "> " + currentInput;
     int key = readKey();
     if (key == 13) {
         buffer.push_back(prompt + currentInput);
