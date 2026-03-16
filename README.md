@@ -49,7 +49,7 @@ build\Debug\LITW.exe
 ```
 
 > *Note*
->  For the best experience, use a modern terminal like Windows Terminal, Alacritty, or iTerm2 that supports 24-bit color and SGR mouse tracking.
+>  For the best experience, use a modern terminal like [Windows Terminal](https://github.com/microsoft/terminal), [Alacritty](https://github.com/alacritty/alacritty), or [kitty](https://github.com/kovidgoyal/kitty) that supports 24-bit color and SGR mouse tracking.
 
 ## Controls
 
