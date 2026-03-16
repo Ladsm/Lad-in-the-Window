@@ -175,6 +175,7 @@ InputType GetPlayerInput() {
                         }
                     }
                 }
+            }
             else {
                 if (n2 == 'A') return InputType::MoveUp;
                 if (n2 == 'B') return InputType::MoveDown;

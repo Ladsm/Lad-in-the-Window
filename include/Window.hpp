@@ -49,6 +49,7 @@ class WindowManager {
     std::shared_ptr<Window> startMenu = nullptr;
 public:
     void Alert(std::string message);
+    void exit(int code);
     void SetStartMenu(std::shared_ptr<Window> sm);
     void AddWindow(std::shared_ptr<Window> w);
     void RemoveWindow(std::shared_ptr<Window> w);

@@ -25,10 +25,7 @@ public:
         AddWidget(std::make_unique<CheckBox>(2, 3, "global state?", globlestate));
         AddWidget(std::make_unique<Separator>(0, 4, this));
         AddWidget(std::make_unique<Button>(2, 5, "Exit", []() {
-            std::cout << "\033[?1000l\033[?1002l\033[?1006l";
-            std::cout << "\033[?25h\033[0m\033[2J\033[H";
-            std::cout << "\033[?1049l" << std::flush;
-            std::exit(0);
+            wm.exit(0);
         }));
     }
     void Draw(std::ostream& buffer) override {
@@ -42,10 +39,7 @@ class MenuWindow : public Window {
 public:
     MenuWindow(std::string title) : Window(title, 40, 10) {
         AddWidget(std::make_unique<Button>(2, 2, "Exit", []() {
-            std::cout << "\033[?1000l\033[?1002l\033[?1006l";
-            std::cout << "\033[?25h\033[0m\033[2J\033[H";
-            std::cout << "\033[?1049l" << std::flush;
-            std::exit(0);
+            wm.exit(0);
             }));
     }
 };
@@ -70,7 +64,7 @@ public:
 };
 class README : public Window {
     std::vector<std::string> text = {
-        "Lad in the Window, Ladsm 2026",
+        "Lad i n the Window, Ladsm 2026",
         "-----------------------------",
         "Hot keys:",
         "Space: Scroll Down on scrollables",
@@ -130,8 +124,6 @@ int main() {
     wm.SetStartMenu(start);
     wm.AddWindow(start);
     wm.Run();
-    std::cout << "\033[?1000l\033[?1002l\033[?1006l";
-    std::cout << "\033[?25h\033[0m\033[2J\033[H";
-    std::cout << "\033[?1049l" << std::flush;
+    wm.exit(1);
     return 0;
 }

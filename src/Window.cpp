@@ -99,6 +99,10 @@ void WindowManager::Alert(std::string message) {
     alert->x = (getConsoleWidth() - alert->width) / 2;
     alert->y = (getConsoleHeight() - alert->height) / 2;
 }
+void WindowManager::exit(int code) {
+    std::cout << "\033[?25h" << "\033[?1000l" << "\033[?1002l" << "\033[?1006l" << "\033[?1049l" << "\033[2J" << "\033[H" << std::flush;
+    std::exit(code);
+}
 void WindowManager::SetStartMenu(std::shared_ptr<Window> sm) {
     startMenu = sm;
 }
@@ -466,9 +470,7 @@ void WindowManager::Run() {
                 }
             }
         }
-        else if (input == InputType::Escape) {
-            running = false;
-        }
         std::this_thread::sleep_for(std::chrono::milliseconds(16));
     }
+    exit(1);
 }
