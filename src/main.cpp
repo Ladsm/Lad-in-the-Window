@@ -1,7 +1,7 @@
 #include "getwh.hpp"
 #include "Window.hpp"
 #include "init.hpp"
-#include "StartMenu.hpp"
+#include <windows/StartMenu.hpp>
 #include <widgets/Button.hpp>
 #include <widgets/Label.hpp>
 #include <widgets/TextInput.hpp>
