@@ -58,7 +58,7 @@ public:
         buffer << "\033[0m";
     }
     void HandleInput(InputType input) override {
-        if (input == InputType::Enter && scroll + amountOfLinesToDraw < text.size()) {
+        if (input == InputType::Space && scroll + amountOfLinesToDraw < text.size()) {
             scroll++;
         }
         else if (input == InputType::Tab && scroll > 0) {

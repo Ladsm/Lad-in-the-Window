@@ -16,6 +16,7 @@ enum class InputType {
     Top8,
     Top9,
     Enter,
+    Space,
     Escape,
     Tab,
     F1,
