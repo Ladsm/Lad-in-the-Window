@@ -48,9 +48,7 @@ void ShellWidget::Draw(std::ostream& bufferStream, int parentX, int parentY) {
         int idx = start + i;
         std::string line = (idx < (int)buffer.size()) ? buffer[idx] : "";
         if (line.length() > (size_t)width - 2) line = line.substr(0, width - 2);
-
-        bufferStream << "\033[" << parentY + y + i << ";" << parentX + x << "H"
-            << "\033[38;2;0;0;0;48;2;192;192;192m" << line << "\033[0m";
+        bufferStream << "\033[" << parentY + y + i << ";" << parentX + x << "H" << "\033[38;2;0;0;0;48;2;192;192;192m" << line << "\033[0m";
     }
     std::string prompt = "LITW " + std::filesystem::current_path().string() + "> " + currentInput;
     bufferStream << "\033[" << parentY + y + height - 1 << ";" << parentX + x << "H";
