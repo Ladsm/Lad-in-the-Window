@@ -55,10 +55,20 @@ public:
         if (children.empty()) return;
         int oldFocus = internalFocus;
         if (input == InputType::Space) {
-            if (internalFocus < (int)children.size() - 1) internalFocus++;
+            if (internalFocus < (int)children.size() - 1) {
+                internalFocus++;
+                if (!children[internalFocus]->focusable) {
+                    internalFocus++;
+                }
+            }
         }
         else if (input == InputType::Tab) {
-            if (internalFocus > 0) internalFocus--;
+            if (internalFocus > 0) {
+                internalFocus--;
+                if (!children[internalFocus]->focusable) {
+                    internalFocus--;
+                }
+            }
         }
         else {
             children[internalFocus]->HandleInput(input);

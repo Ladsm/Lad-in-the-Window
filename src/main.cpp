@@ -117,9 +117,10 @@ class ScrollExample : public Window {
 public:
     ScrollExample() : Window("Scroll Example", 40, 10) {
         auto container = std::make_unique<ScrollContainer>(2, 2, 30, 3);
-        container->AddWidget(std::make_unique<CheckBox>(1, 1, "State one", a));
-        container->AddWidget(std::make_unique<CheckBox>(1, 3, "State two", b));
-        container->AddWidget(std::make_unique<Button>(1, 5, "Save Settings", []() { wm.Alert("Saved!"); }));
+        container->AddWidget(std::make_unique<CheckBox>(0, 1, "State one", a));
+        container->AddWidget(std::make_unique<Label>(0, 3, "middle"));
+        container->AddWidget(std::make_unique<CheckBox>(0, 5, "State two", b));
+        container->AddWidget(std::make_unique<Button>(0, 7, "Save Settings", []() { wm.Alert("Saved!"); }));
         AddWidget(std::move(container));
         AddWidget(std::make_unique<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); }));
     }
