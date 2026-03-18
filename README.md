@@ -34,8 +34,11 @@ cmake --build .
 .\Debug\LITW.exe
 ```
 
-> *Note*
+> *Note*  
 >  For the best experience, use a modern terminal like [Windows Terminal](https://github.com/microsoft/terminal), [Alacritty](https://github.com/alacritty/alacritty), or [kitty](https://github.com/kovidgoyal/kitty) that supports 24-bit color and SGR mouse tracking.
+
+> TTY Only  
+> For TTY only, use KMSCON for 24 bit color.
 
 <div align="center">
 
@@ -49,5 +52,8 @@ cmake --build .
 | | E / R |	Move / Resize mode|
 | Navigation | WASD / Arrows | Move cursor/selection |
 | System  | C | Open Start Menu |
+| Mouse | Left Click | Focus Window |
+| | Left Drag | Move Window |
+
 
 </div>
