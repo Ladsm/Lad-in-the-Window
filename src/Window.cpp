@@ -1,4 +1,5 @@
-#include "Window.hpp"
+#include <Window.hpp>
+#include <init.hpp>
 #include <windows/AlertWindow.hpp>
 #include <sstream>
 #include <ctime>
@@ -143,6 +144,7 @@ void WindowManager::CycleWindow() {
         windows.back()->isMinimized = false;
 }
 void WindowManager::Run() {
+    init();
     std::cout << "\033[2J\033[?25l" << std::flush;
     std::string wallpaperColor = "\033[48;5;30m";
     bool running = true;

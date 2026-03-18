@@ -1,6 +1,5 @@
 #include "getwh.hpp"
 #include "Window.hpp"
-#include "init.hpp"
 #include <windows/StartMenu.hpp>
 #include <widgets/Button.hpp>
 #include <widgets/Label.hpp>
@@ -116,7 +115,6 @@ public:
     }
 };
 int main() {
-    init();
     auto start = std::make_shared<StartMenuWindow>(&wm);
     start->AddItem("Main Menu", []() {
         return std::make_shared<MenuWindow>("main menu");

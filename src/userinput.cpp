@@ -141,7 +141,7 @@ InputType GetPlayerInput() {
         raw.c_lflag &= ~(ICANON | ECHO);
         raw.c_iflag &= ~(IXON | ICRNL);
         tcsetattr(STDIN_FILENO, TCSANOW, &raw);
-        std::cout << "\033[?1000h\033[?1006h" << std::flush;
+        std::cout << "\033[?1002h\033[?1006h" << std::flush;
         consoleInitialized = true;
     }
     int ch = getchThred();
