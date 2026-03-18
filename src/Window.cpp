@@ -32,10 +32,22 @@ std::string Window::headerColor() {
 }
 void Window::Draw(std::ostream& buffer) {
     if (!visible || isMinimized) return;
+    std::string resetStyle = "\033[0m";
+    std::string shadowColor = "\033[48;2;45;45;45m";
+    int termWidth = getConsoleWidth();
+    for (int i = 1; i <= height; ++i) {
+        int shadowX = x + 3;
+        int shadowY = y + i + 1;
+        if (shadowX > termWidth) continue;
+        int availableWidth = termWidth - shadowX + 1;
+        int shadowWidth = (std::min)(width, availableWidth);
+        if (shadowWidth > 0) {
+            buffer << "\033[" << shadowY << ";" << shadowX << "H" << shadowColor << std::string(shadowWidth, ' ') << resetStyle;
+        }
+    }
     int innerWidth = width - 2;
     const int iconVisualWidth = 11;
     std::string silverBody = "\033[38;2;0;0;0;48;2;192;192;192m";
-    std::string resetStyle = "\033[0m";
     auto drawLine = [&](int len) {
         std::string line;
         for (int i = 0; i < len; i++) line += "─";
@@ -44,8 +56,8 @@ void Window::Draw(std::ostream& buffer) {
     buffer << "\033[" << (y + 1) << ";" << (x + 1) << "H" << headerColor() << "┌" << drawLine(innerWidth) << "┐" << resetStyle;
     buffer << "\033[" << (y + 2) << ";" << (x + 1) << "H" << headerColor() << "│ ";
     std::string titleText = title;
-    int spacing = innerWidth - (int)titleText.length() - iconVisualWidth - 1;
-    buffer << titleText << std::string((std::max)(0, spacing), ' ') << "[─] [O] [╳]│" << resetStyle;
+    int spacing = (std::max)(0, innerWidth - (int)titleText.length() - iconVisualWidth - 1);
+    buffer << titleText << std::string(spacing, ' ') << "[─] [O] [╳]│" << resetStyle;
     buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
     for (int i = 3; i < height - 1; ++i) {
         buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
@@ -54,6 +66,7 @@ void Window::Draw(std::ostream& buffer) {
     for (auto& w : widgets)
         w->Draw(buffer, x + 1, y + 3);
 }
+
 
 void Window::Resize(int newW, int newH) {
     this->width = newW;
