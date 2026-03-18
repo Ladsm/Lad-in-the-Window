@@ -51,7 +51,7 @@ public:
         : Window(title, 40, 10) {
         AddWidget(std::make_unique<Label>(2, 2, msg));
         AddWidget(std::make_unique<Button>(2, 5, "Close", [this]() {
-            visible = false;
+            wm.RemoveWindow(this);
             }));
     }
 
@@ -59,7 +59,7 @@ public:
         : Window(title, w, h) {
         AddWidget(std::make_unique<Label>(2, 2, msg));
         AddWidget(std::make_unique<Button>(2, 5, "Close", [this]() {
-            visible = false;
+            wm.RemoveWindow(this);
             }));
     }
 };
@@ -86,7 +86,7 @@ public:
     README() : Window("README", 60, 18) {
         AddWidget(std::make_unique<ScrollableTextBox>(2, 2, 10, 54, text));
         AddWidget(std::make_unique<Button>(2, 13, "Close", [this]() {
-            visible = false;
+            wm.RemoveWindow(this);
             wm.Alert("This is an alert");
         }));
     }
@@ -101,7 +101,7 @@ public:
         table->AddRow({ "01", "Ladsm", "Online" });
         table->AddRow({ "02", "Guest", "Offline" });
         AddWidget(std::move(table));
-        AddWidget(std::make_unique<Button>(2, 8, "Close", [this]() { visible = false; }));
+        AddWidget(std::make_unique<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); }));
     }
 };
 class ShellWindow : public Window {
@@ -114,13 +114,13 @@ public:
     }
 };
 bool a = true, b = true;
-class test : public Window {
+class ScrollExample : public Window {
 public:
-    test() : Window("test", 40, 10) {
+    ScrollExample() : Window("Scroll Example", 40, 10) {
         auto container = std::make_unique<ScrollContainer>(2, 2, 30, 3);
-        container->AddWidget(std::make_unique<CheckBox>(1, 1, "Enable Wifi", a));
-        container->AddWidget(std::make_unique<CheckBox>(1, 3, "Enable Bluetooth", b));
-        container->AddWidget(std::make_unique<Button>(1, 5, "Save Settings", []() {}));
+        container->AddWidget(std::make_unique<CheckBox>(1, 1, "State one", a));
+        container->AddWidget(std::make_unique<CheckBox>(1, 3, "State two", b));
+        container->AddWidget(std::make_unique<Button>(1, 5, "Save Settings", []() { wm.Alert("Saved!"); }));
         AddWidget(std::move(container));
         AddWidget(std::make_unique<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); }));
     }
@@ -145,8 +145,8 @@ int main() {
     start->AddItem("Terminal", []() {
         return ShellWindow::Create();
         });
-    start->AddItem("test", []() {
-        return std::make_shared<test>();
+    start->AddItem("Scroll Example", []() {
+        return std::make_shared<ScrollExample>();
         });
     wm.SetStartMenu(start);
     wm.AddWindow(start);
