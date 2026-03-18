@@ -2,13 +2,13 @@
 #include "Window.hpp"
 #include <windows/StartMenu.hpp>
 #include <widgets/Button.hpp>
-#include <widgets/Label.hpp>
-#include <widgets/TextInput.hpp>
-#include <widgets/LargeTextbox.hpp>
+#include <widgets/text/Label.hpp>
+#include <widgets/text/TextInput.hpp>
+#include <widgets/text/LargeTextbox.hpp>
+#include <widgets/text/Scrollable.hpp>
 #include <widgets/Checkbox.hpp>
 #include <widgets/Bar.hpp>
 #include <widgets/table.hpp>
-#include <widgets/Scrollable.hpp>
 #include <widgets/ShellWidget.hpp>
 #include <iostream>
 #include <functional>

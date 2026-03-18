@@ -1,6 +1,6 @@
 #pragma once
 #include "Window.hpp"
-#include "widgets/Label.hpp"
+#include "widgets/text/Label.hpp"
 #include "widgets/Button.hpp"
 #include <memory>
 
