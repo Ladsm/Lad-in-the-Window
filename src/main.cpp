@@ -87,7 +87,6 @@ public:
         AddWidget(std::make_unique<ScrollableTextBox>(2, 2, 10, 54, text));
         AddWidget(std::make_unique<Button>(2, 13, "Close", [this]() {
             wm.RemoveWindow(this);
-            wm.Alert("This is an alert");
         }));
     }
 };
