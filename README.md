@@ -44,16 +44,26 @@ cmake --build .
 
 ## Controls
 
-| Category  | Key(s) | 	Action |
-| ------------- | ------------- | ------------- |
-| Windows  | 1 - 9  | Focus window by index |
-|    | Escape | Cycle window focus |
-| Window Operations  | Q / X | Minimize / Close |
-| | E / R |	Move / Resize mode|
-| Navigation | WASD / Arrows | Move cursor/selection |
-| System  | C | Open Start Menu |
-| Mouse | Left Click | Focus Window |
-| | Left Drag | Move Window |
-
+| Category           | Key(s)                         | Action                        |
+| ------------------ | ------------------------------ | ----------------------------- |
+| Windows            | 1 - 9                          | Focus window by index         |
+|                    | Escape                         | Cycle window focus            |
+| Window Operations  | Q / X                          | Minimize / Close              |
+|                    | Z                              | Maximize / Restore window     |
+|                    | E / R                          | Move / Resize mode            |
+| Navigation         | WASD / Arrows                  | Move cursor / selection       |
+| System             | C                              | Open / Close Start Menu       |
+| Mouse              | Left Click                     | Focus window / click buttons  |
+|                    | Left Drag                      | Move window                   |
+|                    | Left Click on Title Bar        | Drag to move                  |
+|                    | Left Click on Window Corners   | Drag to resize                |
+| Text Input Widgets | Type while focused             | Add characters                |
+|                    | Backspace / Delete             | Remove characters             |
+|                    | Enter                          | Confirm input / finish typing |
+| Scrollable Widgets | Space                          | Scroll down                   |
+|                    | Tab                            | Scroll up                     |
+| Hotkeys            | R                              | Toggle resizing mode          |
+|                    | E                              | Toggle moving mode            |
+|                    | Escape (while moving/resizing) | Cancel action                 |
 
 </div>
