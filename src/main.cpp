@@ -108,9 +108,7 @@ public:
     ShellWindow() : Window("Terminal", 80, 24) {}
     static std::shared_ptr<ShellWindow> Create() {
         auto win = std::make_shared<ShellWindow>();
-        win->AddWidget(
-            std::make_unique<ShellWidget>(1, 1, 76, 20, win)
-        );
+        win->AddWidget(std::make_unique<ShellWidget>(1, 1, win));
         return win;
     }
 };

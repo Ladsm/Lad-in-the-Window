@@ -11,7 +11,7 @@ private:
     std::weak_ptr<Window> parentWindow;
     bool isWriting = false;
 public:
-    ShellWidget(int px, int py, int w, int h, std::weak_ptr<Window> parent);
+    ShellWidget(int px, int py, std::weak_ptr<Window> parent);
     void Draw(std::ostream& bufferStream, int parentX, int parentY) override;
     bool WantsRawInput() override { return isWriting; }
     void HandleInput(InputType input) override {

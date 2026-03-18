@@ -10,21 +10,22 @@
 #define POPEN popen
 #define PCLOSE pclose
 #endif
-ShellWidget::ShellWidget(int px, int py, int w, int h, std::weak_ptr<Window> parent) {
+ShellWidget::ShellWidget(int px, int py, std::weak_ptr<Window> parent) {
     x = px;
     y = py;
-    width = w;
-    height = h;
     parentWindow = parent;
 }
 void ShellWidget::HandleRawInput() {
+    auto parent = parentWindow.lock();
+    if (!parent) return;
+    int currentWidth = parent->width - 4;
     int key = readKey();
     if (key == 13) {
         if (currentInput == "clear" || currentInput == "cls") {
             buffer.clear();
         }
         if (currentInput == "exit") {
-            if (auto w = parentWindow.lock()) w->visible = false;
+            parent->visible = false;
         }
         if (currentInput == "") {
             isWriting = false;
@@ -36,7 +37,7 @@ void ShellWidget::HandleRawInput() {
         currentInput.clear();
         return;
     }
-    if (key == 9) { 
+    if (key == 9) {
         std::string toMatch = currentInput;
         size_t lastSpace = toMatch.find_last_of(" ");
         std::string prefix = (lastSpace == std::string::npos) ? "" : toMatch.substr(0, lastSpace + 1);
@@ -54,21 +55,28 @@ void ShellWidget::HandleRawInput() {
         if (!currentInput.empty()) currentInput.pop_back();
         return;
     }
-    if (key >= 32 && key <= 126 && currentInput.length() < (size_t)(width - 5)) {
+    if (key >= 32 && key <= 126 && currentInput.length() < (size_t)(currentWidth - 5)) {
         currentInput += (char)key;
     }
 }
+
 void ShellWidget::Draw(std::ostream& bufferStream, int parentX, int parentY) {
-    int drawLines = height - 1;
-    int start = (buffer.size() > (size_t)drawLines) ? buffer.size() - drawLines : 0;
+    auto parent = parentWindow.lock();
+    if (!parent) return;
+    int currentWidth = parent->width - 2;
+    int currentHeight = parent->height - 4;
+    int drawLines = currentHeight - 1;
+    int start = (buffer.size() > (size_t)drawLines) ? (int)buffer.size() - drawLines : 0;
     for (int i = 0; i < drawLines; i++) {
         int idx = start + i;
         std::string line = (idx < (int)buffer.size()) ? buffer[idx] : "";
-        if (line.length() > (size_t)width - 2) line = line.substr(0, width - 2);
-        bufferStream << "\033[" << parentY + y + i << ";" << parentX + x << "H" << "\033[38;2;0;0;0;48;2;192;192;192m" << line << "\033[0m";
+        if (line.length() > (size_t)currentWidth - 2)
+            line = line.substr(0, currentWidth - 2);
+        bufferStream << "\033[" << parentY + y + i << ";" << parentX + x << "H"
+            << "\033[38;2;0;0;0;48;2;192;192;192m" << line << "\033[0m";
     }
     std::string prompt = "LITW " + std::filesystem::current_path().string() + "> " + currentInput;
-    bufferStream << "\033[" << parentY + y + height - 1 << ";" << parentX + x << "H";
+    bufferStream << "\033[" << parentY + y + currentHeight - 1 << ";" << parentX + x << "H";
     bufferStream << "\033[38;2;0;0;0;48;2;192;192;192m\033[?25l";
     if (focused && !isWriting) {
         bufferStream << " " << prompt << " \033[0m";
@@ -77,6 +85,7 @@ void ShellWidget::Draw(std::ostream& bufferStream, int parentX, int parentY) {
         bufferStream << ">" << prompt << " \033[0m";
     }
 }
+
 void ShellWidget::ExecuteCommand(const std::string& cmd) {
     if (cmd.rfind("cd ", 0) == 0) {
         std::string path = cmd.substr(3);
