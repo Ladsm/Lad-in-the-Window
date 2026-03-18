@@ -37,14 +37,16 @@ void Window::Draw(std::ostream& buffer) {
     std::string resetStyle = "\033[0m";
     std::string shadowColor = "\033[48;2;45;45;45m";
     int termWidth = getConsoleWidth();
-    for (int i = 1; i <= height; ++i) {
-        int shadowX = x + 3;
-        int shadowY = y + i + 1;
-        if (shadowX > termWidth) continue;
-        int availableWidth = termWidth - shadowX + 1;
-        int shadowWidth = (std::min)(width, availableWidth);
-        if (shadowWidth > 0) {
-            buffer << "\033[" << shadowY << ";" << shadowX << "H" << shadowColor << std::string(shadowWidth, ' ') << resetStyle;
+    if (!isMaximized) {
+        for (int i = 1; i <= height; ++i) {
+            int shadowX = x + 3;
+            int shadowY = y + i + 1;
+            if (shadowX > termWidth) continue;
+            int availableWidth = termWidth - shadowX + 1;
+            int shadowWidth = (std::min)(width, availableWidth);
+            if (shadowWidth > 0) {
+                buffer << "\033[" << shadowY << ";" << shadowX << "H" << shadowColor << std::string(shadowWidth, ' ') << resetStyle;
+            }
         }
     }
     int innerWidth = width - 2;
@@ -187,6 +189,10 @@ void WindowManager::Run() {
     std::cout << "\033[2J\033[?25l" << std::flush;
     std::string wallpaperColor = "\033[48;5;30m";
     bool running = true;
+    static auto lastClickTime = std::chrono::steady_clock::now();
+    static int lastClickX = -1;
+    static int lastClickY = -1;
+    const int DOUBLE_CLICK_DELAY = 500;
     while (running) {
         int sw = getConsoleWidth();
         int sh = getConsoleHeight();
@@ -258,6 +264,46 @@ void WindowManager::Run() {
         if (input == InputType::MouseLeftDown) {
             int mx = getMouseX();
             int my = getMouseY();
+            if (my == sh - 1) {
+                if (mx >= 0 && mx <= 10) {
+                    if (startMenu) {
+                        startMenu->visible = !startMenu->visible;
+                        if (startMenu->visible) {
+                            auto it = std::find(windows.begin(), windows.end(), startMenu);
+                            if (it != windows.end()) {
+                                windows.erase(it);
+                                windows.push_back(startMenu);
+                            }
+                            else {
+                                windows.push_back(startMenu);
+                            }
+                        }
+                        continue;
+                    }
+                }
+                int currentX = 17;
+                for (int i = 0; i < (int)windows.size(); i++) {
+                    if (!windows[i]->visible) continue;
+                    std::string label = std::to_string(i + 1) + ": " + windows[i]->title +
+                        (windows[i]->isMinimized ? " (min)" : "");
+                    int btnWidth = (int)label.length() + 4;
+                    if (mx >= currentX && mx < currentX + btnWidth) {
+                        auto selected = windows[i];
+                        if (selected->focused && !selected->isMinimized) {
+                            selected->isMinimized = true;
+                            CycleWindow();
+                        }
+                        else {
+                            selected->isMinimized = false;
+                            windows.erase(windows.begin() + i);
+                            windows.push_back(selected);
+                        }
+                        break;
+                    }
+                    currentX += btnWidth;
+                }
+                continue;
+            }
             int found = -1;
             for (int i = (int)windows.size() - 1; i >= 0; --i) {
                 if (!windows[i]->visible || windows[i]->isMinimized) continue;
@@ -269,6 +315,19 @@ void WindowManager::Run() {
             if (found != -1) {
                 auto wptr = windows[found];
                 Window* w = wptr.get();
+                auto now = std::chrono::steady_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(now - lastClickTime).count();
+                bool isSameSpot = (mx == lastClickX && my == lastClickY);
+                bool isFastEnough = (duration < DOUBLE_CLICK_DELAY);
+                bool isOnTitleBar = (my == w->y + 1 && mx >= w->x && mx < w->x + w->width);
+                if (isSameSpot && isFastEnough && isOnTitleBar) {
+                    w->ToggleMaximize(sw, sh);
+                    lastClickX = -1;
+                    continue;
+                }
+                lastClickTime = now;
+                lastClickX = mx;
+                lastClickY = my;
                 if (found != (int)windows.size() - 1) {
                     windows.erase(windows.begin() + found);
                     windows.push_back(wptr);
@@ -290,13 +349,25 @@ void WindowManager::Run() {
                         w->ToggleMaximize(sw, sh);
                         continue;
                     }
-                    else if (relx >= 4 && relx <= 6) {
+                    else if (relx >= 0 && relx <= 2) {
                         w->isMinimized = true;
                         CycleWindow();
                         continue;
                     }
                     else {
                         continue;
+                    }
+                }
+                if (w->isMaximized) {
+                    bool clickingHeader = (my == w->y + 1 && mx >= w->x && mx < w->x + w->width);
+                    bool clickingResize = (mx == w->x || mx == w->x + w->width - 1 ||
+                        my == w->y || my == w->y + w->height - 1);
+                    if (clickingHeader || clickingResize) {
+                        w->ToggleMaximize(sw, sh);
+                        if (clickingHeader) {
+                            w->dragOffsetX = mx - w->x;
+                            w->dragOffsetY = my - w->y;
+                        }
                     }
                 }
                 int rf = Window::RF_None;
@@ -312,7 +383,6 @@ void WindowManager::Run() {
                 else if (onRight) rf = Window::RF_Right;
                 else if (onTop) rf = Window::RF_Top;
                 else if (onBottom) rf = Window::RF_Bottom;
-
                 if (rf != Window::RF_None) {
                     w->isResizing = true;
                     w->resizeFlags = rf;
