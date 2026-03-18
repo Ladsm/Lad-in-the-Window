@@ -38,7 +38,7 @@ cmake --build .
 >  For the best experience, use a modern terminal like [Windows Terminal](https://github.com/microsoft/terminal), [Alacritty](https://github.com/alacritty/alacritty), or [kitty](https://github.com/kovidgoyal/kitty) that supports 24-bit color and SGR mouse tracking.
 
 > TTY Only  
-> For TTY only, use KMSCON for 24 bit color.
+> For TTY only, use (KMSCON)[https://github.com/kmscon/kmscon] for 24 bit color.
 
 <div align="center">
 
