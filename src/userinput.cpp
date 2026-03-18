@@ -76,6 +76,7 @@ InputType GetPlayerInput() {
             case 'q': case 'Q': return InputType::Q;
             case 'c': case 'C': return InputType::C;
             case 'r': case 'R': return InputType::R;
+            case 'z': case 'Z': return InputType::Z;
             default: return InputType::None;
             }
         }
@@ -107,6 +108,7 @@ InputType GetPlayerInput() {
             case 'q': case 'Q': return InputType::Q;
             case 'c': case 'C': return InputType::C;
             case 'r': case 'R': return InputType::R;
+            case 'z': case 'Z': return InputType::Z;
             default: return InputType::None;
             }
         }
@@ -220,6 +222,7 @@ InputType GetPlayerInput() {
     case 'q': case 'Q': return InputType::Q;
     case 'c': case 'C': return InputType::C;
     case 'r': case 'R': return InputType::R;
+    case 'z': case 'Z': return InputType::Z;
     }
     return InputType::None;
 #endif

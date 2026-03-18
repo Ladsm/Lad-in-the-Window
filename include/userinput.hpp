@@ -36,6 +36,7 @@ enum class InputType {
     Q,
     C,
     R,
+    Z,
     MouseMove,
     MouseLeftDown,
     MouseLeftUp,

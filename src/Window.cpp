@@ -76,6 +76,27 @@ void Window::Resize(int newW, int newH) {
     }
 }
 
+void Window::ToggleMaximize(int screenWidth, int screenHeight) {
+    if (!isMaximized) {
+        oldX = x;
+        oldY = y;
+        oldWidth = width;
+        oldHeight = height;
+        x = 0;
+        y = 0;
+        width = screenWidth;
+        height = screenHeight - 1;
+        isMaximized = true;
+    }
+    else {
+        x = oldX;
+        y = oldY;
+        width = oldWidth;
+        height = oldHeight;
+        isMaximized = false;
+    }
+}
+
 void Window::HandleInput(InputType input) {
     if (widgets.empty()) return;
     if (input == InputType::MoveDown) {
@@ -261,6 +282,10 @@ void WindowManager::Run() {
                         continue;
                     }
                     else if (relx >= 4 && relx <= 6) {
+                        w->ToggleMaximize(sw, sh);
+                        continue;
+                    }
+                    else if (relx >= 4 && relx <= 6) {
                         w->isMinimized = true;
                         CycleWindow();
                         continue;
@@ -408,56 +433,68 @@ void WindowManager::Run() {
         }
         else if (top) {
             if (top->isMoving == true) {
-                switch (input) {
-                case InputType::MoveUp:    top->y--; break;
-                case InputType::MoveDown:  top->y++; break;
-                case InputType::MoveRight: top->x++; break;
-                case InputType::MoveLeft:  top->x--; break;
-                case InputType::R:
-                    if (top.get() != startMenu.get()) {
+                if (top->isMaximized) {
+                    top->isMoving = false;
+                }
+                else {
+                    switch (input) {
+                    case InputType::MoveUp:    top->y--; break;
+                    case InputType::MoveDown:  top->y++; break;
+                    case InputType::MoveRight: top->x++; break;
+                    case InputType::MoveLeft:  top->x--; break;
+                    case InputType::R:
+                        if (top.get() != startMenu.get()) {
+                            top->isMoving = false;
+                            top->isResizing = true;
+                        }
+                        break;
+                    case InputType::E:
+                    case InputType::Enter:
                         top->isMoving = false;
-                        top->isResizing = true;
+                        break;
+                    case InputType::Escape:
+                        top->isMoving = false;
+                        CycleWindow();
+                        break;
+                    default:
+                        break;
                     }
-                    break;
-                case InputType::E:
-                case InputType::Enter:
-                    top->isMoving = false;
-                    break;
-                case InputType::Escape:
-                    top->isMoving = false;
-                    CycleWindow();
-                    break;
-                default:
-                    break;
                 }
             }
             else if (top->isResizing == true) {
-                int minHeight = 3;
-                int minWidth = 4;
-                int maxHeight = sh - top->y - 1;
-                int maxWidth = sw - top->x;
-                if (maxHeight < minHeight) maxHeight = minHeight;
-                if (maxWidth < minWidth) maxWidth = minWidth;
-                switch (input) {
-                case InputType::MoveUp:
-                    if (top->height > top->startHeight) top->height--;
-                    break;
-                case InputType::MoveDown:
-                    if (top->height < maxHeight) top->height++;
-                    else top->height = maxHeight;
-                    break;
-                case InputType::MoveRight:
-                    if (top->width < maxWidth) top->width++;
-                    else top->width = maxWidth;
-                    break;
-                case InputType::MoveLeft:
-                    if (top->width > top->startWidth) top->width--;
-                    break;
-                case InputType::R: case InputType::Enter:
-                    top->isResizing = false; break;
-                case InputType::Escape:
-                    top->isResizing = false; CycleWindow(); break;
-                default: break;
+                if (top->isMaximized) {
+                    top->isResizing = false;
+                }
+                else {
+                    int minHeight = 3;
+                    int minWidth = 4;
+                    int maxHeight = sh - top->y - 1;
+                    int maxWidth = sw - top->x;
+                    if (maxHeight < minHeight) maxHeight = minHeight;
+                    if (maxWidth < minWidth) maxWidth = minWidth;
+                    switch (input) {
+                    case InputType::MoveUp:
+                        if (top->height > top->startHeight) top->height--;
+                        break;
+                    case InputType::MoveDown:
+                        if (top->height < maxHeight) top->height++;
+                        else top->height = maxHeight;
+                        break;
+                    case InputType::MoveRight:
+                        if (top->width < maxWidth) top->width++;
+                        else top->width = maxWidth;
+                        break;
+                    case InputType::MoveLeft:
+                        if (top->width > top->startWidth) top->width--;
+                        break;
+                    case InputType::R: case InputType::Enter:
+                        top->isResizing = false; break;
+                    case InputType::E:
+                        top->isResizing = false; top->isMoving = true; break;
+                    case InputType::Escape:
+                        top->isResizing = false; CycleWindow(); break;
+                    default: break;
+                    }
                 }
             }
             else {
@@ -469,15 +506,17 @@ void WindowManager::Run() {
                     RemoveWindow(top.get());
                     break;
                 case InputType::E:
-                    top->isMoving = true;
+                    if (!top->isMaximized) top->isMoving = true;
                     break;
                 case InputType::Q:
                     top->isMinimized = true;
                     CycleWindow();
                     break;
                 case InputType::R:
-                    top->isResizing = true;
-                    CycleWindow();
+                    if (!top->isMaximized) top->isResizing = true;
+                    break;
+                case InputType::Z:
+                    top->ToggleMaximize(sw, sh);
                     break;
                 default:
                     top->HandleInput(input);

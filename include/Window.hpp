@@ -16,7 +16,8 @@ public:
     std::vector<std::unique_ptr<Widget>> widgets;
     int x, y, width, height;
     int startWidth, startHeight;
-    bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false;
+    int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
+    bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
     std::string title;
     int dragOffsetX = 0;
     int dragOffsetY = 0;
@@ -41,6 +42,7 @@ public:
     void HandleInput(InputType input);
     bool ContainsPoint(int px, int py) const;
     void Resize(int newW, int newH);
+    void ToggleMaximize(int screenWidth, int screenHeight);
     virtual ~Window() = default;
 };
 class WindowManager {
