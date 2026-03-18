@@ -6,7 +6,7 @@ set(SOURCES
     src/main.cpp
     src/userinput.cpp
     src/Window.cpp
-    src/ShellWidget.cpp
+    src/widgets/ShellWidget.cpp
 )
 if(WIN32)
     list(APPEND SOURCES "windowsRC/LITW.rc")

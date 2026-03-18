@@ -20,6 +20,9 @@ ShellWidget::ShellWidget(int px, int py, int w, int h, std::weak_ptr<Window> par
 void ShellWidget::HandleRawInput() {
     int key = readKey();
     if (key == 13) {
+        if (currentInput == "clear" || currentInput == "cls") {
+            buffer.clear();
+        }
         if (currentInput == "exit") {
             if (auto w = parentWindow.lock()) w->visible = false;
         }
