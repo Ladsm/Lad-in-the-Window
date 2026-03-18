@@ -36,6 +36,20 @@ void ShellWidget::HandleRawInput() {
         currentInput.clear();
         return;
     }
+    if (key == 9) { 
+        std::string toMatch = currentInput;
+        size_t lastSpace = toMatch.find_last_of(" ");
+        std::string prefix = (lastSpace == std::string::npos) ? "" : toMatch.substr(0, lastSpace + 1);
+        std::string search = (lastSpace == std::string::npos) ? toMatch : toMatch.substr(lastSpace + 1);
+        for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::current_path())) {
+            std::string name = entry.path().filename().string();
+            if (name.rfind(search, 0) == 0) {
+                currentInput = prefix + name;
+                break;
+            }
+        }
+        return;
+    }
     if (key == 8 || key == 127) {
         if (!currentInput.empty()) currentInput.pop_back();
         return;
