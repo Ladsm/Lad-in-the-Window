@@ -6,6 +6,10 @@
 #include <string>
 #include <iostream>
 #include <memory>
+#ifndef _WIN32
+#include <unistd.h>
+#include <termios.h>
+#endif
 #ifdef max
 #undef max
 #endif

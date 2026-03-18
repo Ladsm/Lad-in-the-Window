@@ -10,15 +10,7 @@
 
 #if defined(__linux__)
 int getchThred() {
-    struct termios old_settings, new_settings;
-    int ch;
-    tcgetattr(STDIN_FILENO, &old_settings);
-    new_settings = old_settings;
-    new_settings.c_lflag &= ~(ICANON | ECHO);
-    tcsetattr(STDIN_FILENO, TCSANOW, &new_settings);
-    ch = getchar();
-    tcsetattr(STDIN_FILENO, TCSANOW, &old_settings);
-    return ch;
+    return getchar();
 }
 #endif
 

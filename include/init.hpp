@@ -3,10 +3,10 @@
 #include "getwh.hpp"
 #if defined(_WIN32)
 #include <Windows.h>
-#endif
-#if defined(__linux__)
+#else
 #include <unistd.h>
 #include <termios.h>
+static struct termios originalTermios;
 #endif
 
 inline void init() {
@@ -27,6 +27,12 @@ inline void init() {
 	SetConsoleMode(hOut, dwMode);
 	SetConsoleOutputCP(CP_UTF8);
 	SetConsoleCP(CP_UTF8);
+#else
+	tcgetattr(STDIN_FILENO, &originalTermios);
+	struct termios raw = originalTermios;
+	raw.c_lflag &= ~(ICANON | ECHO);
+	raw.c_iflag &= ~(IXON | ICRNL);
+	tcsetattr(STDIN_FILENO, TCSANOW, &raw);
 #endif
 	std::cout << "\033[?25l";
 	std::cout << "\033[?1000h";

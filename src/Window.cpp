@@ -12,6 +12,8 @@ Window::Window(std::string t, int w, int h) : title(t), width(w), height(h), sta
     y = (getConsoleHeight() - h) / 2;
     if (x < 0) x = 0;
     if (y < 0) y = 0;
+    oldX = x;
+    oldY = y;
 }
 void Window::AddWidget(std::unique_ptr<Widget> w) {
     height = std::max(height, (int)widgets.size() + 5);
@@ -135,7 +137,10 @@ void WindowManager::Alert(std::string message) {
     alert->y = (getConsoleHeight() - alert->height) / 2;
 }
 void WindowManager::exit(int code) {
-    std::cout << "\033[?25h" << "\033[?1000l" << "\033[?1002l" << "\033[?1006l" << "\033[?1049l" << "\033[2J" << "\033[H" << std::flush;
+#ifndef _WIN32
+    tcsetattr(STDIN_FILENO, TCSANOW, &originalTermios);
+#endif
+    std::cout << "\033[?25h" << "\033[?1000l" << "\033[?1002l" << "\033[?1006l" << "\033[?1049l" << "\033[2J" << "\033[H" << "\033[!p" << std::flush;
     std::exit(code);
 }
 void WindowManager::SetStartMenu(std::shared_ptr<Window> sm) {
