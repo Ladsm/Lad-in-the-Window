@@ -64,7 +64,7 @@ public:
 };
 class README : public Window {
     std::vector<std::string> text = {
-        "Lad i n the Window, Ladsm 2026",
+        "Lad in the Window, Ladsm 2026",
         "-----------------------------",
         "Hot keys:",
         "Space: Scroll Down on scrollables",
