@@ -10,6 +10,7 @@
 #include <widgets/Bar.hpp>
 #include <widgets/table.hpp>
 #include <widgets/ShellWidget.hpp>
+#include <ScrollContainer.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -112,6 +113,18 @@ public:
         return win;
     }
 };
+bool a = true, b = true;
+class test : public Window {
+public:
+    test() : Window("test", 40, 10) {
+        auto container = std::make_unique<ScrollContainer>(2, 2, 30, 3);
+        container->AddWidget(std::make_unique<CheckBox>(1, 1, "Enable Wifi", a));
+        container->AddWidget(std::make_unique<CheckBox>(1, 3, "Enable Bluetooth", b));
+        container->AddWidget(std::make_unique<Button>(1, 5, "Save Settings", []() {}));
+        AddWidget(std::move(container));
+        AddWidget(std::make_unique<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); }));
+    }
+};
 int main() {
     auto start = std::make_shared<StartMenuWindow>(&wm);
     start->AddItem("Main Menu", []() {
@@ -131,6 +144,9 @@ int main() {
         });
     start->AddItem("Terminal", []() {
         return ShellWindow::Create();
+        });
+    start->AddItem("test", []() {
+        return std::make_shared<test>();
         });
     wm.SetStartMenu(start);
     wm.AddWindow(start);
