@@ -6,6 +6,7 @@
 #include <widgets/text/TextInput.hpp>
 #include <widgets/text/LargeTextbox.hpp>
 #include <widgets/text/Scrollable.hpp>
+#include <widgets/text/LargeTextInput.hpp>
 #include <widgets/Checkbox.hpp>
 #include <widgets/Bar.hpp>
 #include <widgets/table.hpp>
@@ -125,6 +126,18 @@ public:
         AddWidget(std::make_unique<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); }));
     }
 };
+class TextInputLargeDemo : public Window {
+    std::vector<std::string> text = {
+        "Hello world",
+        "This is a test"
+    };
+public:
+    TextInputLargeDemo() : Window("Text input - large", 50, 20) {
+        AddWidget(std::make_unique<LargeTextInput>(2, 2, 10, 40, &text, this));
+        AddWidget(std::make_unique<Button>(2, 14, "dsaf", [this]() { std::cout << "dsafklasd"; }));
+        AddWidget(std::make_unique<Button>(2, 15, "Close", [this]() { wm.RemoveWindow(this); }));
+    }
+};
 int main() {
     auto start = std::make_shared<StartMenuWindow>(&wm);
     start->AddItem("Main Menu", []() {
@@ -147,6 +160,9 @@ int main() {
         });
     start->AddItem("Scroll Example", []() {
         return std::make_shared<ScrollExample>();
+        });
+    start->AddItem("Text input demo - Large", []() {
+        return std::make_shared<TextInputLargeDemo>();
         });
     wm.SetStartMenu(start);
     wm.AddWindow(start);
