@@ -101,7 +101,7 @@ public:
         table->AddRow({ "01", "Ladsm", "Online" });
         table->AddRow({ "02", "Guest", "Offline" });
         AddWidget(std::move(table));
-        AddWidget(std::make_unique<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); }));
+        AddWidget(std::make_unique<Button>(2, 8, "Close", [this]() { wm.RemoveWindow(this); }));
     }
 };
 class ShellWindow : public Window {
@@ -128,8 +128,10 @@ public:
 };
 class TextInputLargeDemo : public Window {
     std::vector<std::string> text = {
-        "Hello world",
-        "This is a test"
+        "#include <iostream>",
+        "int main() {",
+        "    std::cout << 123 << \"test\" << '\\n'",
+        "}"
     };
 public:
     TextInputLargeDemo() : Window("Text input - large", 50, 20) {

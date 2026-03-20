@@ -34,43 +34,87 @@ public:
         }
     }
     void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg) {
-        std::string typeColor = "\033[38;2;86;156;214m";
-        std::string funcColor = "\033[38;2;220;220;170m";
+        std::string kwColor = "\033[38;2;0;0;255m";
+        std::string funcColor = "\033[38;2;130;130;0m";
+        std::string strColor = "\033[38;2;180;0;0m";
+        std::string numColor = "\033[38;2;0;100;0m";
+        std::string preColor = "\033[38;2;120;0;120m";
+        std::string opColor = "\033[38;2;0;130;130m";
         std::vector<std::string> keywords = {
             "int", "void", "bool", "char", "double", "float", "class",
-            "public", "override", "if", "else", "return", "static", "enum"
+            "public", "override", "if", "else", "return", "static", "enum", "using", "namespace"
         };
         for (int col = 0; col < width; ++col) {
+            if (col >= (int)line.size()) {
+                buffer << " ";
+                continue;
+            }
             bool highlighted = false;
-            if (col < (int)line.size()) {
+            if (line[col] == '"' || line[col] == '\'') {
+                char quote = line[col];
+                int end = col + 1;
+                while (end < (int)line.size() && line[end] != quote) {
+                    if (line[end] == '\\' && end + 1 < (int)line.size()) end++;
+                    end++;
+                }
+                if (end < (int)line.size()) end++;
+                buffer << strColor << line.substr(col, end - col) << bg;
+                col = end - 1;
+                highlighted = true;
+            }
+            else if (line[col] == '#') {
+                int end = col;
+                while (end < (int)line.size() && !isspace((unsigned char)line[end])) end++;
+                buffer << preColor << line.substr(col, end - col) << bg;
+                col = end - 1;
+                highlighted = true;
+            }
+            else if (col + 1 < (int)line.size()) {
+                std::string duo = line.substr(col, 2);
+                if (duo == "<<" || duo == ">>" || duo == "::" || duo == "->" || duo == "==" || duo == "!=") {
+                    buffer << opColor << duo << bg;
+                    col += 1;
+                    highlighted = true;
+                }
+            }
+            if (!highlighted && std::string("+-*/%=!<>|&").find(line[col]) != std::string::npos) {
+                buffer << opColor << line[col] << bg;
+                highlighted = true;
+            }
+            if (!highlighted && isalpha((unsigned char)line[col])) {
                 for (const auto& kw : keywords) {
                     size_t kwLen = kw.size();
                     if (col + kwLen <= line.size() && line.compare(col, kwLen, kw) == 0) {
                         bool isStart = (col == 0 || !isalnum((unsigned char)line[col - 1]) && line[col - 1] != '_');
                         bool isEnd = (col + kwLen == line.size() || !isalnum((unsigned char)line[col + kwLen]) && line[col + kwLen] != '_');
                         if (isStart && isEnd) {
-                            buffer << typeColor << kw << bg;
+                            buffer << kwColor << kw << bg;
                             col += (int)kwLen - 1;
                             highlighted = true;
                             break;
                         }
                     }
                 }
-                if (!highlighted && isalpha((unsigned char)line[col])) {
+                if (!highlighted) {
                     int end = col;
-                    while (end < (int)line.size() && (isalnum((unsigned char)line[end]) || line[end] == '_')) {
-                        end++;
-                    }
+                    while (end < (int)line.size() && (isalnum((unsigned char)line[end]) || line[end] == '_')) end++;
                     if (end < (int)line.size() && line[end] == '(') {
-                        std::string funcName = line.substr(col, end - col);
-                        buffer << funcColor << funcName << bg;
+                        buffer << funcColor << line.substr(col, end - col) << bg;
                         col = end - 1;
                         highlighted = true;
                     }
                 }
             }
+            else if (!highlighted && isdigit((unsigned char)line[col]) && (col == 0 || !isalnum((unsigned char)line[col - 1]))) {
+                int end = col;
+                while (end < (int)line.size() && isdigit((unsigned char)line[end])) end++;
+                buffer << numColor << line.substr(col, end - col) << bg;
+                col = end - 1;
+                highlighted = true;
+            }
+
             if (!highlighted) {
-                buffer << (col < (int)line.size() ? line[col] : ' ');
+                buffer << line[col];
             }
         }
     }
