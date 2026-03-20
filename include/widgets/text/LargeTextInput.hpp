@@ -20,6 +20,7 @@ public:
     int cursorX = 0;
     int cursorY = 0;
     int scroll = 0;
+    int scrollX = 0;
     int height;
     int width;
     Mode mode = COMMAND;
@@ -175,24 +176,72 @@ public:
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         if (!lines) return;
+        int viewHeight = height - 1;
+        if (cursorY < scroll) {
+            scroll = cursorY;
+        }
+        else if (cursorY >= scroll + viewHeight) {
+            scroll = cursorY - viewHeight + 1;
+        }
+        int maxScroll = std::max(0, (int)lines->size() - viewHeight);
+        scroll = std::max(0, std::min(scroll, maxScroll));
         std::string bg = "\033[38;2;0;0;0;48;2;192;192;192m";
-        for (int i = 0; i < height; ++i) {
+        int totalLines = (int)lines->size();
+        int lineNumberWidth = std::to_string(std::max(1, totalLines)).size() + 2;
+        int textWidth = width - lineNumberWidth;
+        if (cursorX < scrollX) {
+            scrollX = cursorX;
+        }
+        else if (cursorX >= scrollX + textWidth) {
+            scrollX = cursorX - textWidth + 1;
+        }
+        scrollX = std::max(0, scrollX);
+        for (int i = 0; i < viewHeight; ++i) {
             int lineIndex = scroll + i;
             buffer << "\033[" << (py + y + i) << ";" << (px + x) << "H" << bg;
-            if (lineIndex < (int)lines->size()) {
-                HighlightLine(buffer, (*lines)[lineIndex], width, bg);
-                if (focused && lineIndex == cursorY && cursorX < width) {
-                    char ch = (cursorX < (int)(*lines)[lineIndex].size()) ? (*lines)[lineIndex][cursorX] : ' ';
-                    buffer << "\033[" << (py + y + i) << ";" << (px + x + cursorX) << "H";
-                    buffer << "\033[38;2;255;255;255;48;2;0;0;0m" << ch << bg;
+            if (lineIndex < totalLines) {
+                std::string lineNum = std::to_string(lineIndex + 1);
+                buffer << "\033[38;2;120;120;120m";
+                buffer << std::string(lineNumberWidth - lineNum.size(), ' ') << lineNum;
+                buffer << bg;
+                std::string visible;
+                const std::string& fullLine = (*lines)[lineIndex];
+
+                if ((int)fullLine.size() > scrollX) {
+                    visible = fullLine.substr(scrollX);
+                }
+                else {
+                    visible = "";
+                }
+                HighlightLine(buffer, visible, textWidth, bg);
+                if (focused && lineIndex == cursorY) {
+                    if (cursorX >= scrollX && cursorX < scrollX + textWidth) {
+                        char ch = (cursorX < (int)fullLine.size())
+                            ? fullLine[cursorX]
+                            : ' ';
+
+                        buffer << "\033[" << (py + y + i) << ";"
+                            << (px + x + lineNumberWidth + (cursorX - scrollX)) << "H";
+
+                        buffer << "\033[38;2;255;255;255;48;2;0;0;0m"
+                            << ch << bg;
+                    }
                 }
             }
             else {
-                buffer << std::string(width, ' ');
+                buffer << "\033[38;2;80;80;80m"
+                    << std::string(lineNumberWidth - 1, ' ') << "~"
+                    << bg;
+
+                buffer << std::string(textWidth, ' ');
             }
         }
-        buffer << "\033[" << (py + y + height - 1) << ";" << (px + x) << "H\033[7m "
-            << (mode == INSERT ? "-- INSERT --" : "-- COMMAND --") << " \033[0m";
+        buffer << "\033[" << (py + y + viewHeight) << ";" << (px + x) << "H";
+        buffer << "\033[7m "
+            << (mode == INSERT ? "-- INSERT --" : "-- COMMAND --");
+        int statusLen = 1 + (mode == INSERT ? 12 : 13);
+        buffer << std::string(std::max(0, width - statusLen), ' ');
+        buffer << "\033[0m";
     }
     void HandleInput(InputType input) override {
         if (!focused) return;
