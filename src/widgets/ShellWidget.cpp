@@ -3,6 +3,8 @@
 #include <iostream>
 #include <sstream>
 #include <filesystem>
+#include <thread>
+#include <mutex>
 #ifdef _WIN32
 #define POPEN _popen
 #define PCLOSE _pclose
@@ -63,6 +65,7 @@ void ShellWidget::HandleRawInput() {
 void ShellWidget::Draw(std::ostream& bufferStream, int parentX, int parentY) {
     auto parent = parentWindow.lock();
     if (!parent) return;
+    std::lock_guard<std::mutex> lock(bufferMutex);
     int currentWidth = parent->width - 2;
     int currentHeight = parent->height - 4;
     int drawLines = currentHeight - 1;
@@ -91,24 +94,30 @@ void ShellWidget::ExecuteCommand(const std::string& cmd) {
         std::string path = cmd.substr(3);
         try {
             std::filesystem::current_path(path);
+            std::lock_guard<std::mutex> lock(bufferMutex);
             buffer.push_back("Changed directory to: " + std::filesystem::current_path().string());
         }
         catch (...) {
+            std::lock_guard<std::mutex> lock(bufferMutex);
             buffer.push_back("cd: directory not found");
         }
         return;
     }
-    FILE* pipe = POPEN(cmd.c_str(), "r");
-    if (!pipe) {
-        buffer.push_back("Failed to run command.");
-        return;
-    }
-    char line[256];
-    while (fgets(line, sizeof(line), pipe)) {
-        std::string s = line;
-        if (!s.empty() && s.back() == '\n')
-            s.pop_back();
-        buffer.push_back(s);
-    }
-    PCLOSE(pipe);
+    std::thread([this, cmd]() {
+        FILE* pipe = POPEN(cmd.c_str(), "r");
+        if (!pipe) {
+            std::lock_guard<std::mutex> lock(bufferMutex);
+            buffer.push_back("Failed to run command.");
+            return;
+        }
+        char line[256];
+        while (fgets(line, sizeof(line), pipe)) {
+            std::string s = line;
+            if (!s.empty() && s.back() == '\n') s.pop_back();
+            std::lock_guard<std::mutex> lock(bufferMutex);
+            buffer.push_back(s);
+            if (buffer.size() > 500) buffer.erase(buffer.begin());
+        }
+        PCLOSE(pipe);
+        }).detach();
 }

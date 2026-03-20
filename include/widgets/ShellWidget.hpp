@@ -4,8 +4,11 @@
 #include <vector>
 #include <string>
 #include <memory>
+#include <thread>
+#include <mutex>
 class ShellWidget : public Widget {
 private:
+    std::mutex bufferMutex;
     std::vector<std::string> buffer;
     std::string currentInput;
     std::weak_ptr<Window> parentWindow;
