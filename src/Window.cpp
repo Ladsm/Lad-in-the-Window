@@ -61,7 +61,7 @@ void Window::Draw(std::ostream& buffer) {
     buffer << "\033[" << (y + 2) << ";" << (x + 1) << "H" << headerColor() << "│ ";
     std::string titleText = title;
     int spacing = (std::max)(0, innerWidth - (int)titleText.length() - iconVisualWidth - 1);
-    buffer << titleText << std::string(spacing, ' ') << "[─] [O] [╳]│" << resetStyle;
+    buffer << titleText << std::string(spacing, ' ') << " 🗕   🗗   🗙 │" << resetStyle;
     buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
     for (int i = 3; i < height - 1; ++i) {
         buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
