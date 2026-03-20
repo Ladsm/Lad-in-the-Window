@@ -1,7 +1,7 @@
 #pragma once
-#include "Window.hpp"
-#include "Button.hpp"
-#include "userinput.hpp"
+#include <Window.hpp>
+#include <widgets/Button.hpp>
+#include <userinput.hpp>
 #include <vector>
 #include <functional>
 #include <memory>
