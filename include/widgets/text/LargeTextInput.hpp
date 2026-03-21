@@ -42,7 +42,7 @@ public:
         std::string preColor = "\033[38;2;120;0;120m";
         std::string opColor = "\033[38;2;0;130;130m";
         std::vector<std::string> keywords = {
-            "int", "void", "bool", "char", "double", "float", "class",
+            "int", "void", "bool", "char", "double", "float", "class", "var", "string",
             "public", "override", "if", "else", "return", "static", "enum", "using", "namespace"
         };
         for (int col = 0; col < width; ++col) {
@@ -187,8 +187,8 @@ public:
         scroll = std::max(0, std::min(scroll, maxScroll));
         std::string bg = "\033[38;2;0;0;0;48;2;192;192;192m";
         int totalLines = (int)lines->size();
-        int lineNumberWidth = std::to_string(std::max(1, totalLines)).size() + 2;
-        int textWidth = width - lineNumberWidth;
+        size_t lineNumberWidth = std::to_string(std::max(1, totalLines)).size() + 2;
+        size_t textWidth = width - lineNumberWidth;
         if (cursorX < scrollX) {
             scrollX = cursorX;
         }
@@ -206,7 +206,6 @@ public:
                 buffer << bg;
                 std::string visible;
                 const std::string& fullLine = (*lines)[lineIndex];
-
                 if ((int)fullLine.size() > scrollX) {
                     visible = fullLine.substr(scrollX);
                 }
@@ -219,26 +218,20 @@ public:
                         char ch = (cursorX < (int)fullLine.size())
                             ? fullLine[cursorX]
                             : ' ';
-
                         buffer << "\033[" << (py + y + i) << ";"
                             << (px + x + lineNumberWidth + (cursorX - scrollX)) << "H";
-
                         buffer << "\033[38;2;255;255;255;48;2;0;0;0m"
                             << ch << bg;
                     }
                 }
             }
             else {
-                buffer << "\033[38;2;80;80;80m"
-                    << std::string(lineNumberWidth - 1, ' ') << "~"
-                    << bg;
-
+                buffer << "\033[38;2;80;80;80m" << std::string(lineNumberWidth - 1, ' ') << "~" << bg;
                 buffer << std::string(textWidth, ' ');
             }
         }
         buffer << "\033[" << (py + y + viewHeight) << ";" << (px + x) << "H";
-        buffer << "\033[7m "
-            << (mode == INSERT ? "-- INSERT --" : "-- COMMAND --");
+        buffer << (mode == INSERT ? "-- INSERT --" : "-- COMMAND --");
         int statusLen = 1 + (mode == INSERT ? 12 : 13);
         buffer << std::string(std::max(0, width - statusLen), ' ');
         buffer << "\033[0m";
