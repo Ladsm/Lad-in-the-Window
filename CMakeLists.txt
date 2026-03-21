@@ -14,7 +14,6 @@ target_include_directories(${PROJECT_NAME}_lib PUBLIC
 add_executable(LITW "Demo/main.cpp")
 target_link_libraries(LITW PRIVATE ${PROJECT_NAME}_lib)
 if(WIN32)
-    target_compile_definitions(${PROJECT_NAME}_lib PRIVATE RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/windowsRC")
     target_compile_options(${PROJECT_NAME}_lib PRIVATE /utf-8)
     target_link_libraries(${PROJECT_NAME}_lib PUBLIC User32.lib Gdi32.lib Shell32.lib Advapi32.lib)
     set_target_properties(LITW PROPERTIES WIN32_EXECUTABLE FALSE)
