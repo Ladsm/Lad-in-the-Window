@@ -1,7 +1,6 @@
 #pragma once
 #include "Widget.hpp"
 #include <memory>
-
 class Label : public Widget {
 public:
     std::string text;
@@ -10,6 +9,12 @@ public:
         this->y = y;
         this->text = t;
         this->focusable = false;
+    }
+    int GetWidth() const override {
+        return (int)text.length();
+    }
+    int GetHeight() const override {
+        return 1;
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";

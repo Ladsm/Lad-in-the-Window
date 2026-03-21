@@ -10,6 +10,8 @@ public:
     int height = 0;
     bool focused = false;
     bool focusable = true;
+    virtual int GetWidth() const { return 10; }
+    virtual int GetHeight() const { return 1; }
     virtual void Draw(std::ostream& buffer, int parentX, int parentY) = 0;
     virtual void HandleInput(InputType input) {}
     virtual ~Widget() = default;

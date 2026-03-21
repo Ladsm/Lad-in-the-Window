@@ -25,6 +25,15 @@ public:
         }
         DrawLine(buffer, px + x, curY, "└", "┴", "┘", "─");
     }
+    int GetWidth() const override {
+        int total = 0;
+        for (auto w : colWidths) total += w;
+        total += (int)colWidths.size() + 1;
+        return total;
+    }
+    int GetHeight() const override {
+        return 3 + (int)rows.size();
+    }
 private:
     void DrawLine(std::ostream& buf, int xPos, int yPos, const char* left, const char* mid, const char* right, const char* fill) {
         buf << "\033[" << yPos << ";" << xPos << "H" << left;

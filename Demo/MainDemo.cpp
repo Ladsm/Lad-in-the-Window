@@ -54,6 +54,7 @@ public:
 class README : public Window {
     std::vector<std::string> text = {
         "Lad in the Window, Ladsm 2026",
+        "version : " LITWVERSION,
         "-----------------------------",
         "Hot keys:",
         "Space: Scroll Down on scrollables",
@@ -127,6 +128,21 @@ public:
         AddWidget(std::make_unique<Button>(2, 15, "Close", [this]() { wm.RemoveWindow(this); }));
     }
 };
+class Contest : public Window {
+public:
+    Contest() : Window("Container test", 50, 20) {
+        auto vbox = std::make_unique<VertCon>(2, 2);
+        vbox->AddWidget(std::make_unique<Label>(0, 0, "Settings"));
+        vbox->AddWidget(std::make_unique<Button>(0, 0, "Apply", [] {}));
+        vbox->AddWidget(std::make_unique<Button>(0, 0, "Cancel", [] {}));
+        AddWidget(std::move(vbox));
+        auto hbox = std::make_unique<HorizlCon>(2, 7);
+        hbox->AddWidget(std::make_unique<Button>(0, 0, "Yes", [] {}));
+        hbox->AddWidget(std::make_unique<Button>(0, 0, "No", [] {}));
+        hbox->AddWidget(std::make_unique<Button>(0, 0, "Cancel", [] {}));
+        AddWidget(std::move(hbox));
+    }
+};
 int main() {
     auto start = std::make_shared<StartMenuWindow>(&wm);
     start->AddItem("Main Menu", []() {
@@ -152,6 +168,9 @@ int main() {
         });
     start->AddItem("Text input demo - Large", []() {
         return std::make_shared<TextInputLargeDemo>();
+        });
+    start->AddItem("Containers", []() {
+        return std::make_shared<Contest>();
         });
     wm.SetStartMenu(start);
     wm.AddWindow(start);

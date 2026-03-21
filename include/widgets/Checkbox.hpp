@@ -11,6 +11,12 @@ public:
         this->text = t;
         this->state = &isOn;
     }
+    int GetWidth() const override {
+        return text.size() + 8;
+    }
+    int GetHeight() const override {
+        return 1;
+    }
     void Draw(std::ostream& buffer, int px, int py) override {
         std::string visual;
         if (focused) {

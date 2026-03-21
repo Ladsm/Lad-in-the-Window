@@ -7,26 +7,15 @@
 #include <unistd.h>
 #include <termios.h>
 #endif
-
 #if defined(__linux__)
 int getchThred() {
     return getchar();
 }
 #endif
-
 static int g_mouseX = 0;
 static int g_mouseY = 0;
-
 int getMouseX() { return g_mouseX; }
 int getMouseY() { return g_mouseY; }
-
-/*
-+-------+   0   1   2   3   4   5   6   7   8   9
-|   2   |  10  11  12  13  14  15  16  17  18  19
-|-1   -2|
-|   1   | Diagram of GetPlayerInput() for future me
-+-------+
-*/
 InputType GetPlayerInput() {
 #if defined(_WIN32)
     static bool consoleInitialized = false;

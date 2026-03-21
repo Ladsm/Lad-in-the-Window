@@ -5,12 +5,18 @@ class Button : public Widget {
 public:
     std::string label;
     std::function<void()> onClick;
-
     Button(int x, int y, std::string l, std::function<void()> cb) {
         this->x = x;
         this->y = y;
         label = l;
         onClick = cb;
+        this->focusable = true;
+    }
+    int GetWidth() const override {
+        return (int)label.length() + 4;
+    }
+    int GetHeight() const override {
+        return 1;
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         std::string body = "\033[38;2;0;0;0;48;2;192;192;192m";
@@ -22,6 +28,7 @@ public:
             buffer << " [" << label << "] ";
     }
     void HandleInput(InputType input) override {
-        if (input == InputType::Enter && onClick) onClick();
+        if (input == InputType::Enter && onClick)
+            onClick();
     }
 };

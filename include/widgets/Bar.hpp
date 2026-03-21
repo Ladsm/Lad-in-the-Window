@@ -1,9 +1,16 @@
 #pragma once
 #include "Widget.hpp"
+#include <Window.hpp>
 
 class Separator : public Widget {
 public:
     Window* parent;
+    int GetWidth() const override {
+        return parent->width;
+    }
+    int GetHeight() const override {
+        return 1;
+    }
     Separator(int x, int y, Window* p) : parent(p) {
         this->x = x;
         this->y = y;
