@@ -1,12 +1,12 @@
 #pragma once
 #include "Widget.hpp"
 #include <Window.hpp>
-
+// Separator should not be used in a container. I still have code for it but I would not do that.
 class Separator : public Widget {
 public:
     Window* parent;
     int GetWidth() const override {
-        return parent->width;
+        return parent->width - 2;
     }
     int GetHeight() const override {
         return 1;
