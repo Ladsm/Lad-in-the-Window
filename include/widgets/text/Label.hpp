@@ -1,5 +1,6 @@
 #pragma once
-#include "Widget.hpp"
+#include <Widget.hpp>
+#include <Window.hpp>
 #include <memory>
 class Label : public Widget {
 public:

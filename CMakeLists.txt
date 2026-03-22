@@ -12,7 +12,6 @@ set_target_properties(LITW_lib PROPERTIES OUTPUT_NAME "LITW")
 target_include_directories(LITW_lib PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
 add_executable(LITWDemo "Demo/MainDemo.cpp")
 target_link_libraries(LITWDemo PRIVATE LITW_lib)
-
 if(WIN32)
     target_compile_options(LITW_lib PRIVATE /utf-8)
     target_link_libraries(LITW_lib PUBLIC User32.lib Gdi32.lib Shell32.lib Advapi32.lib)
