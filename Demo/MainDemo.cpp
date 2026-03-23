@@ -57,14 +57,15 @@ class README : public Window {
         "version : " LITWVERSION,
         "-----------------------------",
         "Hot keys:",
-        "Space: Scroll Down on scrollables",
-        "Tab: Scroll up on scrollables",
-        "Enter: confirm input and tick check box",
-        "WASD and Arrow keys: Movement",
-        "Q: Minimize window  X: Close window",
-        "E: Edit window position  R: Resize window",
-        "C: Start menu  Escape: Cycle windows",
-        "1-9: Change window by window number(taskbar number)",
+        "Space: Scroll Down on scrollables.",
+        "Tab: Scroll up on scrollables.",
+        "Enter: confirm input and tick check box.",
+        "WASD and Arrow keys: Movement.",
+        "Q: Minimize window  X: Close window.",
+        "E: Edit window position  R: Resize window.",
+        "C: Start menu  Escape: Cycle windows.",
+        "1-9: Change window by window number(taskbar number).",
+        "F12: Exit LITW.",
         "---------------------------------------------------",
         "Hello, Ladsm here.",
         "This program is a demo of the Lad in a Window TUI",
@@ -73,8 +74,8 @@ class README : public Window {
     };
 public:
     README() : Window("README", 60, 18) {
-        AddWidget(std::make_unique<ScrollableTextBox>(2, 2, 10, 54, text));
-        AddWidget(std::make_unique<Button>(2, 13, "Close", [this]() {
+        AddWidget(std::make_unique<ScrollableTextBox>(2, 2, 10, 55, text));
+        AddWidget(std::make_unique<Button>(2, 14, "Close", [this]() {
             wm.RemoveWindow(this);
         }));
     }

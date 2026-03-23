@@ -53,17 +53,15 @@ cmake --build .
 |                    | E / R                          | Move / Resize mode            |
 | Navigation         | WASD / Arrows                  | Move cursor / selection       |
 | System             | C                              | Open / Close Start Menu       |
+|                    | F12                            | Exit                          |
 | Mouse              | Left Click                     | Focus window / click buttons  |
 |                    | Left Drag                      | Move window                   |
 |                    | Left Click on Title Bar        | Drag to move                  |
 |                    | Left Click on Window Corners   | Drag to resize                |
 | Text Input Widgets | Type while focused             | Add characters                |
-|                    | Backspace / Delete             | Remove characters             |
+|                    | Backspace                      | Remove characters             |
 |                    | Enter                          | Confirm input / finish typing |
 | Scrollable Widgets | Space                          | Scroll down                   |
 |                    | Tab                            | Scroll up                     |
-| Hotkeys            | R                              | Toggle resizing mode          |
-|                    | E                              | Toggle moving mode            |
-|                    | Escape (while moving/resizing) | Cancel action                 |
 
 </div>
