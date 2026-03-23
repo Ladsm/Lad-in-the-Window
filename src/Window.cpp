@@ -494,6 +494,7 @@ void WindowManager::Run() {
             }
             continue;
         }
+        if (input == InputType::F12) { exit(0); }
         if (input >= InputType::Top1 && input <= InputType::Top9) {
             int targetIdx =
                 static_cast<int>(input) -
