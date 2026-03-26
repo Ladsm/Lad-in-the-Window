@@ -1,6 +1,7 @@
 #include <Window.hpp>
 #include <init.hpp>
 #include <windows/AlertWindow.hpp>
+#include <widgets/containers/VertCon.hpp>
 #include <sstream>
 #include <ctime>
 #include <algorithm>
@@ -103,13 +104,22 @@ void Window::ToggleMaximize(int screenWidth, int screenHeight) {
 
 void Window::HandleInput(InputType input) {
     if (widgets.empty()) return;
+    Widget* w = widgets[focusedWidget].get();
+    if (w->IsContainer) {
+        auto container = dynamic_cast<VertCon*>(w);
+        if (container) {
+            int before = container->internalFocus;
+            container->HandleInput(input);
+            if (container->internalFocus >= 0)
+                return;
+        }
+    }
     if (input == InputType::MoveDown) {
         widgets[focusedWidget]->focused = false;
         int start = focusedWidget;
         do {
             focusedWidget = (focusedWidget + 1) % widgets.size();
-        } 
-        while (!widgets[focusedWidget]->focusable && focusedWidget != start);
+        } while (!widgets[focusedWidget]->focusable && focusedWidget != start);
         widgets[focusedWidget]->focused = true;
         return;
     }
@@ -123,8 +133,8 @@ void Window::HandleInput(InputType input) {
         widgets[focusedWidget]->focused = true;
         return;
     }
-    if (widgets[focusedWidget]->focusable) {
-        widgets[focusedWidget]->HandleInput(input);
+    if (w->focusable) {
+        w->HandleInput(input);
     }
 }
 

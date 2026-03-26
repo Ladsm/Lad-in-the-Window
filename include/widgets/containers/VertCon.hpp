@@ -13,6 +13,7 @@ public:
         this->x = x;
         this->y = y;
         this->focusable = true;
+        this->IsContainer = true;
     }
     void AddWidget(std::unique_ptr<Widget> w) {
         children.push_back(std::move(w));
@@ -43,20 +44,42 @@ public:
     }
     void HandleInput(InputType input) override {
         if (children.empty()) return;
-        if (input == InputType::Space) {
-            int start = internalFocus;
-            do {
-                internalFocus = (internalFocus + 1) % children.size();
-            } while (!children[internalFocus]->focusable && internalFocus != start);
+        if (input == InputType::MoveDown) {
+            if (internalFocus < 0) {
+                for (size_t i = 0; i < children.size(); i++) {
+                    if (children[i]->focusable) {
+                        internalFocus = (int)i;
+                        return;
+                    }
+                }
+                return;
+            }
+            for (int i = internalFocus + 1; i < (int)children.size(); i++) {
+                if (children[i]->focusable) {
+                    internalFocus = i;
+                    return;
+                }
+            }
+            internalFocus = -1;
             return;
         }
-        if (input == InputType::Tab) {
-            int start = internalFocus;
-            do {
-                internalFocus--;
-                if (internalFocus < 0)
-                    internalFocus = (int)children.size() - 1;
-            } while (!children[internalFocus]->focusable && internalFocus != start);
+        if (input == InputType::MoveUp) {
+            if (internalFocus < 0) {
+                for (int i = (int)children.size() - 1; i >= 0; i--) {
+                    if (children[i]->focusable) {
+                        internalFocus = i;
+                        return;
+                    }
+                }
+                return;
+            }
+            for (int i = internalFocus - 1; i >= 0; i--) {
+                if (children[i]->focusable) {
+                    internalFocus = i;
+                    return;
+                }
+            }
+            internalFocus = -1;
             return;
         }
         if (internalFocus >= 0 && internalFocus < (int)children.size()) {

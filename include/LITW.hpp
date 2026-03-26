@@ -1,4 +1,4 @@
-#define LITWVERSION "0.8.7"
+#define LITWVERSION "0.9.0"
 #include <Window.hpp>
 #include <userinput.hpp>
 #include <windows/StartMenu.hpp>
