@@ -1,0 +1,5 @@
+include("${CMAKE_CURRENT_LIST_DIR}/LITWTargets.cmake")
+if(WIN32)
+else()
+find_package(Threads REQUIRED)
+endif()
