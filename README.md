@@ -1,12 +1,10 @@
 <div align="center">
-  <img src="./images/LITWLogo.png" width="150" height="150" alt="LITW Logo">
-  <h1>Lad In The Window (LITW)</h1>
-  <p><strong>A TUI that looks like a GUI.</strong></p>
- 
-##  Demo
-
-  <img src="./images/LITWDemo.png" alt="Demo Image" width="45%">
-  <img src="./images/LITWDemo.gif" alt="Demo Gif" width="45%">
+	<img src="./images/LITWLogo.png" width="150" height="150" alt="LITW Logo">
+	<h1>Lad In The Window (LITW)</h1>
+	<p><strong>A TUI that looks like a GUI.</strong></p>
+	<h2>Demo</h2>
+	<img src="./images/LITWDemo.png" alt="Demo Image" width="45%">
+	<img src="./images/LITWDemo.gif" alt="Demo Gif" width="45%">
 </div>
 
 ## Core Ideas
@@ -64,4 +62,11 @@ cmake --build .
 | Scrollable Widgets | Space                          | Scroll down                   |
 |                    | Tab                            | Scroll up                     |
 
+</div>
+<div align="center">
+	<h5>Links</h5>
+	<p>
+	<a href="https://ladsm.neocities.org/LITW/">Website</a>,
+	<a href="https://github.com/Ladsm/Lad-in-the-Window">GitHub</a>
+	</p>
 </div>
