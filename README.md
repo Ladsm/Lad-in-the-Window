@@ -26,10 +26,12 @@ cd Lad-in-the-Window
 mkdir build && cd build
 cmake ..
 cmake --build .
+
+#The demo is here:
 # Linux/macOS:
-./LITW 
+./LITWDemo
 # Windows:
-.\Debug\LITW.exe
+.\Debug\LITWDemo.exe
 ```
 
 > *Note*  
