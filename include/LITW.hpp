@@ -1,6 +1,7 @@
-#define LITWVERSION "0.9.1"
+#define LITWVERSION "0.9.3"
 #include <Window.hpp>
 #include <userinput.hpp>
+#include <Widget.hpp>
 #include <windows/StartMenu.hpp>
 #include <widgets/Button.hpp>
 #include <widgets/text/Label.hpp>

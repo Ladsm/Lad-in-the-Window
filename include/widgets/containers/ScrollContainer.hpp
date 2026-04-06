@@ -27,6 +27,13 @@ public:
     void AddWidget(std::unique_ptr<Widget> w) {
         children.push_back(std::move(w));
     }
+    template<typename T, typename... Args>
+    T& Add(Args&&... args) {
+        auto widget = std::make_unique<T>(std::forward<Args>(args)...);
+        T& ref = *widget;
+        AddWidget(std::move(widget));
+        return ref;
+    }
     int GetContentHeight() const {
         int maxY = 0;
         for (const auto& c : children) {

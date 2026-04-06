@@ -39,6 +39,13 @@ public:
     int resizeStartHeight = 0;
     int resizeStartX = 0;
     int resizeStartY = 0;
+    template<typename T, typename... Args>
+    T& Add(Args&&... args) {
+        auto widget = std::make_unique<T>(std::forward<Args>(args)...);
+        T& ref = *widget;
+        AddWidget(std::move(widget));
+        return ref;
+    }
     Window(std::string t, int w, int h);
     void AddWidget(std::unique_ptr<Widget> w);
     std::string headerColor();

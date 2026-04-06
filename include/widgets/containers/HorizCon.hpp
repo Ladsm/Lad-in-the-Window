@@ -23,9 +23,13 @@ public:
     }
     void AddWidget(std::unique_ptr<Widget> w) {
         children.push_back(std::move(w));
-        if (internalFocus == -1 && children.back()->focusable) {
-            internalFocus = (int)children.size() - 1;
-        }
+    }
+    template<typename T, typename... Args>
+    T& Add(Args&&... args) {
+        auto widget = std::make_unique<T>(std::forward<Args>(args)...);
+        T& ref = *widget;
+        AddWidget(std::move(widget));
+        return ref;
     }
     void Layout() {
         int offsetX = 0;

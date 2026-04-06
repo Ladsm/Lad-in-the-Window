@@ -10,12 +10,12 @@ WindowManager wm;
 class Textinputer : public Window {
 public:
     Textinputer() : Window(::title, 40, 10) {
-        AddWidget(std::make_unique<TextInput>(2, 2, 20, &::title));
-        AddWidget(std::make_unique<CheckBox>(2, 3, "global state?", globlestate));
-        AddWidget(std::make_unique<Separator>(0, 4, this));
-        AddWidget(std::make_unique<Button>(2, 5, "Exit", []() {
+        Add<TextInput>(2, 2, 20, &::title);
+        Add<CheckBox>(2, 3, "global state?", globlestate);
+        Add<Separator>(0, 4, this);
+        Add<Button>(2, 5, "Exit", []() {
             wm.exit(0);
-        }));
+            });
     }
     void Draw(std::ostream& buffer) override {
         if (this->title != ::title) {
@@ -27,9 +27,9 @@ public:
 class MenuWindow : public Window {
 public:
     MenuWindow(std::string title) : Window(title, 40, 10) {
-        AddWidget(std::make_unique<Button>(2, 2, "Exit", []() {
+        Add<Button>(2, 2, "Exit", []() {
             wm.exit(0);
-            }));
+            });
     }
 };
 
@@ -37,18 +37,18 @@ class TextWindow : public Window {
 public:
     TextWindow(std::string title, std::string msg)
         : Window(title, 40, 10) {
-        AddWidget(std::make_unique<Label>(2, 2, msg));
-        AddWidget(std::make_unique<Button>(2, 5, "Close", [this]() {
+        Add<Label>(2, 2, msg);
+        Add<Button>(2, 5, "Close", [this]() {
             wm.RemoveWindow(this);
-            }));
+            });
     }
 
     TextWindow(std::string title, std::string msg, int w, int h)
         : Window(title, w, h) {
-        AddWidget(std::make_unique<Label>(2, 2, msg));
-        AddWidget(std::make_unique<Button>(2, 5, "Close", [this]() {
+        Add<Label>(2, 2, msg);
+        Add<Button>(2, 5, "Close", [this]() {
             wm.RemoveWindow(this);
-            }));
+            });
     }
 };
 class README : public Window {
@@ -74,10 +74,10 @@ class README : public Window {
     };
 public:
     README() : Window("README", 60, 18) {
-        AddWidget(std::make_unique<ScrollableTextBox>(2, 2, 10, 55, text));
-        AddWidget(std::make_unique<Button>(2, 14, "Close", [this]() {
+        Add<ScrollableTextBox>(2, 2, 10, 55, text);
+        Add<Button>(2, 14, "Close", [this]() {
             wm.RemoveWindow(this);
-        }));
+            });
     }
 };
 class Users : public Window {
@@ -90,7 +90,7 @@ public:
         table->AddRow({ "01", "Ladsm", "Online" });
         table->AddRow({ "02", "Guest", "Offline" });
         AddWidget(std::move(table));
-        AddWidget(std::make_unique<Button>(2, 8, "Close", [this]() { wm.RemoveWindow(this); }));
+        Add<Button>(2, 8, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class ShellWindow : public Window {
@@ -98,7 +98,7 @@ public:
     ShellWindow() : Window("Terminal", 80, 24) {}
     static std::shared_ptr<ShellWindow> Create() {
         auto win = std::make_shared<ShellWindow>();
-        win->AddWidget(std::make_unique<ShellWidget>(1, 1, win));
+        win->Add<ShellWidget>(1, 1, win);
         return win;
     }
 };
@@ -107,12 +107,12 @@ class ScrollExample : public Window {
 public:
     ScrollExample() : Window("Scroll Example", 40, 10) {
         auto container = std::make_unique<ScrollContainer>(2, 2, 30, 3);
-        container->AddWidget(std::make_unique<CheckBox>(0, 1, "State one", a));
-        container->AddWidget(std::make_unique<Label>(0, 3, "middle"));
-        container->AddWidget(std::make_unique<CheckBox>(0, 5, "State two", b));
-        container->AddWidget(std::make_unique<Button>(0, 7, "Save Settings", []() { wm.Alert("Saved!"); }));
+        container->Add<CheckBox>(0, 1, "State one", a);
+        container->Add<Label>(0, 3, "middle");
+        container->Add<CheckBox>(0, 5, "State two", b);
+        container->Add<Button>(0, 7, "Save Settings", []() { wm.Alert("Saved!"); });
         AddWidget(std::move(container));
-        AddWidget(std::make_unique<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); }));
+        Add<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class TextInputLargeDemo : public Window {
@@ -124,9 +124,8 @@ class TextInputLargeDemo : public Window {
     };
 public:
     TextInputLargeDemo() : Window("Text input - large", 50, 20) {
-        AddWidget(std::make_unique<LargeTextInput>(2, 2, 10, 40, &text, this));
-        AddWidget(std::make_unique<Button>(2, 14, "dsaf", [this]() { std::cout << "dsafklasd"; }));
-        AddWidget(std::make_unique<Button>(2, 15, "Close", [this]() { wm.RemoveWindow(this); }));
+        Add<LargeTextInput>(2, 2, 10, 45, &text, this);
+        Add<Button>(2, 15, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class Contest : public Window {
@@ -134,17 +133,22 @@ class Contest : public Window {
 public:
     Contest() : Window("Container test", 50, 20) {
         auto vbox = std::make_unique<VertCon>(2, 2);
-        vbox->AddWidget(std::make_unique<Label>(0, 0, "Settings"));
-        vbox->AddWidget(std::make_unique<Button>(0, 0, "Apply", [] {}));
-        vbox->AddWidget(std::make_unique<Button>(0, 0, "Cancel", [] {}));
-        vbox->AddWidget(std::make_unique<TextInput>(0, 0, 10, &text));
+        vbox->Add<Label>(0, 0, "Settings");
+        vbox->Add<Button>(0, 0, "Apply", [] {
+            });
+        vbox->Add<Button>(0, 0, "Cancel", [] {
+            });
+        vbox->Add<TextInput>(0, 0, 10, &text);
         AddWidget(std::move(vbox));
         auto hbox = std::make_unique<HorizlCon>(2, 7);
-        hbox->AddWidget(std::make_unique<Button>(0, 0, "Yes", [] {}));
-        hbox->AddWidget(std::make_unique<Button>(0, 0, "No", [] {}));
-        hbox->AddWidget(std::make_unique<Button>(0, 0, "Cancel", [] {}));
-        hbox->AddWidget(std::make_unique<TextInput>(0, 0, 10, &text));
-        AddWidget(std::make_unique<TextInput>(10, 10, 10, &text));
+        hbox->Add<Button>(0, 0, "Yes", [] {
+            });
+        hbox->Add<Button>(0, 0, "No", [] {
+            });
+        hbox->Add<Button>(0, 0, "Cancel", [] {
+            });
+        hbox->Add<TextInput>(0, 0, 10, &text);
+        Add<TextInput>(10, 10, 10, &text);
         AddWidget(std::move(hbox));
     }
 };
