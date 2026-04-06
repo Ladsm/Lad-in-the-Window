@@ -2,6 +2,8 @@
 #include <init.hpp>
 #include <windows/AlertWindow.hpp>
 #include <widgets/containers/VertCon.hpp>
+#include <widgets/containers/HorizCon.hpp>
+#include <widgets/containers/ScrollContainer.hpp>
 #include <sstream>
 #include <ctime>
 #include <algorithm>
@@ -71,7 +73,6 @@ void Window::Draw(std::ostream& buffer) {
     for (auto& w : widgets)
         w->Draw(buffer, x + 1, y + 3);
 }
-
 
 void Window::Resize(int newW, int newH) {
     this->width = newW;
@@ -261,11 +262,10 @@ void WindowManager::Run() {
         std::cout << frame.str() << std::flush;
         if (top && top->focusedWidget >= 0 &&
             top->focusedWidget < (int)top->widgets.size()) {
-
-            Widget* w = top->widgets[top->focusedWidget].get();
-
-            if (w->WantsRawInput()) {
-                w->HandleRawInput();
+            Widget* rootWidget = top->widgets[top->focusedWidget].get();
+            Widget* activeLeaf = rootWidget->GetActiveWidget();
+            if (activeLeaf && activeLeaf->WantsRawInput()) {
+                activeLeaf->HandleRawInput();
                 std::this_thread::sleep_for(std::chrono::milliseconds(16));
                 continue;
             }

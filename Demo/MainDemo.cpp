@@ -130,17 +130,21 @@ public:
     }
 };
 class Contest : public Window {
+    std::string text;
 public:
     Contest() : Window("Container test", 50, 20) {
         auto vbox = std::make_unique<VertCon>(2, 2);
         vbox->AddWidget(std::make_unique<Label>(0, 0, "Settings"));
         vbox->AddWidget(std::make_unique<Button>(0, 0, "Apply", [] {}));
         vbox->AddWidget(std::make_unique<Button>(0, 0, "Cancel", [] {}));
+        vbox->AddWidget(std::make_unique<TextInput>(0, 0, 10, &text));
         AddWidget(std::move(vbox));
         auto hbox = std::make_unique<HorizlCon>(2, 7);
         hbox->AddWidget(std::make_unique<Button>(0, 0, "Yes", [] {}));
         hbox->AddWidget(std::make_unique<Button>(0, 0, "No", [] {}));
         hbox->AddWidget(std::make_unique<Button>(0, 0, "Cancel", [] {}));
+        hbox->AddWidget(std::make_unique<TextInput>(0, 0, 10, &text));
+        AddWidget(std::make_unique<TextInput>(10, 10, 10, &text));
         AddWidget(std::move(hbox));
     }
 };

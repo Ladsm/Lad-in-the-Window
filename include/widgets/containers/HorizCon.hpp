@@ -13,6 +13,13 @@ public:
         this->x = x;
         this->y = y;
         this->focusable = true;
+        this->IsContainer = true;
+    }
+    Widget* GetActiveWidget() override {
+        if (internalFocus >= 0 && internalFocus < children.size()) {
+            return children[internalFocus]->GetActiveWidget();
+        }
+        return this;
     }
     void AddWidget(std::unique_ptr<Widget> w) {
         children.push_back(std::move(w));

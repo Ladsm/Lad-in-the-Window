@@ -18,5 +18,6 @@ public:
     virtual ~Widget() = default;
     virtual bool WantsRawInput() { return false; }
     virtual void HandleRawInput() {}
+    virtual Widget* GetActiveWidget() { return this; }
     virtual void OnResize(int windowWidth, int windowHeight) {}
 };

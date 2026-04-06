@@ -15,6 +15,12 @@ public:
         this->focusable = true;
         this->IsContainer = true;
     }
+    Widget* GetActiveWidget() override {
+        if (internalFocus >= 0 && internalFocus < children.size()) {
+            return children[internalFocus]->GetActiveWidget();
+        }
+        return this;
+    }
     void AddWidget(std::unique_ptr<Widget> w) {
         children.push_back(std::move(w));
         if (internalFocus == -1 && children.back()->focusable) {
@@ -36,9 +42,7 @@ public:
         Layout();
         for (size_t i = 0; i < children.size(); i++) {
             auto& child = children[i];
-
             child->focused = (this->focused && (int)i == internalFocus);
-
             child->Draw(buffer, px + x, py + y);
         }
     }
