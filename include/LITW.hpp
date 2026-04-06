@@ -1,4 +1,4 @@
-#define LITWVERSION "0.9.3"
+#define LITWVERSION "0.9.4"
 #include <Window.hpp>
 #include <userinput.hpp>
 #include <Widget.hpp>

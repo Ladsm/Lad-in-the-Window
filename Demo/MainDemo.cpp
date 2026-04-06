@@ -129,58 +129,33 @@ public:
     }
 };
 class Contest : public Window {
-    std::string text;
+    std::string text = "input here!";
 public:
-    Contest() : Window("Container test", 50, 20) {
-        auto vbox = std::make_unique<VertCon>(2, 2);
-        vbox->Add<Label>(0, 0, "Settings");
-        vbox->Add<Button>(0, 0, "Apply", [] {
-            });
-        vbox->Add<Button>(0, 0, "Cancel", [] {
-            });
-        vbox->Add<TextInput>(0, 0, 10, &text);
-        AddWidget(std::move(vbox));
-        auto hbox = std::make_unique<HorizlCon>(2, 7);
-        hbox->Add<Button>(0, 0, "Yes", [] {
-            });
-        hbox->Add<Button>(0, 0, "No", [] {
-            });
-        hbox->Add<Button>(0, 0, "Cancel", [] {
-            });
-        hbox->Add<TextInput>(0, 0, 10, &text);
-        Add<TextInput>(10, 10, 10, &text);
-        AddWidget(std::move(hbox));
+    Contest() : Window("Container test", 50, 11) {
+        auto& vbox = Add<VertCon>(2, 2);
+        vbox.Add<Label>(0, 0, "Settings");
+        vbox.Add<Button>(0, 0, "Apply", [] {});
+        auto& hbox = Add<HorizlCon>(2, 7);
+        hbox.Add<Button>(0, 0, "Yes", [] {});
+        hbox.Add<Button>(0, 0, "no", [] {});
+        hbox.Add<TextInput>(0, 0, 15, &text);
     }
 };
 int main() {
     auto start = std::make_shared<StartMenuWindow>(&wm);
-    start->AddItem("Main Menu", []() {
-        return std::make_shared<MenuWindow>("main menu");
-        });
-    start->AddItem("System Status", []() {
-        return std::make_shared<TextWindow>("System status", "System is running smoothly!");
-        });
-    start->AddItem("README", []() {
-        return std::make_shared<README>();
-        });
-    start->AddItem("Text Input Demo", []() {
-        return std::make_shared<Textinputer>();
-        });
-    start->AddItem("Table of Users", []() {
-        return std::make_shared<Users>();
-        });
-    start->AddItem("Terminal", []() {
-        return ShellWindow::Create();
-        });
-    start->AddItem("Scroll Example", []() {
-        return std::make_shared<ScrollExample>();
-        });
-    start->AddItem("Text input demo - Large", []() {
-        return std::make_shared<TextInputLargeDemo>();
-        });
-    start->AddItem("Containers", []() {
-        return std::make_shared<Contest>();
-        });
+    start->AddItem<MenuWindow>("Main Menu", "main menu");
+    start->AddItem<TextWindow>(
+        "System Status",
+        "System status",
+        "System is running smoothly!"
+    );
+    start->AddItem<README>("README");
+    start->AddItem<Textinputer>("Text Input Demo");
+    start->AddItem<Users>("Table of Users");
+    start->AddItem("Terminal", &ShellWindow::Create);
+    start->AddItem<ScrollExample>("Scroll Example");
+    start->AddItem<TextInputLargeDemo>("Text input demo - Large");
+    start->AddItem<Contest>("Containers");
     wm.SetStartMenu(start);
     wm.AddWindow(start);
     wm.Run();

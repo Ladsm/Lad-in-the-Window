@@ -34,6 +34,12 @@ public:
         AddWidget(std::move(widget));
         return ref;
     }
+    template<typename T>
+    T& Add(std::unique_ptr<T> widget) {
+        T& ref = *widget;
+        AddWidget(std::move(widget));
+        return ref;
+    }
     int GetContentHeight() const {
         int maxY = 0;
         for (const auto& c : children) {

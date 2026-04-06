@@ -48,10 +48,10 @@ public:
                     thumbPos = 1 + (int)(scrollPercent * (trackHeight - 1));
                 }
                 if (i == thumbPos) {
-                    buffer << " # ";
+                    buffer << " █ ";
                 }
                 else {
-                    buffer << " | ";
+                    buffer << " │ ";
                 }
             }
         }
