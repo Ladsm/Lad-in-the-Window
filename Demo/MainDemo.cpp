@@ -121,10 +121,21 @@ public:
         hbox.Add<TextInput>(0, 0, 15, &text);
     }
 };
+class StartAlert : public Window {
+public:
+    StartAlert() : Window("Start Alert", 40, 10) {
+        auto& vbox = Add<VertCon>(1, 2);
+        vbox.Add<Label>(0,0, "Welcome to the Lad in the Window demo!");
+        vbox.Add<Label>(0,0, "sep here"); Add<Separator>(0, 3, this);
+        vbox.Add<Label>(0,0, "Check readme in the start menu for");
+        vbox.Add<Label>(0,0, "more info.");
+    }
+};
 int main() {
+    auto startalert = std::make_shared<StartAlert>();
     auto start = std::make_shared<StartMenuWindow>(&wm);
-    start->AddItem<MenuWindow>("Main Menu", "main menu");
     start->AddItem<README>("README");
+    start->AddItem<MenuWindow>("Main Menu", "main menu");
     start->AddItem<Textinputer>("Text Input Demo");
     start->AddItem<Users>("Table of Users");
     start->AddItem("Terminal", &ShellWindow::Create);
@@ -133,6 +144,7 @@ int main() {
     start->AddItem<Contest>("Containers");
     wm.SetStartMenu(start);
     wm.AddWindow(start);
+    wm.AddWindow(startalert);
     wm.Run();
     wm.exit(1);
     return 0;
