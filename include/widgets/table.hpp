@@ -17,13 +17,13 @@ public:
     void Draw(std::ostream& buffer, int px, int py) override {
         buffer << "\033[38;2;0;0;0;48;2;192;192;192m";
         int curY = py + y;
-        DrawLine(buffer, px + x, curY++, "┌", "┬", "┐", "─");
+        DrawLine(buffer, px + x, curY++, "╭", "┬", "╮", "─");
         DrawDataRow(buffer, px + x, curY++, headers);
         DrawLine(buffer, px + x, curY++, "├", "┼", "┤", "─");
         for (const auto& row : rows) {
             DrawDataRow(buffer, px + x, curY++, row);
         }
-        DrawLine(buffer, px + x, curY, "└", "┴", "┘", "─");
+        DrawLine(buffer, px + x, curY, "╰", "┴", "╯", "─");
     }
     int GetWidth() const override {
         int total = 0;
