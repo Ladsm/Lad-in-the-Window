@@ -54,7 +54,7 @@ cmake --build .
 | Navigation         | WASD / Arrows                  | Move cursor / selection       |
 | System             | C                              | Open / Close Start Menu       |
 |                    | F12                            | Exit                          |
-| Mouse              | Left Click                     | Focus window / click buttons  |
+| Mouse              | Left Click                     | Focus window                  |
 |                    | Left Drag                      | Move window                   |
 |                    | Left Click on Title Bar        | Drag to move                  |
 |                    | Left Click on Window Corners   | Drag to resize                |
