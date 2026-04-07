@@ -60,7 +60,7 @@ void Window::Draw(std::ostream& buffer) {
         for (int i = 0; i < len; i++) line += "─";
         return line;
         };
-    buffer << "\033[" << (y + 1) << ";" << (x + 1) << "H" << headerColor() << "┌" << drawLine(innerWidth) << "┐" << resetStyle;
+    buffer << "\033[" << (y + 1) << ";" << (x + 1) << "H" << headerColor() << "╭" << drawLine(innerWidth) << "╮" << resetStyle;
     buffer << "\033[" << (y + 2) << ";" << (x + 1) << "H" << headerColor() << "│ ";
     std::string titleText = title;
     int spacing = (std::max)(0, innerWidth - (int)titleText.length() - iconVisualWidth - 1);
@@ -69,7 +69,7 @@ void Window::Draw(std::ostream& buffer) {
     for (int i = 3; i < height - 1; ++i) {
         buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
     }
-    buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "└" << drawLine(innerWidth) << "┘" << resetStyle;
+    buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "╰" << drawLine(innerWidth) << "╯" << resetStyle;
     for (auto& w : widgets)
         w->Draw(buffer, x + 1, y + 3);
 }
