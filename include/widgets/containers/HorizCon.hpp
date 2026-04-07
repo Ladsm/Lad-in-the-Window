@@ -4,12 +4,12 @@
 #include <memory>
 #include <algorithm>
 
-class HorizlCon : public Widget {
+class HorizCon : public Widget {
 public:
     std::vector<std::unique_ptr<Widget>> children;
     int spacing = 2;
     int internalFocus = -1;
-    HorizlCon(int x, int y) {
+    HorizCon(int x, int y) {
         this->x = x;
         this->y = y;
         this->focusable = true;
