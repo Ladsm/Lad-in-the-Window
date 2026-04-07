@@ -1,4 +1,4 @@
-#include <LITW.hpp>
+﻿#include <LITW.hpp>
 #include <iostream>
 #include <functional>
 #include <cstdlib>
@@ -10,8 +10,9 @@ WindowManager wm;
 class Textinputer : public Window {
 public:
     Textinputer() : Window(::title, 40, 10) {
-        Add<TextInput>(2, 2, 20, &::title);
-        Add<CheckBox>(2, 3, "global state?", globlestate);
+        auto& vbox = Add<VertCon>(2, 2);
+        vbox.Add<TextInput>(0, 0, 20, &::title);
+        vbox.Add<CheckBox>(0, 0, "global state?", globlestate);
         Add<Separator>(0, 4, this);
         Add<Button>(2, 5, "Exit", []() {
             wm.exit(0);
@@ -29,25 +30,6 @@ public:
     MenuWindow(std::string title) : Window(title, 40, 10) {
         Add<Button>(2, 2, "Exit", []() {
             wm.exit(0);
-            });
-    }
-};
-
-class TextWindow : public Window {
-public:
-    TextWindow(std::string title, std::string msg)
-        : Window(title, 40, 10) {
-        Add<Label>(2, 2, msg);
-        Add<Button>(2, 5, "Close", [this]() {
-            wm.RemoveWindow(this);
-            });
-    }
-
-    TextWindow(std::string title, std::string msg, int w, int h)
-        : Window(title, w, h) {
-        Add<Label>(2, 2, msg);
-        Add<Button>(2, 5, "Close", [this]() {
-            wm.RemoveWindow(this);
             });
     }
 };
@@ -74,23 +56,22 @@ class README : public Window {
     };
 public:
     README() : Window("README", 60, 18) {
-        Add<ScrollableTextBox>(2, 2, 10, 55, text);
-        Add<Button>(2, 14, "Close", [this]() {
-            wm.RemoveWindow(this);
-            });
+        auto& vbox = Add<VertCon>(2, 2);
+        vbox.Add<ScrollableTextBox>(0, 0, 10, 55, text);
+        vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class Users : public Window {
 public:
     Users() : Window("List of Users", 40, 12) {
-        auto table = std::make_unique<Table>(2, 2,
+        auto& vbox = Add<VertCon>(2, 2);
+        auto& table = vbox.Add<Table>(2, 2,
             std::vector<std::string>{"ID", "Name", "Status"},
             std::vector<int>{4, 15, 10}
         );
-        table->AddRow({ "01", "Ladsm", "Online" });
-        table->AddRow({ "02", "Guest", "Offline" });
-        AddWidget(std::move(table));
-        Add<Button>(2, 8, "Close", [this]() { wm.RemoveWindow(this); });
+        table.AddRow({ "01", "Ladsm", "Online" });
+        table.AddRow({ "02", "Guest", "Offline" });
+        vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class ShellWindow : public Window {
@@ -144,11 +125,6 @@ public:
 int main() {
     auto start = std::make_shared<StartMenuWindow>(&wm);
     start->AddItem<MenuWindow>("Main Menu", "main menu");
-    start->AddItem<TextWindow>(
-        "System Status",
-        "System status",
-        "System is running smoothly!"
-    );
     start->AddItem<README>("README");
     start->AddItem<Textinputer>("Text Input Demo");
     start->AddItem<Users>("Table of Users");

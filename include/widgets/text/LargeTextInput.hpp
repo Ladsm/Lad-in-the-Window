@@ -34,6 +34,12 @@ public:
             lines->push_back("");
         }
     }
+    int GetWidth() const override {
+        return width;
+    }
+    int GetHeight() const override {
+        return height;
+    }
     void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg) {
         std::string kwColor = "\033[38;2;0;0;255m";
         std::string funcColor = "\033[38;2;130;130;0m";
@@ -126,7 +132,7 @@ public:
         cursorX = std::max(0, std::min(cursorX, (int)(*lines)[cursorY].size()));
         int key = readKey();
         if (mode == COMMAND) {
-            if (key == '\r' || key == '\n') {
+            if (key == '\r' || key == '\n' || key == 13) {
                 this->focused = false;
                 return;
             }

@@ -16,6 +16,12 @@ public:
         this->text = t;
         this->focusable = true;
     }
+    int GetWidth() const override {
+        return width;
+    }
+    int GetHeight() const override {
+        return amountOfLinesToDraw;
+    }
     void Draw(std::ostream& buffer, int px, int py) override {
         std::string bg = "\033[38;2;0;0;0;48;2;192;192;192m";
         for (int i = 0; i < amountOfLinesToDraw; ++i) {

@@ -75,6 +75,7 @@ void Window::Draw(std::ostream& buffer) {
 }
 
 void Window::Resize(int newW, int newH) {
+    if (staticWindow) return;
     this->width = newW;
     this->height = newH;
     for (auto& w : widgets) {
@@ -83,6 +84,7 @@ void Window::Resize(int newW, int newH) {
 }
 
 void Window::ToggleMaximize(int screenWidth, int screenHeight) {
+    if (staticWindow) return;
     if (!isMaximized) {
         oldX = x;
         oldY = y;
@@ -419,6 +421,8 @@ void WindowManager::Run() {
             if (!windows.empty()) {
                 auto wptr = windows.back();
                 Window* w = wptr.get();
+                if (w->staticWindow)
+                    continue;
                 if (w->isMoving) {
                     w->x = mx - w->dragOffsetX;
                     w->y = my - w->dragOffsetY;
@@ -592,14 +596,14 @@ void WindowManager::Run() {
                     RemoveWindow(top.get());
                     break;
                 case InputType::E:
-                    if (!top->isMaximized) top->isMoving = true;
+                    if (!top->isMaximized && !top->staticWindow) top->isMoving = true;
                     break;
                 case InputType::Q:
                     top->isMinimized = true;
                     CycleWindow();
                     break;
                 case InputType::R:
-                    if (!top->isMaximized) top->isResizing = true;
+                    if (!top->isMaximized && !top->staticWindow) top->isResizing = true;
                     break;
                 case InputType::Z:
                     top->ToggleMaximize(sw, sh);

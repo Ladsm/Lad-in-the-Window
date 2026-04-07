@@ -1,9 +1,7 @@
 #pragma once
-
 #include <Window.hpp>
 #include <widgets/Button.hpp>
 #include <userinput.hpp>
-
 #include <memory>
 #include <functional>
 #include <string>
@@ -13,10 +11,12 @@
 class WindowManager;
 
 class StartMenuWindow : public Window {
+private:
+    WindowManager* wm;
 public:
-    explicit StartMenuWindow(WindowManager* manager)
-        : Window("Start", 30, 10), wm(manager) {
-        visible = false;
+    explicit StartMenuWindow(WindowManager* manager) : Window("Start", 30, 10), wm(manager) {
+        this->staticWindow = true;
+        this->visible = false;
     }
     template<typename T, typename... Args>
     void AddItem(const std::string& name, Args&&... args) {
@@ -33,9 +33,7 @@ public:
             }
         );
     }
-    void AddItem(const std::string& name,
-        std::function<std::shared_ptr<Window>()> factory)
-    {
+    void AddItem(const std::string& name, std::function<std::shared_ptr<Window>()> factory) {
         AddWidget(std::make_unique<Button>(
             2,
             1 + widgets.size(),
@@ -49,7 +47,6 @@ public:
     void Draw(std::ostream& buffer) override {
         x = getConsoleWidth() - width;
         y = getConsoleHeight() - height - 1;
-
         Window::Draw(buffer);
     }
     void HandleInput(InputType input) {
@@ -59,7 +56,4 @@ public:
         }
         Window::HandleInput(input);
     }
-
-private:
-    WindowManager* wm;
 };
