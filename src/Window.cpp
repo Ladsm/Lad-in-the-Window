@@ -235,8 +235,15 @@ void WindowManager::Run() {
             if (w->visible && !w->isMinimized)
                 w->Draw(frame);
         }
+        std::string LITWOS = std::string(" LITW ") +
+#ifdef _WIN32
+            ""
+#else
+            ""
+#endif
+            + " :";
         frame << "\033[" << sh << ";1H\033[97;104m" << std::string(sw, ' ');
-        frame << "\033[" << sh << ";1H Start(C)  LITW: ";
+        frame << "\033[" << sh << ";1H Start(C) " + LITWOS;
         for (int i = 0; i < (int)windows.size(); i++) {
             if (windows[i]->visible) {
                 std::string label =
