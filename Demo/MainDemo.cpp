@@ -13,10 +13,8 @@ public:
         auto& vbox = Add<VertCon>(2, 2);
         vbox.Add<TextInput>(0, 0, 20, &::title);
         vbox.Add<CheckBox>(0, 0, "global state?", globlestate);
-        Add<Separator>(0, 4, this);
-        Add<Button>(2, 5, "Exit", []() {
-            wm.exit(0);
-            });
+        Add<Separator>(0, 5, this);
+        vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
     }
     void Draw(std::ostream& buffer) override {
         if (this->title != ::title) {

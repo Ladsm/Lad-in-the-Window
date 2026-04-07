@@ -1,3 +1,4 @@
+#pragma once
 #define LITWVERSION "0.9.5"
 #include <Window.hpp>
 #include <userinput.hpp>
