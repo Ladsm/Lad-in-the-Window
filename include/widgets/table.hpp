@@ -32,7 +32,7 @@ public:
         return total;
     }
     int GetHeight() const override {
-        return 3 + (int)rows.size();
+        return 4 + (int)rows.size();
     }
 private:
     void DrawLine(std::ostream& buf, int xPos, int yPos, const char* left, const char* mid, const char* right, const char* fill) {
