@@ -1,5 +1,5 @@
 #pragma once
-#define LITWVERSION "0.9.5"
+#define LITWVERSION "0.9.6"
 #include <Window.hpp>
 #include <userinput.hpp>
 #include <Widget.hpp>

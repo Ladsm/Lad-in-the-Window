@@ -7,11 +7,18 @@
 class VertCon : public Widget {
 public:
     std::vector<std::unique_ptr<Widget>> children;
-    int spacing = 1;
+    int spacing = 0;
     int internalFocus = -1;
     VertCon(int x, int y) {
         this->x = x;
         this->y = y;
+        this->focusable = true;
+        this->IsContainer = true;
+    }
+    VertCon(int x, int y, int z) {
+        this->x = x;
+        this->y = y;
+        this->spacing = z;
         this->focusable = true;
         this->IsContainer = true;
     }
@@ -39,7 +46,10 @@ public:
             child->y = offsetY;
             int h = child->GetHeight();
             if (h <= 0) h = 1;
-            offsetY += h + spacing;
+            offsetY += h;
+            if (i < children.size() - 1) {
+                offsetY += spacing;
+            }
         }
     }
     void Draw(std::ostream& buffer, int px, int py) override {

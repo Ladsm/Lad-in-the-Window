@@ -15,6 +15,12 @@ public:
         this->x = x;
         this->y = y;
     }
+    int GetWidth() const override {
+        return maxlength + 1;
+    }
+    int GetHeight() const override {
+        return 1;
+    }
     bool WantsRawInput() { return isWriting; }
     void HandleRawInput() {
         if (!target) return;

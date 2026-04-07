@@ -1,6 +1,6 @@
 <div align="center">
 	<img src="./images/LITWLogo.png" width="150" height="150" alt="LITW Logo">
-	<h1>Lad In The Window (LITW)</h1>
+	<h1>Lad In The Window (LITW)<h5>Version: 0.9.6</h5></h1>
 	<p><strong>A TUI that looks like a GUI.</strong></p>
 	<h2>Demo</h2>
 	<img src="./images/LITWDemo.png" alt="Demo Image" width="45%">

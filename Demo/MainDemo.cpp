@@ -9,11 +9,12 @@ bool globlestate = false;
 WindowManager wm;
 class Textinputer : public Window {
 public:
-    Textinputer() : Window(::title, 40, 10) {
-        auto& vbox = Add<VertCon>(2, 2);
-        vbox.Add<TextInput>(0, 0, 20, &::title);
-        vbox.Add<CheckBox>(0, 0, "global state?", globlestate);
-        Add<Separator>(0, 5, this);
+    Textinputer() : Window(::title, 47, 8) {
+        auto& vbox = Add<VertCon>(2, 2, 1);
+        auto& hbox = vbox.Add<HorizlCon>(0, 0);
+        hbox.Add<TextInput>(0, 0, 20, &::title);
+        hbox.Add<CheckBox>(0, 0, "global state?", globlestate);
+        Add<Separator>(0, 3, this);
         vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
     }
     void Draw(std::ostream& buffer) override {
