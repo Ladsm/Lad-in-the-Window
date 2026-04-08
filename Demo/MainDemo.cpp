@@ -131,6 +131,14 @@ public:
         vbox.Add<Label>(0,0, "more info.");
     }
 };
+class EyesWindow : public Window {
+public:
+    EyesWindow() : Window("Eyes", 30, 10) {
+        AddWidget(std::make_unique<EyesWidget>(8, 2, 14, 4));
+        auto& vbox = Add<VertCon>(2, 7);
+        vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
+    }
+};
 int main() {
     auto startalert = std::make_shared<StartAlert>();
     auto start = std::make_shared<StartMenuWindow>(&wm);
@@ -142,6 +150,7 @@ int main() {
     start->AddItem<ScrollExample>("Scroll Example");
     start->AddItem<TextInputLargeDemo>("Text input demo - Large");
     start->AddItem<Contest>("Containers");
+    start->AddItem<EyesWindow>("Eyes");
     wm.SetStartMenu(start);
     wm.AddWindow(start);
     wm.AddWindow(startalert);

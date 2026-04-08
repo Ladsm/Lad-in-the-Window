@@ -17,3 +17,4 @@
 #include <widgets/Separator.hpp>
 #include <widgets/Table.hpp>
 #include <widgets/ShellWidget.hpp>
+#include <widgets/EyesWidget.hpp>
