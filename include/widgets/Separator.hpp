@@ -13,11 +13,13 @@ public:
     Separator(int x, int y, Window* p) : parent(p) {
         this->x = x;
         this->y = y;
+        this->isSeparator = true;
         this->focusable = false;
     }
     Separator(Window* p) : parent(p) {
         this->x = 0;
         this->y = 0;
+        this->isSeparator = true;
         this->focusable = false;
     }
     void Draw(std::ostream& buffer, int px, int py) override {

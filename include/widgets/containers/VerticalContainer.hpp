@@ -71,8 +71,7 @@ public:
         for (size_t i = 0; i < children.size(); i++) {
             auto& child = children[i];
             child->focused = (this->focused && (int)i == internalFocus);
-            bool isSep = (dynamic_cast<Separator*>(child.get()) != nullptr);
-            if (isSep) {
+            if(child->isSeparator){
                 child->Draw(buffer, px, py + y);
             }
             else {
