@@ -111,11 +111,11 @@ public:
 class Contest : public Window {
     std::string text = "input here!";
 public:
-    Contest() : Window("Container test", 50, 11) {
-        auto& vbox = Add<VertCon>(2, 2);
+    Contest() : Window("Container test", 40, 8) {
+        auto& vbox = Add<VertCon>(2, 2, 0);
         vbox.Add<Label>(0, 0, "Settings");
         vbox.Add<Button>(0, 0, "Apply", [] {});
-        auto& hbox = Add<HorizCon>(2, 7);
+        auto& hbox = vbox.Add<HorizCon>(2, 7);
         hbox.Add<Button>(0, 0, "Yes", [] {});
         hbox.Add<Button>(0, 0, "no", [] {});
         hbox.Add<TextInput>(0, 0, 15, &text);
