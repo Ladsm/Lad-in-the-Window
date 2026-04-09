@@ -1,6 +1,6 @@
 #pragma once
 #define LITW
-#define LITWVERSION "0.10.0"
+#define LITWVERSION "0.10.2"
 #include <Window.hpp>
 #include <userinput.hpp>
 #include <Widget.hpp>

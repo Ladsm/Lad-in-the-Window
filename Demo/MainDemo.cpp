@@ -138,7 +138,7 @@ class EyesWindow : public Window {
 public:
     EyesWindow() : Window("Eyes", 30, 10) {
         auto& vbox = Add<VerticalContainer>(8, 2);
-        vbox.Add<EyesWidget>(8, 2, 15, 5);
+        vbox.Add<EyesWidget>(15, 5);
         vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };

@@ -7,7 +7,7 @@ class EyesWidget : public Widget {
 public:
     int eyeWidth;
     int eyeHeight;
-    EyesWidget(int x, int y, int w = 12, int h = 5) {
+    EyesWidget(int x, int y, int w, int h) {
         this->x = x;
         this->y = y;
         this->eyeWidth = w;
