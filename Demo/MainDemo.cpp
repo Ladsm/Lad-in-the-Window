@@ -144,7 +144,7 @@ public:
 };
 int main() {
     auto startalert = std::make_shared<StartAlert>();
-    auto start = std::make_shared<StartMenuWindow>(&wm);
+    auto start = startmenu<StartMenuWindow>(&wm);
     start->AddItem<README>("README");
     start->AddItem<MenuWindow>("Main Menu", "main menu");
     start->AddItem<Textinputer>("Text Input Demo");

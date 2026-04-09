@@ -57,3 +57,9 @@ public:
         Window::HandleInput(input);
     }
 };
+
+template<typename T>
+std::shared_ptr<T> startmenu(WindowManager* wm) {
+    auto start = std::make_shared<T>(wm);
+    return start;
+}
