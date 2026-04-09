@@ -11,11 +11,11 @@ class Textinputer : public Window {
 public:
     Textinputer() : Window(::title, 47, 8) {
         auto& vbox = Add<VerticalContainer>(2, 2, 1);
-        auto& hbox = vbox.Add<HorizontalContainer>(0, 0);
-        hbox.Add<TextInput>(0, 0, 20, &::title);
-        hbox.Add<CheckBox>(0, 0, "global state?", globlestate);
+        auto& hbox = vbox.Add<HorizontalContainer>();
+        hbox.Add<TextInput>(20, &::title);
+        hbox.Add<CheckBox>("global state?", globlestate);
         Add<Separator>(0, 3, this);
-        vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
     void Draw(std::ostream& buffer) override {
         if (this->title != ::title) {
@@ -27,7 +27,8 @@ public:
 class MenuWindow : public Window {
 public:
     MenuWindow(std::string title) : Window(title, 40, 10) {
-        Add<Button>(2, 2, "Exit", []() {
+        auto& vbox = Add<VerticalContainer>(2, 2);
+        vbox.Add<Button>("Exit", []() {
             wm.exit(0);
             });
     }
@@ -56,21 +57,21 @@ class README : public Window {
 public:
     README() : Window("README", 60, 18) {
         auto& vbox = Add<VerticalContainer>(2, 2);
-        vbox.Add<ScrollableTextBox>(0, 0, 10, 55, text);
-        vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<ScrollableTextBox>(10, 55, text);
+        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class Users : public Window {
 public:
     Users() : Window("List of Users", 40, 12) {
         auto& vbox = Add<VerticalContainer>(2, 2);
-        auto& table = vbox.Add<Table>(2, 2,
+        auto& table = vbox.Add<Table>(
             std::vector<std::string>{"ID", "Name", "Status"},
             std::vector<int>{4, 15, 10}
         );
         table.AddRow({ "01", "Ladsm", "Online" });
         table.AddRow({ "02", "Guest", "Offline" });
-        vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class ShellWindow : public Window {
@@ -114,23 +115,23 @@ class ContainerTest: public Window {
 public:
     ContainerTest() : Window("Container test", 40, 10) {
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
-        vbox.Add<Label>(0, 0, "Settings");
-        vbox.Add<Button>(0, 0, "Apply", [] {});
-        auto& hbox = vbox.Add<HorizontalContainer>(2, 7);
-        hbox.Add<Button>(0, 0, "Yes", [] {});
-        hbox.Add<Button>(0, 0, "no", [] {});
-        hbox.Add<TextInput>(0, 0, 15, &text);
-        vbox.Add<Toggle>(0, 0, "toggle", offon);
+        vbox.Add<Label>("Settings");
+        vbox.Add<Button>("Apply", [] {});
+        auto& hbox = vbox.Add<HorizontalContainer>();
+        hbox.Add<Button>("Yes", [] {});
+        hbox.Add<Button>("no", [] {});
+        hbox.Add<TextInput>(15, &text);
+        vbox.Add<Toggle>("toggle", offon);
     }
 };
 class StartAlert : public Window {
 public:
     StartAlert() : Window("Start Alert", 40, 10) {
         auto& vbox = Add<VerticalContainer>(1, 2);
-        vbox.Add<Label>(0,0, "Welcome to the Lad in the Window demo!");
-        vbox.Add<Label>(0,0, "sep here"); Add<Separator>(0, 3, this);
-        vbox.Add<Label>(0,0, "Check readme in the start menu for");
-        vbox.Add<Label>(0,0, "more info.");
+        vbox.Add<Label>("Welcome to the Lad in the Window demo!");
+        vbox.Add<Label>("sep here"); Add<Separator>(0, 3, this);
+        vbox.Add<Label>("Check readme in the start menu for");
+        vbox.Add<Label>("more info.");
     }
 };
 class EyesWindow : public Window {

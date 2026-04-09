@@ -15,6 +15,12 @@ public:
         this->focusable = true;
         this->IsContainer = true;
     }
+    HorizontalContainer() {
+        this->x = 0;
+        this->y = 0;
+        this->focusable = true;
+        this->IsContainer = true;
+    }
     Widget* GetActiveWidget() override {
         if (internalFocus >= 0 && internalFocus < children.size()) {
             return children[internalFocus]->GetActiveWidget();

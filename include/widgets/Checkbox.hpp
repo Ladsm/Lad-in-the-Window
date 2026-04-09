@@ -11,6 +11,12 @@ public:
         this->text = t;
         this->state = &isOn;
     }
+    CheckBox(std::string t, bool& isOn) {
+        this->x = 0;
+        this->y = 0;
+        this->text = t;
+        this->state = &isOn;
+    }
     int GetWidth() const override {
         return text.size() + 8;
     }

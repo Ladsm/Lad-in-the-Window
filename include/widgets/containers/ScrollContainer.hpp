@@ -18,6 +18,14 @@ public:
         this->focusable = true;
         this->IsContainer = true;
     }
+    ScrollContainer(int w, int h) {
+        this->x = 0;
+        this->y = 0;
+        this->viewWidth = w;
+        this->viewHeight = h;
+        this->focusable = true;
+        this->IsContainer = true;
+    }
     Widget* GetActiveWidget() override {
         if (internalFocus >= 0 && internalFocus < children.size()) {
             return children[internalFocus]->GetActiveWidget();

@@ -11,6 +11,12 @@ public:
         this->text = t;
         this->focusable = false;
     }
+    Label(std::string t) {
+        this->x = 0;
+        this->y = 0;
+        this->text = t;
+        this->focusable = false;
+    }
     int GetWidth() const override {
         return (int)text.length();
     }

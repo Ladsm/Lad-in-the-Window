@@ -15,6 +15,12 @@ public:
         this->x = x;
         this->y = y;
     }
+    TextInput(int z, std::string* boundString)
+        : target(boundString), maxlength(z)
+    {
+        this->x = 0;
+        this->y = 0;
+    }
     int GetWidth() const override {
         return maxlength + 1;
     }

@@ -11,6 +11,12 @@ public:
         label = l;
         this->focusable = true;
     }
+    Toggle(std::string l, bool& val) : value(val) {
+        this->x = 0;
+        this->y = 0;
+        label = l;
+        this->focusable = true;
+    }
     int GetWidth() const override { return (int)label.length() + 8; }
     int GetHeight() const override { return 1; }
     void Draw(std::ostream& buffer, int px, int py) override {

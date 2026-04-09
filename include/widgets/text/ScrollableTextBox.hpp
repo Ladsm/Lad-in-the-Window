@@ -16,6 +16,14 @@ public:
         this->text = t;
         this->focusable = true;
     }
+    ScrollableTextBox(int h, int w, const std::vector<std::string>& t) {
+        this->x = 0;
+        this->y = 0;
+        this->amountOfLinesToDraw = h;
+        this->width = w;
+        this->text = t;
+        this->focusable = true;
+    }
     int GetWidth() const override {
         return width;
     }

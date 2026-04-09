@@ -13,6 +13,12 @@ public:
         this->text = t;
         this->focusable = false;
     }
+    TextBox(const std::vector<std::string>& t) {
+        this->x = 0;
+        this->y = 0;
+        this->text = t;
+        this->focusable = false;
+    }
     void Draw(std::ostream& buffer, int px, int py) override {
         for (size_t i = 0; i < text.size(); ++i) {
             buffer << "\033[" << (py + y + static_cast<int>(i)) << ";" << (px + x) << "H";

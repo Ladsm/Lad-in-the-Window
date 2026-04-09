@@ -13,6 +13,12 @@ public:
         this->x = x; this->y = y;
         this->focusable = false;
     }
+    Table(std::vector<std::string> hdrs, std::vector<int> widths)
+        : headers(hdrs), colWidths(widths) {
+    this->x = 0;
+    this->y = 0;
+        this->focusable = false;
+    }
     void AddRow(std::vector<std::string> row) { rows.push_back(row); }
     void Draw(std::ostream& buffer, int px, int py) override {
         buffer << "\033[38;2;0;0;0;48;2;192;192;192m";

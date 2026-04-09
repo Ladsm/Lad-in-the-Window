@@ -22,6 +22,19 @@ public:
         this->focusable = true;
         this->IsContainer = true;
     }
+    VerticalContainer() {
+        this->x = 0;
+        this->y = 0;
+        this->focusable = true;
+        this->IsContainer = true;
+    }
+    VerticalContainer(int z) {
+        this->x = 0;
+        this->y = 0;
+        this->spacing = z;
+        this->focusable = true;
+        this->IsContainer = true;
+    }
     Widget* GetActiveWidget() override {
         if (internalFocus >= 0 && internalFocus < children.size()) {
             return children[internalFocus]->GetActiveWidget();

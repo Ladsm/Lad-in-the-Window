@@ -34,6 +34,15 @@ public:
             lines->push_back("");
         }
     }
+    LargeTextInput(int h, int w, std::vector<std::string>* target, Window* pWin)
+        : lines(target), height(h), width(w), win(pWin) {
+        this->x = 0;
+        this->y = 0;
+        this->focusable = true;
+        if (lines && lines->empty()) {
+            lines->push_back("");
+        }
+    }
     int GetWidth() const override {
         return width;
     }

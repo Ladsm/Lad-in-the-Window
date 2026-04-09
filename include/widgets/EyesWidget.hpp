@@ -14,6 +14,13 @@ public:
         this->eyeHeight = h;
         this->focusable = false;
     }
+    EyesWidget(int w = 12, int h = 5) {
+        this->x = 0;
+        this->y = 0;
+        this->eyeWidth = w;
+        this->eyeHeight = h;
+        this->focusable = false;
+    }
     int GetWidth() const override { return eyeWidth; }
     int GetHeight() const override { return eyeHeight; }
     void Draw(std::ostream& buffer, int px, int py) override {

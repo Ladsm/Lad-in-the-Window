@@ -12,6 +12,13 @@ public:
         onClick = cb;
         this->focusable = true;
     }
+    Button(std::string l, std::function<void()> cb) {
+        this->x = 0;
+        this->y = 0;
+        label = l;
+        onClick = cb;
+        this->focusable = true;
+    }
     int GetWidth() const override {
         return (int)label.length() + 4;
     }
