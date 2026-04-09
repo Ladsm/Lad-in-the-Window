@@ -1,7 +1,6 @@
 #pragma once
 #include "Widget.hpp"
 #include <Window.hpp>
-// Separator should not be used in a container. I still have code for it but I would not do that.
 class Separator : public Widget {
 public:
     Window* parent;
@@ -16,15 +15,18 @@ public:
         this->y = y;
         this->focusable = false;
     }
+    Separator(Window* p) : parent(p) {
+        this->x = 0;
+        this->y = 0;
+        this->focusable = false;
+    }
     void Draw(std::ostream& buffer, int px, int py) override {
-        int currentWidth = parent->width;
-        buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
+        buffer << "\033[" << (py + y) << ";" << px << "H";
         buffer << "\033[38;2;0;0;0;48;2;192;192;192m";
-        if (currentWidth > 2) {
+        int winWidth = parent->width;
+        if (winWidth > 2) {
             buffer << "├";
-            for (int i = 0; i < currentWidth - 2; i++) {
-                buffer << "─";
-            }
+            for (int i = 0; i < winWidth - 2; i++) buffer << "─";
             buffer << "┤";
         }
         buffer << "\033[0m";

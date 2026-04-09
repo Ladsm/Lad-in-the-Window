@@ -10,11 +10,11 @@ WindowManager wm;
 class Textinputer : public Window {
 public:
     Textinputer() : Window(::title, 47, 8) {
-        auto& vbox = Add<VerticalContainer>(2, 2, 1);
+        auto& vbox = Add<VerticalContainer>(2, 2, 0);
         auto& hbox = vbox.Add<HorizontalContainer>();
         hbox.Add<TextInput>(20, &::title);
         hbox.Add<CheckBox>("global state?", globlestate);
-        Add<Separator>(0, 3, this);
+        vbox.Add<Separator>(this);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
     void Draw(std::ostream& buffer) override {
@@ -129,7 +129,7 @@ public:
     StartAlert() : Window("Start Alert", 40, 10) {
         auto& vbox = Add<VerticalContainer>(1, 2);
         vbox.Add<Label>("Welcome to the Lad in the Window demo!");
-        vbox.Add<Label>("sep here"); Add<Separator>(0, 3, this);
+        vbox.Add<Separator>(this);
         vbox.Add<Label>("Check readme in the start menu for");
         vbox.Add<Label>("more info.");
     }

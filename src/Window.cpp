@@ -108,6 +108,7 @@ void Window::ToggleMaximize(int screenWidth, int screenHeight) {
 void Window::HandleInput(InputType input) {
     if (widgets.empty()) return;
     Widget* w = widgets[focusedWidget].get();
+    if (!w) return;
     if (w->IsContainer) {
         auto container = dynamic_cast<VerticalContainer*>(w);
         if (container) {

@@ -1,5 +1,6 @@
 #pragma once
 #include "Widget.hpp"
+#include <widgets/Separator.hpp>
 #include <vector>
 #include <memory>
 #include <algorithm>
@@ -70,7 +71,13 @@ public:
         for (size_t i = 0; i < children.size(); i++) {
             auto& child = children[i];
             child->focused = (this->focused && (int)i == internalFocus);
-            child->Draw(buffer, px + x, py + y);
+            bool isSep = (dynamic_cast<Separator*>(child.get()) != nullptr);
+            if (isSep) {
+                child->Draw(buffer, px, py + y);
+            }
+            else {
+                child->Draw(buffer, px + x, py + y);
+            }
         }
     }
     void HandleInput(InputType input) override {
