@@ -56,7 +56,6 @@ private:
         int drawPy = eY + (pupilY > 0 ? 1 : 0);
         if (drawPx < eX + 1) drawPx = eX + 1;
         if (drawPx > eX + 4) drawPx = eX + 4;
-
         buffer << "\033[" << drawPy << ";" << drawPx << "H" << blackPupil << "●" << reset;
     }
 };

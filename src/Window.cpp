@@ -1,8 +1,8 @@
 #include <Window.hpp>
 #include <init.hpp>
 #include <windows/AlertWindow.hpp>
-#include <widgets/containers/VertCon.hpp>
-#include <widgets/containers/HorizCon.hpp>
+#include <widgets/containers/VerticalContainer.hpp>
+#include <widgets/containers/HorizontalContainer.hpp>
 #include <widgets/containers/ScrollContainer.hpp>
 #include <sstream>
 #include <ctime>
@@ -109,7 +109,7 @@ void Window::HandleInput(InputType input) {
     if (widgets.empty()) return;
     Widget* w = widgets[focusedWidget].get();
     if (w->IsContainer) {
-        auto container = dynamic_cast<VertCon*>(w);
+        auto container = dynamic_cast<VerticalContainer*>(w);
         if (container) {
             int before = container->internalFocus;
             container->HandleInput(input);

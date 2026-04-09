@@ -1,5 +1,6 @@
 #pragma once
-#define LITWVERSION "0.9.6"
+#define LITW
+#define LITWVERSION "0.10.0"
 #include <Window.hpp>
 #include <userinput.hpp>
 #include <Widget.hpp>
@@ -11,10 +12,11 @@
 #include <widgets/text/ScrollableTextBox.hpp>
 #include <widgets/text/LargeTextInput.hpp>
 #include <widgets/containers/ScrollContainer.hpp>
-#include <widgets/containers/VertCon.hpp>
-#include <widgets/containers/HorizCon.hpp>
+#include <widgets/containers/VerticalContainer.hpp>
+#include <widgets/containers/HorizontalContainer.hpp>
 #include <widgets/Checkbox.hpp>
 #include <widgets/Separator.hpp>
 #include <widgets/Table.hpp>
 #include <widgets/ShellWidget.hpp>
 #include <widgets/EyesWidget.hpp>
+#include <widgets/Toggle.hpp>

@@ -1,6 +1,8 @@
 #pragma once
 #include "Widget.hpp"
 #include <vector>
+#include <string>
+#include <algorithm>
 
 class TextBox : public Widget {
 public:
@@ -16,5 +18,16 @@ public:
             buffer << "\033[" << (py + y + static_cast<int>(i)) << ";" << (px + x) << "H";
             buffer << "\033[38;2;0;0;0;48;2;192;192;192m" << text[i] << "\033[0m";
         }
+    }
+    int GetWidth() const override {
+        auto longest_it = std::max_element(text.begin(), text.end(),
+            [](const std::string& a, const std::string& b) {
+                return a.size() < b.size();
+            });
+        int returner = std::stoi(*longest_it);
+        return returner;
+    }
+    int GetHeight() const override {
+        return text.size();
     }
 };

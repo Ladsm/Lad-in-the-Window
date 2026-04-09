@@ -4,18 +4,18 @@
 #include <memory>
 #include <algorithm>
 
-class VertCon : public Widget {
+class VerticalContainer : public Widget {
 public:
     std::vector<std::unique_ptr<Widget>> children;
     int spacing = 0;
     int internalFocus = -1;
-    VertCon(int x, int y) {
+    VerticalContainer(int x, int y) {
         this->x = x;
         this->y = y;
         this->focusable = true;
         this->IsContainer = true;
     }
-    VertCon(int x, int y, int z) {
+    VerticalContainer(int x, int y, int z) {
         this->x = x;
         this->y = y;
         this->spacing = z;

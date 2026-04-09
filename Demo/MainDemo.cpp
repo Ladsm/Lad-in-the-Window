@@ -10,8 +10,8 @@ WindowManager wm;
 class Textinputer : public Window {
 public:
     Textinputer() : Window(::title, 47, 8) {
-        auto& vbox = Add<VertCon>(2, 2, 1);
-        auto& hbox = vbox.Add<HorizCon>(0, 0);
+        auto& vbox = Add<VerticalContainer>(2, 2, 1);
+        auto& hbox = vbox.Add<HorizontalContainer>(0, 0);
         hbox.Add<TextInput>(0, 0, 20, &::title);
         hbox.Add<CheckBox>(0, 0, "global state?", globlestate);
         Add<Separator>(0, 3, this);
@@ -55,7 +55,7 @@ class README : public Window {
     };
 public:
     README() : Window("README", 60, 18) {
-        auto& vbox = Add<VertCon>(2, 2);
+        auto& vbox = Add<VerticalContainer>(2, 2);
         vbox.Add<ScrollableTextBox>(0, 0, 10, 55, text);
         vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
     }
@@ -63,7 +63,7 @@ public:
 class Users : public Window {
 public:
     Users() : Window("List of Users", 40, 12) {
-        auto& vbox = Add<VertCon>(2, 2);
+        auto& vbox = Add<VerticalContainer>(2, 2);
         auto& table = vbox.Add<Table>(2, 2,
             std::vector<std::string>{"ID", "Name", "Status"},
             std::vector<int>{4, 15, 10}
@@ -108,23 +108,25 @@ public:
         Add<Button>(2, 15, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
-class Contest : public Window {
+class ContainerTest: public Window {
     std::string text = "input here!";
+    bool offon = false;
 public:
-    Contest() : Window("Container test", 40, 8) {
-        auto& vbox = Add<VertCon>(2, 2, 0);
+    ContainerTest() : Window("Container test", 40, 10) {
+        auto& vbox = Add<VerticalContainer>(2, 2, 0);
         vbox.Add<Label>(0, 0, "Settings");
         vbox.Add<Button>(0, 0, "Apply", [] {});
-        auto& hbox = vbox.Add<HorizCon>(2, 7);
+        auto& hbox = vbox.Add<HorizontalContainer>(2, 7);
         hbox.Add<Button>(0, 0, "Yes", [] {});
         hbox.Add<Button>(0, 0, "no", [] {});
         hbox.Add<TextInput>(0, 0, 15, &text);
+        vbox.Add<Toggle>(0, 0, "toggle", offon);
     }
 };
 class StartAlert : public Window {
 public:
     StartAlert() : Window("Start Alert", 40, 10) {
-        auto& vbox = Add<VertCon>(1, 2);
+        auto& vbox = Add<VerticalContainer>(1, 2);
         vbox.Add<Label>(0,0, "Welcome to the Lad in the Window demo!");
         vbox.Add<Label>(0,0, "sep here"); Add<Separator>(0, 3, this);
         vbox.Add<Label>(0,0, "Check readme in the start menu for");
@@ -134,8 +136,8 @@ public:
 class EyesWindow : public Window {
 public:
     EyesWindow() : Window("Eyes", 30, 10) {
-        AddWidget(std::make_unique<EyesWidget>(8, 2, 14, 4));
-        auto& vbox = Add<VertCon>(2, 7);
+        auto& vbox = Add<VerticalContainer>(8, 2);
+        vbox.Add<EyesWidget>(8, 2, 15, 5);
         vbox.Add<Button>(0, 0, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
@@ -149,7 +151,7 @@ int main() {
     start->AddItem("Terminal", &ShellWindow::Create);
     start->AddItem<ScrollExample>("Scroll Example");
     start->AddItem<TextInputLargeDemo>("Text input demo - Large");
-    start->AddItem<Contest>("Containers");
+    start->AddItem<ContainerTest>("Containers");
     start->AddItem<EyesWindow>("Eyes");
     wm.SetStartMenu(start);
     wm.AddWindow(start);
