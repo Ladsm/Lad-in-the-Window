@@ -4,24 +4,18 @@
 #include <cstdlib>
 #include <memory>
 
-std::string title = "Text Entering Demo";
-bool globlestate = false;
 WindowManager wm;
 class Textinputer : public Window {
+    std::string text = "Text Entering Demo";
+    bool checkbox = false;
 public:
-    Textinputer() : Window(::title, 47, 8) {
+    Textinputer() : Window("Text Entering Demo", 47, 8) {
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
         auto& hbox = vbox.Add<HorizontalContainer>();
-        hbox.Add<TextInput>(20, &::title);
-        hbox.Add<CheckBox>("global state?", globlestate);
+        hbox.Add<TextInput>(20, &text);
+        hbox.Add<CheckBox>("checkbox", checkbox);
         vbox.Add<Separator>(this);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
-    }
-    void Draw(std::ostream& buffer) override {
-        if (this->title != ::title) {
-            this->title = ::title;
-        }
-        Window::Draw(buffer);
     }
 };
 class MenuWindow : public Window {
