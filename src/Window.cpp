@@ -280,7 +280,7 @@ void WindowManager::Run() {
                 continue;
             }
         }
-        InputType input = GetPlayerInput();
+        InputType input = GetInput();
         if (input == InputType::MouseLeftDown) {
             int mx = getMouseX();
             int my = getMouseY();

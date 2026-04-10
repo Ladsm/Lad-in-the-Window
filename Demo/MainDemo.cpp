@@ -83,8 +83,8 @@ public:
     ScrollExample() : Window("Scroll Example", 40, 10) {
         auto container = std::make_unique<ScrollContainer>(2, 2, 30, 3);
         container->Add<CheckBox>(0, 1, "State one", a);
-        container->Add<Label>(0, 3, "middle");
-        container->Add<CheckBox>(0, 5, "State two", b);
+        container->Add<Label>(0, 3, "Middle");
+        container->Add<CheckBox>(0, 5, "State Two", b);
         container->Add<Button>(0, 7, "Save Settings", []() { wm.Alert("Saved!"); });
         AddWidget(std::move(container));
         Add<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); });
@@ -98,24 +98,24 @@ class TextInputLargeDemo : public Window {
         "}"
     };
 public:
-    TextInputLargeDemo() : Window("Text input - large", 50, 20) {
+    TextInputLargeDemo() : Window("Text Input - Large", 50, 20) {
         Add<LargeTextInput>(2, 2, 10, 45, &text, this);
         Add<Button>(2, 15, "Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 class ContainerTest: public Window {
-    std::string text = "input here!";
+    std::string text = "Input Here!";
     bool offon = false;
 public:
-    ContainerTest() : Window("Container test", 40, 10) {
+    ContainerTest() : Window("Container Test", 40, 10) {
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
         vbox.Add<Label>("Settings");
         vbox.Add<Button>("Apply", [] {});
         auto& hbox = vbox.Add<HorizontalContainer>();
         hbox.Add<Button>("Yes", [] {});
-        hbox.Add<Button>("no", [] {});
+        hbox.Add<Button>("No", [] {});
         hbox.Add<TextInput>(15, &text);
-        vbox.Add<Toggle>("toggle", offon);
+        vbox.Add<Toggle>("Toggle", offon);
     }
 };
 class StartAlert : public Window {
