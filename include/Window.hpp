@@ -56,6 +56,16 @@ public:
     void ToggleMaximize(int screenWidth, int screenHeight);
     virtual ~Window() = default;
 };
+template<typename T>
+std::shared_ptr<T> mksharedWindow() {
+    auto share = std::make_shared<T>();
+    return share;
+}
+template<typename T, typename... Args>
+std::shared_ptr<T> mksharedWindow(Args&& ... args) {
+    auto share = std::make_shared<T>(std::forward<Args>(args)...);
+    return share;
+}
 class WindowManager {
     std::vector<std::shared_ptr<Window>> windows;
     int windowCount = 0;

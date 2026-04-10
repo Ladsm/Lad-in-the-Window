@@ -11,7 +11,10 @@ public:
     }
 };
 int main() {
-    wm.AddWindow(mksharedWindow<TextWindow>("Hello World", "Hello World"));
+    auto start = startmenu<StartMenuWindow>(&wm);
+    start->AddItem<TextWindow>("Hello world", "Hello world", "Hello world");
+    wm.SetStartMenu(start);
+    wm.AddWindow(start);
     wm.Run();
     wm.exit(1);
     return 0;
