@@ -6,7 +6,6 @@
 #else
 #include <unistd.h>
 #include <termios.h>
-struct termios originalTermios;
 #endif
 #ifndef _WIN32
 int getch() {
@@ -145,10 +144,13 @@ InputType GetInput() {
         }
     }
 #else
+    static struct termios originalTermios;
     static bool consoleInitialized = false;
     if (!consoleInitialized) {
+        if (tcgetattr(STDIN_FILENO, &originalTermios) == 0) {
+            consoleInitialized = true;
+        }
         struct termios raw = originalTermios;
-        tcgetattr(STDIN_FILENO, &originalTermios);
         raw.c_lflag &= ~(ICANON | ECHO);
         raw.c_iflag &= ~(IXON | ICRNL);
         tcsetattr(STDIN_FILENO, TCSANOW, &raw);
