@@ -58,8 +58,15 @@ public:
         std::string preColor = "\033[38;2;120;0;120m";
         std::string opColor = "\033[38;2;0;130;130m";
         std::vector<std::string> keywords = {
-            "int", "void", "bool", "char", "double", "float", "class", "var", "string",
-            "public", "override", "if", "else", "return", "static", "enum", "using", "namespace"
+            "int", "void", "bool", "char", "double", "float", "long", "short", "signed", "unsigned",
+            "const", "static", "volatile", "mutable", "auto", "nullptr", "constexpr", "inline",
+            "class", "struct", "union", "enum", "public", "private", "protected", "virtual",
+            "override", "final", "friend", "explicit", "this", "operator", "typename", "template",
+            "if", "else", "switch", "case", "default", "return", "for", "while", "do",
+            "break", "continue", "goto", "try", "catch", "throw", "noexcept",
+            "and", "or", "not", "new", "delete", "sizeof", "decltype", "typeid",
+            "static_cast", "dynamic_cast", "const_cast", "reinterpret_cast",
+            "using", "namespace", "import", "export", "module"
         };
         for (int col = 0; col < width; ++col) {
             if (col >= (int)line.size()) {
