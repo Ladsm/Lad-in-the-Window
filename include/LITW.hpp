@@ -10,7 +10,6 @@
 #include <widgets/text/LargeTextbox.hpp>
 #include <widgets/text/ScrollableTextBox.hpp>
 #include <widgets/text/LargeTextInput.hpp>
-#include <widgets/containers/ScrollContainer.hpp>
 #include <widgets/containers/VerticalContainer.hpp>
 #include <widgets/containers/HorizontalContainer.hpp>
 #include <widgets/Checkbox.hpp>

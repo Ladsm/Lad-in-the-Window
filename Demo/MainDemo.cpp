@@ -77,19 +77,6 @@ public:
         return win;
     }
 };
-bool a = true, b = true;
-class ScrollExample : public Window {
-public:
-    ScrollExample() : Window("Scroll Example", 40, 10) {
-        auto container = std::make_unique<ScrollContainer>(2, 2, 30, 3);
-        container->Add<CheckBox>(0, 1, "State one", a);
-        container->Add<Label>(0, 3, "Middle");
-        container->Add<CheckBox>(0, 5, "State Two", b);
-        container->Add<Button>(0, 7, "Save Settings", []() { wm.Alert("Saved!"); });
-        AddWidget(std::move(container));
-        Add<Button>(2, 6, "Close", [this]() { wm.RemoveWindow(this); });
-    }
-};
 class TextInputLargeDemo : public Window {
     std::vector<std::string> text = {
         "#include <iostream>",
@@ -145,7 +132,6 @@ int main() {
     start->AddItem<Textinputer>("Text Input Demo");
     start->AddItem<Users>("Table of Users");
     start->AddItem("Terminal", &ShellWindow::Create);
-    start->AddItem<ScrollExample>("Scroll Example");
     start->AddItem<TextInputLargeDemo>("Text input demo - Large");
     start->AddItem<ContainerTest>("Containers");
     start->AddItem<EyesWindow>("Eyes");
