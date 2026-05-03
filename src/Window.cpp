@@ -3,7 +3,6 @@
 #include <windows/AlertWindow.hpp>
 #include <widgets/containers/VerticalContainer.hpp>
 #include <widgets/containers/HorizontalContainer.hpp>
-#include <widgets/containers/ScrollContainer.hpp>
 #include <sstream>
 #include <ctime>
 #include <algorithm>
