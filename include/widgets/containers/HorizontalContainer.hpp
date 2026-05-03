@@ -15,6 +15,20 @@ public:
         this->focusable = true;
         this->IsContainer = true;
     }
+    HorizontalContainer(int x, int y, int z) {
+        this->x = x;
+        this->y = y;
+        this->spacing = z;
+        this->focusable = true;
+        this->IsContainer = true;
+    }
+    HorizontalContainer(int x) {
+        this->x = 0;
+        this->y = 0;
+        this->spacing = x;
+        this->focusable = true;
+        this->IsContainer = true;
+    }
     HorizontalContainer() {
         this->x = 0;
         this->y = 0;
