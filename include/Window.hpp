@@ -13,6 +13,7 @@
 #ifdef max
 #undef max
 #endif
+//for custom colors, check out https://ladsm.neocities.org/colorpicker. ASCII colors look so frickin bad :;(.
 class StartMenuWindow;
 class Window {
 public:
@@ -23,7 +24,7 @@ public:
     int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
     bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
     bool staticWindow = false, decorated = true;
-    std::string title;
+    std::string title = "", bodyColor = "\033[38;2;0;0;0;48;2;192;192;192m";
     int dragOffsetX = 0;
     int dragOffsetY = 0;
     enum ResizeFlag : int {
@@ -71,7 +72,10 @@ class WindowManager {
     std::vector<std::shared_ptr<Window>> windows;
     int windowCount = 0;
     std::shared_ptr<Window> startMenu = nullptr;
+    std::string wallpaperColor = "\033[48;5;30m";
 public:
+    WindowManager() = default;
+    WindowManager(std::string wallPepColor);
     void Alert(std::string message);
     void exit(int code);
     void SetStartMenu(std::shared_ptr<Window> sm);

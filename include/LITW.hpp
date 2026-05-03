@@ -1,6 +1,6 @@
 #pragma once
 #define LITW
-#define LITWVERSION "0.11.0"
+#define LITWVERSION "0.11.1"
 #include <Window.hpp>
 #include <Widget.hpp>
 #include <windows/StartMenu.hpp>

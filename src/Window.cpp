@@ -38,7 +38,6 @@ std::string Window::headerColor() {
 void Window::Draw(std::ostream& buffer) {
     if (!visible || isMinimized) return;
     std::string resetStyle = "\033[0m";
-    std::string silverBody = "\033[38;2;0;0;0;48;2;192;192;192m";
     int termWidth = getConsoleWidth();
     if (decorated && !isMaximized) {
         std::string shadowColor = "\033[48;2;45;45;45m";
@@ -68,13 +67,13 @@ void Window::Draw(std::ostream& buffer) {
         buffer << titleText << std::string(spacing, ' ') << "        │" << resetStyle;
         buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
         for (int i = 3; i < height - 1; ++i) {
-            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
+            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << bodyColor << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
         }
-        buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "╰" << drawLine(innerWidth) << "╯" << resetStyle;
+        buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << bodyColor << "╰" << drawLine(innerWidth) << "╯" << resetStyle;
     }
     else {
         for (int i = 0; i < height; ++i) {
-            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << std::string(width, ' ') << resetStyle;
+            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << bodyColor << std::string(width, ' ') << resetStyle;
         }
     }
     int contentOffsetY = decorated ? 3 : 0;
@@ -156,6 +155,9 @@ bool Window::ContainsPoint(int px, int py) const {
     return px >= x && px < x + width &&
         py >= y && py < y + height;
 }
+WindowManager::WindowManager(std::string wallPepColor){
+    wallpaperColor = wallPepColor;
+}
 void WindowManager::Alert(std::string message) {
     auto alert = std::make_shared<AlertWindow>(message, this);
     AddWindow(alert);
@@ -211,7 +213,6 @@ void WindowManager::CycleWindow() {
 void WindowManager::Run() {
     init();
     std::cout << "\033[2J\033[?25l" << std::flush;
-    std::string wallpaperColor = "\033[48;5;30m";
     bool running = true;
     static auto lastClickTime = std::chrono::steady_clock::now();
     static int lastClickX = -1;
