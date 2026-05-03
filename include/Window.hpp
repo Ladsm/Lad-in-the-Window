@@ -21,7 +21,8 @@ public:
     int x, y, width, height;
     int startWidth, startHeight;
     int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
-    bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false, staticWindow = false;
+    bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
+    bool staticWindow = false, decorated = true;
     std::string title;
     int dragOffsetX = 0;
     int dragOffsetY = 0;

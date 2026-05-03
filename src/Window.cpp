@@ -38,9 +38,10 @@ std::string Window::headerColor() {
 void Window::Draw(std::ostream& buffer) {
     if (!visible || isMinimized) return;
     std::string resetStyle = "\033[0m";
-    std::string shadowColor = "\033[48;2;45;45;45m";
+    std::string silverBody = "\033[38;2;0;0;0;48;2;192;192;192m";
     int termWidth = getConsoleWidth();
-    if (!isMaximized) {
+    if (decorated && !isMaximized) {
+        std::string shadowColor = "\033[48;2;45;45;45m";
         for (int i = 1; i <= height; ++i) {
             int shadowX = x + 3;
             int shadowY = y + i + 1;
@@ -52,26 +53,35 @@ void Window::Draw(std::ostream& buffer) {
             }
         }
     }
-    int innerWidth = width - 2;
-    const int iconVisualWidth = 11;
-    std::string silverBody = "\033[38;2;0;0;0;48;2;192;192;192m";
-    auto drawLine = [&](int len) {
-        std::string line;
-        for (int i = 0; i < len; i++) line += "─";
-        return line;
-        };
-    buffer << "\033[" << (y + 1) << ";" << (x + 1) << "H" << headerColor() << "╭" << drawLine(innerWidth) << "╮" << resetStyle;
-    buffer << "\033[" << (y + 2) << ";" << (x + 1) << "H" << headerColor() << "│ ";
-    std::string titleText = title;
-    int spacing = (std::max)(0, innerWidth - (int)titleText.length() - iconVisualWidth - 1);
-    buffer << titleText << std::string(spacing, ' ') << " 🗕   🗗   🗙 │" << resetStyle;
-    buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
-    for (int i = 3; i < height - 1; ++i) {
-        buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
+    if (decorated) {
+        int innerWidth = width - 2;
+        const int iconVisualWidth = 11;
+        auto drawLine = [&](int len) {
+            std::string line;
+            for (int i = 0; i < len; i++) line += "─";
+            return line;
+            };
+        buffer << "\033[" << (y + 1) << ";" << (x + 1) << "H" << headerColor() << "╭" << drawLine(innerWidth) << "╮" << resetStyle;
+        buffer << "\033[" << (y + 2) << ";" << (x + 1) << "H" << headerColor() << "│ ";
+        std::string titleText = title;
+        int spacing = (std::max)(0, innerWidth - (int)titleText.length() - iconVisualWidth - 1);
+        buffer << titleText << std::string(spacing, ' ') << "        │" << resetStyle;
+        buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
+        for (int i = 3; i < height - 1; ++i) {
+            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
+        }
+        buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "╰" << drawLine(innerWidth) << "╯" << resetStyle;
     }
-    buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << silverBody << "╰" << drawLine(innerWidth) << "╯" << resetStyle;
+    else {
+        for (int i = 0; i < height; ++i) {
+            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << silverBody << std::string(width, ' ') << resetStyle;
+        }
+    }
+    int contentOffsetY = decorated ? 3 : 0;
+    int contentOffsetX = decorated ? 1 : 0;
+
     for (auto& w : widgets)
-        w->Draw(buffer, x + 1, y + 3);
+        w->Draw(buffer, x + contentOffsetX, y + contentOffsetY);
 }
 
 void Window::Resize(int newW, int newH) {

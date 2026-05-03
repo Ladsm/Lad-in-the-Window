@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <widgets/containers/VerticalContainer.hpp>
 
 #ifdef max
 #undef max
@@ -143,6 +144,17 @@ public:
         if (mode == COMMAND) {
             if (key == '\r' || key == '\n' || key == 13) {
                 this->focused = false;
+                if (win) {
+                    if (win->focusedWidget >= 0 && win->focusedWidget < (int)win->widgets.size()) {
+                        Widget* root = win->widgets[win->focusedWidget].get();
+                        auto vc = dynamic_cast<VerticalContainer*>(root);
+                        if (vc) {
+                            vc->internalFocus = -1;
+                        } else {
+                            win->focusedWidget = std::min((int)win->widgets.size() - 1, win->focusedWidget + 1);
+                        }
+                    }
+                }
                 return;
             }
             switch (key) {
