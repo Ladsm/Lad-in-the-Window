@@ -4,7 +4,7 @@
 #include <cstdlib>
 #include <memory>
 
-WindowManager wm;
+WindowManager wm("LITW demo");
 class Textinputer : public Window {
     std::string text = "Text Entering Demo";
     bool checkbox = false;

@@ -154,8 +154,12 @@ bool Window::ContainsPoint(int px, int py) const {
     return px >= x && px < x + width &&
         py >= y && py < y + height;
 }
-WindowManager::WindowManager(std::string wallPepColor){
+WindowManager::WindowManager(std::string wallPepColor, std::string deftitle) {
     wallpaperColor = wallPepColor;
+    windowDefaultTitle = deftitle;
+}
+WindowManager::WindowManager(std::string deftitle) {
+    windowDefaultTitle = deftitle;
 }
 void WindowManager::Alert(std::string message) {
     auto alert = std::make_shared<AlertWindow>(message, this);
@@ -279,6 +283,9 @@ void WindowManager::Run() {
         std::string clockStr = " [ " + std::string(timeBuf) + " ] ";
         int clockPos = sw - (int)clockStr.length() + 1;
         frame << "\033[" << sh << ";" << clockPos << "H" << clockStr << "\033[0m";
+        std::string consoleTitle = windowDefaultTitle;
+        if (top) consoleTitle = top->title;
+        std::cout << "\033]0;" << consoleTitle << "\007";
         std::cout << frame.str() << std::flush;
         if (top && top->focusedWidget >= 0 &&
             top->focusedWidget < (int)top->widgets.size()) {

@@ -73,9 +73,11 @@ class WindowManager {
     int windowCount = 0;
     std::shared_ptr<Window> startMenu = nullptr;
     std::string wallpaperColor = "\033[48;5;30m";
+    std::string windowDefaultTitle = "LITW title";
 public:
     WindowManager() = default;
-    WindowManager(std::string wallPepColor);
+    WindowManager(std::string deftitle);
+    WindowManager(std::string wallPepColor, std::string deftitle);
     void Alert(std::string message);
     void exit(int code);
     void SetStartMenu(std::shared_ptr<Window> sm);
