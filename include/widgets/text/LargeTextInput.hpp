@@ -156,7 +156,7 @@ public:
                         Widget* root = win->widgets[win->focusedWidget].get();
                         auto vc = dynamic_cast<VerticalContainer*>(root);
                         if (vc) {
-                            vc->internalFocus = -1;
+                            vc->internalFocus = +1;
                         } else {
                             win->focusedWidget = std::min((int)win->widgets.size() - 1, win->focusedWidget + 1);
                         }

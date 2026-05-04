@@ -1,6 +1,6 @@
 <div align="center">
 	<img src="./images/LITWLogo.png" width="150" height="150" alt="LITW Logo">
-	<h1>Lad In The Window (LITW)<h5>Version: 0.9.6</h5></h1>
+	<h1>Lad In The Window (LITW)<h5>Version: 1.0.0</h5></h1>
 	<p><strong>A TUI that looks like a GUI.</strong></p>
 	<h2>Demo</h2>
 	<img src="./images/LITWDemo.png" alt="Demo Image" width="45%">
@@ -51,7 +51,7 @@ cmake --build .
 | Window Operations  | Q / X                          | Minimize / Close              |
 |                    | Z                              | Maximize / Restore window     |
 |                    | E / R                          | Move / Resize mode            |
-| Navigation         | WASD / Arrows                  | Move cursor / selection       |
+| Navigation         | Arrows                         | Move cursor / selection       |
 | System             | C                              | Open / Close Start Menu       |
 |                    | F12                            | Exit                          |
 | Mouse              | Left Click                     | Focus window                  |
@@ -66,7 +66,7 @@ cmake --build .
 
 </div>
 <div align="center">
-	<h5>Links</h5>
+	<h4>Links</h4>
 	<p>
 	<a href="https://ladsm.neocities.org/LITW/">Website</a>,
 	<a href="https://github.com/Ladsm/Lad-in-the-Window">GitHub</a>
