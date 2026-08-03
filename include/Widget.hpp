@@ -2,6 +2,7 @@
 #include <iostream>
 #include <string>
 #include "userinput.hpp"
+class Window;
 class Widget {
 public:
     int x = 0;
@@ -12,6 +13,7 @@ public:
     bool focusable = true;
     bool IsContainer = false;
     bool isSeparator = false;
+    Window* parent;
     virtual int GetWidth() const { return 10; }
     virtual int GetHeight() const { return 1; }
     virtual void Draw(std::ostream& buffer, int parentX, int parentY) = 0;

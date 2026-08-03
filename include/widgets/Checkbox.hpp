@@ -32,7 +32,7 @@ public:
             visual = *state ? "  [X]   " : "  [ ]   ";
         }
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
-        buffer << "\033[38;2;0;0;0;48;2;192;192;192m" << visual << text;
+        buffer << parent->Palette.Body << visual << text;
     }
     void HandleInput(InputType input) override {
         if (input == InputType::Enter) {

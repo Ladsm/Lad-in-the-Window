@@ -28,6 +28,23 @@ Window::Window(std::string t, int w, int h, WindowPalette p) : title(t), width(w
 }
 
 void Window::AddWidget(std::unique_ptr<Widget> w) {
+    w->parent = this;
+    std::function<void(Widget*)> setDescParents = [&](Widget* widget) {
+        if (!widget || !widget->IsContainer) return;
+        if (auto vc = dynamic_cast<VerticalContainer*>(widget)) {
+            for (auto& ch : vc->children) {
+                ch->parent = this;
+                setDescParents(ch.get());
+            }
+        }
+        else if (auto hc = dynamic_cast<HorizontalContainer*>(widget)) {
+            for (auto& ch : hc->children) {
+                ch->parent = this;
+                setDescParents(ch.get());
+            }
+        }
+        };
+    setDescParents(w.get());
     height = std::max(height, (int)widgets.size() + 5);
     widgets.push_back(std::move(w));
     if (focusedWidget == -1) {

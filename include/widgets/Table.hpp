@@ -21,7 +21,7 @@ public:
     }
     void AddRow(std::vector<std::string> row) { rows.push_back(row); }
     void Draw(std::ostream& buffer, int px, int py) override {
-        buffer << "\033[38;2;0;0;0;48;2;192;192;192m";
+        buffer << parent->Palette.Body;
         int curY = py + y;
         DrawLine(buffer, px + x, curY++, "╭", "┬", "╮", "─");
         DrawDataRow(buffer, px + x, curY++, headers);

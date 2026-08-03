@@ -22,7 +22,7 @@ public:
     void Draw(std::ostream& buffer, int px, int py) override {
         for (size_t i = 0; i < text.size(); ++i) {
             buffer << "\033[" << (py + y + static_cast<int>(i)) << ";" << (px + x) << "H";
-            buffer << "\033[38;2;0;0;0;48;2;192;192;192m" << text[i] << "\033[0m";
+            buffer << parent->Palette.Body << text[i] << "\033[0m";
         }
     }
     int GetWidth() const override {

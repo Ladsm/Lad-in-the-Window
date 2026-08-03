@@ -25,20 +25,19 @@ public:
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
-        buffer << "\033[38;2;0;0;0;48;2;192;192;192m" << text;
+        buffer << parent->Palette.Body << text;
     }
 };
 class CenteredLabel : public Widget {
 public:
     std::string text;
-    Window* parent;
-    CenteredLabel(int y, std::string t, Window* p) : text(t), parent(p) {
+    CenteredLabel(int y, std::string t) : text(t) {
         this->y = y;
         this->focusable = false;
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         int centerX = (parent->width / 2) - ((int)text.length() / 2);
         buffer << "\033[" << (py + y) << ";" << (px + (centerX > 0 ? centerX : 1)) << "H";
-        buffer << "\033[38;2;0;0;0;48;2;192;192;192m" << text;
+        buffer << parent->Palette.Body << text;
     }
 };

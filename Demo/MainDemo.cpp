@@ -14,7 +14,7 @@ public:
         auto& hbox = vbox.Add<HorizontalContainer>();
         hbox.Add<TextInput>(20, &text);
         hbox.Add<CheckBox>("checkbox", checkbox);
-        vbox.Add<Separator>(this);
+        vbox.Add<Separator>();
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
@@ -111,7 +111,7 @@ public:
     StartAlert() : Window("Start Alert", 40, 10) {
         auto& vbox = Add<VerticalContainer>(1, 2);
         vbox.Add<Label>("Welcome to the Lad in the Window demo!");
-        vbox.Add<Separator>(this);
+        vbox.Add<Separator>();
         vbox.Add<Label>("Check readme in the start menu for");
         vbox.Add<Label>("more info.");
     }

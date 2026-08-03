@@ -31,7 +31,7 @@ public:
         return amountOfLinesToDraw;
     }
     void Draw(std::ostream& buffer, int px, int py) override {
-        std::string bg = "\033[38;2;0;0;0;48;2;192;192;192m";
+        std::string bg = parent->Palette.Body;
         for (int i = 0; i < amountOfLinesToDraw; ++i) {
             int textIndex = i + scroll;
             buffer << "\033[" << (py + y + i) << ";" << (px + x) << "H" << bg;

@@ -26,7 +26,7 @@ public:
         return 1;
     }
     void Draw(std::ostream& buffer, int px, int py) override {
-        std::string body = "\033[38;2;0;0;0;48;2;192;192;192m";
+        std::string body = parent->Palette.Body;
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
         buffer << body;
         if (focused)

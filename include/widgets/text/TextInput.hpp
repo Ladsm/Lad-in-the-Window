@@ -56,7 +56,7 @@ public:
             buffer << "\033[?25h";
         }
         else {
-            buffer << "\033[38;2;0;0;0;48;2;192;192;192m";
+            buffer << parent->Palette.Body;
             buffer << "\033[?25l";
         }
         if (focused) {

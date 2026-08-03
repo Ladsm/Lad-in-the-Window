@@ -43,6 +43,7 @@ public:
         return this;
     }
     void AddWidget(std::unique_ptr<Widget> w) {
+        w->parent = this->parent ? this->parent : nullptr;
         children.push_back(std::move(w));
     }
     template<typename T, typename... Args>

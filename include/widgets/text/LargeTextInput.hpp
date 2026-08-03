@@ -219,7 +219,7 @@ public:
         }
         int maxScroll = std::max(0, (int)lines->size() - viewHeight);
         scroll = std::max(0, std::min(scroll, maxScroll));
-        std::string bg = "\033[38;2;0;0;0;48;2;192;192;192m";
+        std::string bg = parent->Palette.Body;
         int totalLines = (int)lines->size();
         size_t lineNumberWidth = std::to_string(std::max(1, totalLines)).size() + 2;
         size_t textWidth = width - lineNumberWidth;

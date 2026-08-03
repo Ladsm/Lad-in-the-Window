@@ -93,7 +93,7 @@ public:
             outputBuffer << "\033[?25h";
         }
         else {
-            outputBuffer << "\033[38;2;0;0;0;48;2;192;192;192m";
+            outputBuffer << parent->Palette.Body;
             outputBuffer << "\033[?25l";
         }
         if (focused) {
