@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <thread>
 #include <memory>
+#include <functional>
 
 Window::Window(std::string t, int w, int h) : title(t), width(w), height(h), startWidth(w), startHeight(h) {
     x = (getConsoleWidth() - w) / 2;
@@ -17,29 +18,37 @@ Window::Window(std::string t, int w, int h) : title(t), width(w), height(h), sta
     oldX = x;
     oldY = y;
 }
+Window::Window(std::string t, int w, int h, WindowPalette p) : title(t), width(w), height(h), startWidth(w), startHeight(h), Palette(p) {
+    x = (getConsoleWidth() - w) / 2;
+    y = (getConsoleHeight() - h) / 2;
+    if (x < 0) x = 0;
+    if (y < 0) y = 0;
+    oldX = x;
+    oldY = y;
+}
+
 void Window::AddWidget(std::unique_ptr<Widget> w) {
     height = std::max(height, (int)widgets.size() + 5);
     widgets.push_back(std::move(w));
-
     if (focusedWidget == -1) {
         focusedWidget = 0;
         widgets[0]->focused = true;
     }
 }
+
 std::string Window::headerColor() {
     if (isResizing)
-        return "\033[95;45m";
+        return Palette.Resize;
     else if (isMoving)
-        return "\033[93;43m";
+        return Palette.Move;
     else
-        return focused ? "\033[97;44m" : "\033[37;100m";
+        return focused ? Palette.Focused : Palette.Unfocused;
 }
 void Window::Draw(std::ostream& buffer) {
     if (!visible || isMinimized) return;
     std::string resetStyle = "\033[0m";
     int termWidth = getConsoleWidth();
-    if (decorated && !isMaximized) {
-        std::string shadowColor = "\033[48;2;45;45;45m";
+    if (decorated && !isMaximized) {;
         for (int i = 1; i <= height; ++i) {
             int shadowX = x + 3;
             int shadowY = y + i + 1;
@@ -47,7 +56,7 @@ void Window::Draw(std::ostream& buffer) {
             int availableWidth = termWidth - shadowX + 1;
             int shadowWidth = (std::min)(width, availableWidth);
             if (shadowWidth > 0) {
-                buffer << "\033[" << shadowY << ";" << shadowX << "H" << shadowColor << std::string(shadowWidth, ' ') << resetStyle;
+                buffer << "\033[" << shadowY << ";" << shadowX << "H" << Palette.Shadow << std::string(shadowWidth, ' ') << resetStyle;
             }
         }
     }
@@ -66,13 +75,13 @@ void Window::Draw(std::ostream& buffer) {
         buffer << titleText << std::string(spacing, ' ') << "        │" << resetStyle;
         buffer << "\033[" << (y + 3) << ";" << (x + 1) << "H" << headerColor() << "├" << drawLine(innerWidth) << "┤" << resetStyle;
         for (int i = 3; i < height - 1; ++i) {
-            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << bodyColor << "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
+            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << Palette.Body<< "│" << std::string(innerWidth, ' ') << "│" << resetStyle;
         }
-        buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << bodyColor << "╰" << drawLine(innerWidth) << "╯" << resetStyle;
+        buffer << "\033[" << (y + height) << ";" << (x + 1) << "H" << Palette.Body << "╰" << drawLine(innerWidth) << "╯" << resetStyle;
     }
     else {
         for (int i = 0; i < height; ++i) {
-            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << bodyColor << std::string(width, ' ') << resetStyle;
+            buffer << "\033[" << (y + i + 1) << ";" << (x + 1) << "H" << Palette.Body << std::string(width, ' ') << resetStyle;
         }
     }
     int contentOffsetY = decorated ? 3 : 0;
@@ -154,13 +163,9 @@ bool Window::ContainsPoint(int px, int py) const {
     return px >= x && px < x + width &&
         py >= y && py < y + height;
 }
-WindowManager::WindowManager(std::string wallPepColor, std::string deftitle) {
-    wallpaperColor = wallPepColor;
-    windowDefaultTitle = deftitle;
-}
-WindowManager::WindowManager(std::string deftitle) {
-    windowDefaultTitle = deftitle;
-}
+WindowManager::WindowManager(std::string deftitle) : WindowTitle(deftitle) {}
+WindowManager::WindowManager(std::string deftitle, WindowManagerPalette p) : WindowTitle(deftitle), Palette(p) {}
+
 void WindowManager::Alert(std::string message) {
     auto alert = std::make_shared<AlertWindow>(message, this);
     AddWindow(alert);
@@ -283,7 +288,7 @@ void WindowManager::Run() {
         std::string clockStr = " [ " + std::string(timeBuf) + " ] ";
         int clockPos = sw - (int)clockStr.length() + 1;
         frame << "\033[" << sh << ";" << clockPos << "H" << clockStr << "\033[0m";
-        std::string consoleTitle = windowDefaultTitle;
+        std::string consoleTitle = WindowTitle;
         if (top) consoleTitle = top->title;
         std::cout << "\033]0;" << consoleTitle << "\007";
         std::cout << frame.str() << std::flush;
@@ -639,7 +644,7 @@ void WindowManager::Run() {
                 }
             }
         }
-        std::this_thread::sleep_for(std::chrono::milliseconds(33));
+        std::this_thread::sleep_for(std::chrono::milliseconds(66));
     }
     exit(1);
 }

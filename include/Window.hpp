@@ -2,6 +2,7 @@
 #include "getwh.hpp"
 #include "userinput.hpp"
 #include "Widget.hpp"
+#include "Palette.hpp"
 #include <vector>
 #include <string>
 #include <iostream>
@@ -13,18 +14,19 @@
 #ifdef max
 #undef max
 #endif
-//for custom colors, check out https://ladsm.neocities.org/colorpicker. ASCII colors look so frickin bad :;(.
 class StartMenuWindow;
+
 class Window {
 public:
+    WindowPalette Palette;
     int focusedWidget = -1;
     std::vector<std::unique_ptr<Widget>> widgets;
+    std::string title;
     int x, y, width, height;
     int startWidth, startHeight;
     int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
     bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
     bool staticWindow = false, decorated = true;
-    std::string title = "", bodyColor = "\033[38;2;0;0;0;48;2;192;192;192m";
     int dragOffsetX = 0;
     int dragOffsetY = 0;
     enum ResizeFlag : int {
@@ -49,6 +51,7 @@ public:
         return ref;
     }
     Window(std::string t, int w, int h);
+    Window(std::string t, int w, int h, WindowPalette p);
     void AddWidget(std::unique_ptr<Widget> w);
     std::string headerColor();
     virtual void Draw(std::ostream& buffer);
@@ -68,16 +71,18 @@ std::shared_ptr<T> mksharedWindow(Args&& ... args) {
     auto share = std::make_shared<T>(std::forward<Args>(args)...);
     return share;
 }
+
 class WindowManager {
     std::vector<std::shared_ptr<Window>> windows;
     int windowCount = 0;
     std::shared_ptr<Window> startMenu = nullptr;
     std::string wallpaperColor = "\033[48;5;30m";
-    std::string windowDefaultTitle = "LITW title";
+    std::string WindowTitle = "LITW title";
+    WindowManagerPalette Palette;
 public:
     WindowManager() = default;
     WindowManager(std::string deftitle);
-    WindowManager(std::string wallPepColor, std::string deftitle);
+    WindowManager(std::string deftitle, WindowManagerPalette p);
     void Alert(std::string message);
     void exit(int code);
     void SetStartMenu(std::shared_ptr<Window> sm);
