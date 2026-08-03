@@ -35,6 +35,20 @@ public:
         this->focusable = true;
         this->IsContainer = true;
     }
+    void EnsureValidFocus() {
+        if (internalFocus >= 0 &&
+            internalFocus < static_cast<int>(children.size()) &&
+            children[internalFocus]->focusable) {
+            return;
+        }
+        for (size_t i = 0; i < children.size(); i++) {
+            if (children[i]->focusable) {
+                internalFocus = static_cast<int>(i);
+                return;
+            }
+        }
+        internalFocus = -1;
+    }
     Widget* GetActiveWidget() override {
         if (internalFocus >= 0 && internalFocus < children.size()) {
             return children[internalFocus]->GetActiveWidget();
@@ -65,6 +79,7 @@ public:
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         Layout();
+        EnsureValidFocus();
         for (size_t i = 0; i < children.size(); i++) {
             auto& child = children[i];
             child->focused = (this->focused && (int)i == internalFocus);
@@ -73,6 +88,7 @@ public:
     }
     void HandleInput(InputType input) override {
         if (children.empty()) return;
+        EnsureValidFocus();
         if (input == InputType::MoveRight) {
             int start = internalFocus;
             do {

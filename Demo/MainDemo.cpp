@@ -96,11 +96,12 @@ class ContainerTest: public Window {
     std::string text = "Input Here!";
     bool offon = false;
 public:
-    ContainerTest() : Window("Container Test", 40, 10) {
+    ContainerTest() : Window("Container Test", 50, 10) {
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
         vbox.Add<Label>("Settings");
         vbox.Add<Button>("Apply", [] {});
         auto& hbox = vbox.Add<HorizontalContainer>();
+        hbox.Add<Label>("Button example");
         hbox.Add<Button>("Yes", [] {});
         hbox.Add<Button>("No", [] {});
         hbox.Add<TextInput>(15, &text);

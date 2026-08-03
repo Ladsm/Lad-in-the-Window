@@ -9,7 +9,7 @@ class VerticalContainer : public Widget {
 public:
     std::vector<std::unique_ptr<Widget>> children;
     int spacing = 0;
-    int internalFocus = -1;
+    int internalFocus = 0;
     VerticalContainer(int x, int y) {
         this->x = x;
         this->y = y;
@@ -35,6 +35,20 @@ public:
         this->spacing = z;
         this->focusable = true;
         this->IsContainer = true;
+    }
+    void EnsureValidFocus() {
+        if (internalFocus >= 0 &&
+            internalFocus < static_cast<int>(children.size()) &&
+            children[internalFocus]->focusable) {
+            return;
+        }
+        for (size_t i = 0; i < children.size(); i++) {
+            if (children[i]->focusable) {
+                internalFocus = static_cast<int>(i);
+                return;
+            }
+        }
+        internalFocus = -1;
     }
     Widget* GetActiveWidget() override {
         if (internalFocus >= 0 && internalFocus < children.size()) {
@@ -69,6 +83,9 @@ public:
     }
     void Draw(std::ostream& buffer, int px, int py) override {
         Layout();
+        if (this->focused && (internalFocus < 0 || !children[internalFocus]->focusable)) {
+            EnsureValidFocus();
+        }
         for (size_t i = 0; i < children.size(); i++) {
             auto& child = children[i];
             child->focused = (this->focused && (int)i == internalFocus);
@@ -82,42 +99,30 @@ public:
     }
     void HandleInput(InputType input) override {
         if (children.empty()) return;
+        EnsureValidFocus();
         if (input == InputType::MoveDown) {
-            if (internalFocus < 0) {
-                for (size_t i = 0; i < children.size(); i++) {
-                    if (children[i]->focusable) {
-                        internalFocus = (int)i;
-                        return;
-                    }
-                }
-                return;
-            }
-            for (int i = internalFocus + 1; i < (int)children.size(); i++) {
-                if (children[i]->focusable) {
-                    internalFocus = i;
+            int start = (internalFocus < 0) ? 0 : internalFocus;
+            int next = start;
+            do {
+                next = (next + 1) % children.size();
+                if (children[next]->focusable) {
+                    internalFocus = next;
                     return;
                 }
-            }
-            internalFocus = -1;
+            } while (next != start);
             return;
         }
+
         if (input == InputType::MoveUp) {
-            if (internalFocus < 0) {
-                for (int i = (int)children.size() - 1; i >= 0; i--) {
-                    if (children[i]->focusable) {
-                        internalFocus = i;
-                        return;
-                    }
-                }
-                return;
-            }
-            for (int i = internalFocus - 1; i >= 0; i--) {
-                if (children[i]->focusable) {
-                    internalFocus = i;
+            int start = (internalFocus < 0) ? 0 : internalFocus;
+            int next = start;
+            do {
+                next = (next - 1 + children.size()) % children.size();
+                if (children[next]->focusable) {
+                    internalFocus = next;
                     return;
                 }
-            }
-            internalFocus = -1;
+            } while (next != start);
             return;
         }
         if (internalFocus >= 0 && internalFocus < (int)children.size()) {
