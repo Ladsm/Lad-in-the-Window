@@ -8,7 +8,7 @@ class HorizontalContainer : public Widget {
 public:
     std::vector<std::unique_ptr<Widget>> children;
     int spacing = 2;
-    int internalFocus = -1;
+    int internalFocus = 0;
     HorizontalContainer(int x, int y) {
         this->x = x;
         this->y = y;
