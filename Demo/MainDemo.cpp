@@ -55,6 +55,7 @@ public:
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
+
 class Users : public Window {
 public:
     Users() : Window("List of Users", 40, 12) {
@@ -133,6 +134,21 @@ public:
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
+WindowPalette TestPalette = WindowPalette(
+    "\033[1;2;0;0;0;48;2;255;128;227m",
+    "\033[1;2;0;0;0;48;2;55;255;0m",
+    "\033[38;2;255;0;0;48;2;255;255;255m",
+    "\033[38;2;255;255;255;48;2;255;0;0m",
+    "\033[38;2;255;0;208;48;2;163;163;163m",
+    "\033[38;2;128;128;128;48;2;102;102;102m"
+);
+class PaletteTest : public Window {
+public:
+    PaletteTest() : Window("Palette Test", 30, 7, TestPalette) {
+        auto& vbox = Add<VerticalContainer>(2, 2);
+        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+    }
+};
 
 int main() {
     auto startalert = mksharedWindow<StartAlert>();
@@ -146,6 +162,7 @@ int main() {
     start->AddItem("Terminal", &ShellWindow::Create);
     start->AddItem<ContainerTest>("Containers");
     start->AddItem<EyesWindow>("Eyes");
+    start->AddItem<PaletteTest>("Palette Test");
     wm.SetStartMenu(start);
     wm.AddWindow(start);
     wm.AddWindow(startalert);

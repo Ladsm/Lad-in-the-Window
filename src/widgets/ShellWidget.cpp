@@ -76,11 +76,11 @@ void ShellWidget::Draw(std::ostream& bufferStream, int parentX, int parentY) {
         if (line.length() > (size_t)currentWidth - 2)
             line = line.substr(0, currentWidth - 2);
         bufferStream << "\033[" << parentY + y + i << ";" << parentX + x << "H"
-            << "\033[38;2;0;0;0;48;2;192;192;192m" << line << "\033[0m";
+            << parent->Palette.Body << line << "\033[0m";
     }
     std::string prompt = "LITW " + std::filesystem::current_path().string() + "> " + currentInput;
     bufferStream << "\033[" << parentY + y + currentHeight - 1 << ";" << parentX + x << "H";
-    bufferStream << "\033[38;2;0;0;0;48;2;192;192;192m\033[?25l";
+    bufferStream << parent->Palette.Body << "\033[? 25l";
     if (focused && !isWriting) {
         bufferStream << " " << prompt << " \033[0m";
     }
