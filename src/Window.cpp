@@ -242,7 +242,7 @@ void WindowManager::Run() {
         }
         std::stringstream frame;
         frame << "\033[H";
-        frame << "\033[48;5;30m";
+        frame << wallpaperColor;
         for (int i = 1; i <= sh; i++) {
             frame << "\033[" << i << ";1H\033[K";
         }
