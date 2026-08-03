@@ -1,6 +1,7 @@
 #pragma once
 #define LITW
-#define LITWVERSION "1.0.0"
+#define LITWVERSION 1.1.0
+#define LITWVERSION_STRING "1.1.0"
 #include <Window.hpp>
 #include <Widget.hpp>
 #include <windows/StartMenu.hpp>
@@ -13,8 +14,9 @@
 #include <widgets/containers/VerticalContainer.hpp>
 #include <widgets/containers/HorizontalContainer.hpp>
 #include <widgets/Checkbox.hpp>
+#include <widgets/Toggle.hpp>
 #include <widgets/Separator.hpp>
 #include <widgets/Table.hpp>
 #include <widgets/ShellWidget.hpp>
 #include <widgets/EyesWidget.hpp>
-#include <widgets/Toggle.hpp>
+#include <widgets/NumberInput.hpp>

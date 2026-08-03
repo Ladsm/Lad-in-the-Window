@@ -30,7 +30,7 @@ public:
 class README : public Window {
     std::vector<std::string> text = {
         "Lad in the Window, Ladsm 2026",
-        "version : " LITWVERSION,
+        "version : " LITWVERSION_STRING,
         "-----------------------------",
         "Hot keys:",
         "Space: Scroll Down on scrollables.",
@@ -124,15 +124,26 @@ public:
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
+class NumberInputWindow : public Window {
+    int number = 0;
+public:
+    NumberInputWindow() : Window("Number Input Demo", 31, 7) {
+        auto& vbox = Add<VerticalContainer>(2, 2);
+        vbox.Add<NumberInput>(3, &number);
+        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+    }
+};
+
 int main() {
     auto startalert = mksharedWindow<StartAlert>();
     auto start = startmenu<StartMenuWindow>(&wm);
     start->AddItem<README>("README");
     start->AddItem<MenuWindow>("Main Menu", "main menu");
+    start->AddItem<NumberInputWindow>("Number Input Demo");
     start->AddItem<Textinputer>("Text Input Demo");
+    start->AddItem<TextInputLargeDemo>("Text input demo - Large");
     start->AddItem<Users>("Table of Users");
     start->AddItem("Terminal", &ShellWindow::Create);
-    start->AddItem<TextInputLargeDemo>("Text input demo - Large");
     start->AddItem<ContainerTest>("Containers");
     start->AddItem<EyesWindow>("Eyes");
     wm.SetStartMenu(start);
