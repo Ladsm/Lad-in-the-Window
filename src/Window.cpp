@@ -264,7 +264,7 @@ void WindowManager::Run() {
         }
         std::stringstream frame;
         frame << "\033[H";
-        frame << wallpaperColor;
+        frame << Palette.Wallpaper;
         for (int i = 1; i <= sh; i++) {
             frame << "\033[" << i << ";1H\033[K";
         }
@@ -279,7 +279,7 @@ void WindowManager::Run() {
             ""
 #endif
             + " :";
-        frame << "\033[" << sh << ";1H\033[97;104m" << std::string(sw, ' ');
+        frame << "\033[" << sh << ";1H" << Palette.TaskBar << std::string(sw, ' ');
         frame << "\033[" << sh << ";1H Start(C) " + LITWOS;
         for (int i = 0; i < (int)windows.size(); i++) {
             if (windows[i]->visible) {
@@ -288,7 +288,7 @@ void WindowManager::Run() {
                     windows[i]->title +
                     (windows[i]->isMinimized ? " (min)" : "");
                 if (windows[i]->focused)
-                    frame << "\033[97;44m [ " << label << " ] \033[97;104m";
+                    frame << Palette.TaskBarFocusedWindow <<" [ " << label << " ] " << Palette.TaskBar;
                 else
                     frame << "  " << label << "  ";
             }
@@ -316,7 +316,7 @@ void WindowManager::Run() {
             if (activeLeaf && activeLeaf->WantsRawInput()) {
                 activeLeaf->HandleRawInput();
                 std::this_thread::sleep_for(std::chrono::milliseconds(16));
-                continue;
+                continue; 
             }
         }
         InputType input = GetInput();

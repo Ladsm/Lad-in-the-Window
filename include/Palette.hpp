@@ -16,10 +16,10 @@ struct WindowPalette {
 
 struct WindowManagerPalette {
     std::string Wallpaper = "\033[48;5;30m";
-    std::string BottomBar = "\033[97;104m";
-    std::string BottomBarFocusedWindow = "\033[97;44m";
+    std::string TaskBar = "\033[97;104m";
+    std::string TaskBarFocusedWindow = "\033[97;44m";
     WindowManagerPalette() = default;
     WindowManagerPalette(std::string x, std::string y, std::string z) :
-        Wallpaper(x), BottomBar(y), BottomBarFocusedWindow(z) {}
+        Wallpaper(x), TaskBar(y), TaskBarFocusedWindow(z) {}
 };
 

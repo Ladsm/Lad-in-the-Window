@@ -76,7 +76,6 @@ class WindowManager {
     std::vector<std::shared_ptr<Window>> windows;
     int windowCount = 0;
     std::shared_ptr<Window> startMenu = nullptr;
-    std::string wallpaperColor = "\033[48;5;30m";
     std::string WindowTitle = "LITW title";
     WindowManagerPalette Palette;
 public:
