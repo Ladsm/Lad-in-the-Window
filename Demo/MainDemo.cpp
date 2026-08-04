@@ -88,7 +88,7 @@ class TextInputLargeDemo : public Window {
 public:
     TextInputLargeDemo() : Window("Text Input - Large", 50, 20) {
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
-        vbox.Add<LargeTextInput>(10, 45, &text, this);
+        vbox.Add<LargeTextInput>(10, 45, &text);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };

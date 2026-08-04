@@ -25,9 +25,8 @@ public:
     int height;
     int width;
     Mode mode = COMMAND;
-    Window* win;
-    LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target, Window* pWin)
-        : lines(target), height(h), width(w), win(pWin) {
+    LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target)
+        : lines(target), height(h), width(w) {
         this->x = x;
         this->y = y;
         this->focusable = true;
@@ -35,8 +34,8 @@ public:
             lines->push_back("");
         }
     }
-    LargeTextInput(int h, int w, std::vector<std::string>* target, Window* pWin)
-        : lines(target), height(h), width(w), win(pWin) {
+    LargeTextInput(int h, int w, std::vector<std::string>* target)
+        : lines(target), height(h), width(w) {
         this->x = 0;
         this->y = 0;
         this->focusable = true;
@@ -151,14 +150,14 @@ public:
         if (mode == COMMAND) {
             if (key == '\r' || key == '\n' || key == 13) {
                 this->focused = false;
-                if (win) {
-                    if (win->focusedWidget >= 0 && win->focusedWidget < (int)win->widgets.size()) {
-                        Widget* root = win->widgets[win->focusedWidget].get();
+                if (parent) {
+                    if (parent->focusedWidget >= 0 && parent->focusedWidget < (int)parent->widgets.size()) {
+                        Widget* root = parent->widgets[parent->focusedWidget].get();
                         auto vc = dynamic_cast<VerticalContainer*>(root);
                         if (vc) {
                             vc->internalFocus = +1;
                         } else {
-                            win->focusedWidget = std::min((int)win->widgets.size() - 1, win->focusedWidget + 1);
+                            parent->focusedWidget = std::min((int)parent->widgets.size() - 1, parent->focusedWidget + 1);
                         }
                     }
                 }
@@ -274,8 +273,8 @@ public:
         if (!focused) return;
         if (mode == COMMAND && input == InputType::Enter) {
             focused = false;
-            if (win) {
-                win->focusedWidget = std::min((int)win->widgets.size() - 1, win->focusedWidget + 1);
+            if (parent) {
+                parent->focusedWidget = std::min((int)parent->widgets.size() - 1, parent->focusedWidget + 1);
             }
         }
     }
