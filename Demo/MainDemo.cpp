@@ -78,6 +78,15 @@ public:
         return win;
     }
 };
+
+WindowPalette winpal = WindowPalette(
+    "\033[38;2;255;255;255;48;2;37;0;100m",
+    "\033[38;2;255;255;255;48;2;102;49;0m",
+    "\033[38;2;255;255;255;48;2;0;0;0m",
+    "\033[38;2;255;255;255;48;2;84;84;84m",
+    "\033[38;2;255;255;255;48;2;18;18;18m",
+    "\033[48;2;45;45;45m"
+);
 class TextInputLargeDemo : public Window {
     std::vector<std::string> text = {
         "#include <iostream>",
@@ -86,7 +95,7 @@ class TextInputLargeDemo : public Window {
         "}"
     };
 public:
-    TextInputLargeDemo() : Window("Text Input - Large", 50, 20) {
+    TextInputLargeDemo() : Window("Text Input - Large", 50, 20, winpal) {
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
         vbox.Add<LargeTextInput>(10, 45, &text, true);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
