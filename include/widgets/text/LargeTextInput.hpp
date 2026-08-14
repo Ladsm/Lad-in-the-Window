@@ -24,9 +24,10 @@ public:
     int scrollX = 0;
     int height;
     int width;
+    bool highligh = false;
     Mode mode = COMMAND;
-    LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target)
-        : lines(target), height(h), width(w) {
+    LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target, bool hi)
+        : lines(target), height(h), width(w), highligh(hi) {
         this->x = x;
         this->y = y;
         this->focusable = true;
@@ -34,8 +35,8 @@ public:
             lines->push_back("");
         }
     }
-    LargeTextInput(int h, int w, std::vector<std::string>* target)
-        : lines(target), height(h), width(w) {
+    LargeTextInput(int h, int w, std::vector<std::string>* target, bool hi)
+        : lines(target), height(h), width(w), highligh(hi) {
         this->x = 0;
         this->y = 0;
         this->focusable = true;
@@ -245,7 +246,9 @@ public:
                 else {
                     visible = "";
                 }
-                HighlightLine(buffer, visible, textWidth, bg);
+                if (highligh) {
+                    HighlightLine(buffer, visible, textWidth, bg);
+                }
                 if (focused && lineIndex == cursorY) {
                     if (cursorX >= scrollX && cursorX < scrollX + textWidth) {
                         char ch = (cursorX < (int)fullLine.size())

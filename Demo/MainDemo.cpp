@@ -88,7 +88,7 @@ class TextInputLargeDemo : public Window {
 public:
     TextInputLargeDemo() : Window("Text Input - Large", 50, 20) {
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
-        vbox.Add<LargeTextInput>(10, 45, &text);
+        vbox.Add<LargeTextInput>(10, 45, &text, true);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
@@ -120,7 +120,7 @@ public:
 };
 class EyesWindow : public Window {
 public:
-    EyesWindow() : Window("Eyes", 30, 10) {
+    EyesWindow() : Window("Eyes", 30, 11) {
         auto& vbox = Add<VerticalContainer>(8, 2);
         vbox.Add<EyesWidget>(15, 5);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
