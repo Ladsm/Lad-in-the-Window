@@ -56,6 +56,7 @@ public:
     std::string headerColor();
     virtual void Draw(std::ostream& buffer);
     void HandleInput(InputType input);
+    bool HandleMouseClick(int mx, int my);
     bool ContainsPoint(int px, int py) const;
     void Resize(int newW, int newH);
     void ToggleMaximize(int screenWidth, int screenHeight);

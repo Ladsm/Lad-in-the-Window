@@ -176,6 +176,25 @@ void Window::HandleInput(InputType input) {
     }
 }
 
+bool Window::HandleMouseClick(int mx, int my) {
+    int contentOffsetX = decorated ? 1 : 0;
+    int contentOffsetY = decorated ? 3 : 0;
+    int startPx = x + contentOffsetX;
+    int startPy = y + contentOffsetY;
+    for (size_t i = 0; i < widgets.size(); ++i) {
+        auto& w = widgets[i];
+        if (w->HandleMouseClick(mx, my, startPx, startPy)) {
+            if (focusedWidget >= 0 && focusedWidget < static_cast<int>(widgets.size())) {
+                widgets[focusedWidget]->focused = false;
+            }
+            focusedWidget = static_cast<int>(i);
+            widgets[focusedWidget]->focused = true;
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Window::ContainsPoint(int px, int py) const {
     return px >= x && px < x + width &&
         py >= y && py < y + height;
@@ -459,6 +478,7 @@ void WindowManager::Run() {
                     w->dragOffsetY = my - w->y;
                     continue;
                 }
+                w->HandleMouseClick(mx, my);
                 continue;
             }
         }

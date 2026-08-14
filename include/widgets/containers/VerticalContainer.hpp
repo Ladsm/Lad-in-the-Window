@@ -10,6 +10,7 @@ public:
     std::vector<std::unique_ptr<Widget>> children;
     int spacing = 0;
     int internalFocus = 0;
+
     VerticalContainer(int x, int y) {
         this->x = x;
         this->y = y;
@@ -36,6 +37,7 @@ public:
         this->focusable = true;
         this->IsContainer = true;
     }
+
     void EnsureValidFocus() {
         if (internalFocus >= 0 &&
             internalFocus < static_cast<int>(children.size()) &&
@@ -50,16 +52,19 @@ public:
         }
         internalFocus = -1;
     }
+
     Widget* GetActiveWidget() override {
-        if (internalFocus >= 0 && internalFocus < children.size()) {
+        if (internalFocus >= 0 && internalFocus < (int)children.size()) {
             return children[internalFocus]->GetActiveWidget();
         }
         return this;
     }
+
     void AddWidget(std::unique_ptr<Widget> w) {
         w->parent = this->parent ? this->parent : nullptr;
         children.push_back(std::move(w));
     }
+
     template<typename T, typename... Args>
     T& Add(Args&&... args) {
         auto widget = std::make_unique<T>(std::forward<Args>(args)...);
@@ -67,6 +72,7 @@ public:
         AddWidget(std::move(widget));
         return ref;
     }
+
     void Layout() {
         int offsetY = 0;
         for (size_t i = 0; i < children.size(); i++) {
@@ -81,6 +87,25 @@ public:
             }
         }
     }
+
+    bool HandleMouseClick(int mx, int my, int px, int py) override {
+        Layout();
+        int containerPx = px + x;
+        int containerPy = py + y;
+        for (size_t i = 0; i < children.size(); ++i) {
+            auto& child = children[i];
+            int childPx = child->isSeparator ? px : containerPx;
+            int childPy = containerPy;
+            if (child->HandleMouseClick(mx, my, childPx, childPy)) {
+                if (child->focusable || child->IsContainer) {
+                    internalFocus = static_cast<int>(i);
+                }
+                return true;
+            }
+        }
+        return false;
+    }
+
     void Draw(std::ostream& buffer, int px, int py) override {
         Layout();
         if (this->focused && (internalFocus < 0 || !children[internalFocus]->focusable)) {
@@ -89,7 +114,7 @@ public:
         for (size_t i = 0; i < children.size(); i++) {
             auto& child = children[i];
             child->focused = (this->focused && (int)i == internalFocus);
-            if(child->isSeparator){
+            if (child->isSeparator) {
                 child->Draw(buffer, px, py + y);
             }
             else {
@@ -97,6 +122,7 @@ public:
             }
         }
     }
+
     void HandleInput(InputType input) override {
         if (children.empty()) return;
         EnsureValidFocus();
@@ -129,6 +155,7 @@ public:
             children[internalFocus]->HandleInput(input);
         }
     }
+
     int GetWidth() const override {
         int maxW = 0;
         for (const auto& c : children) {
@@ -136,6 +163,7 @@ public:
         }
         return maxW;
     }
+
     int GetHeight() const override {
         int total = 0;
         for (const auto& c : children) {
