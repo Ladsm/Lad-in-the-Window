@@ -25,7 +25,9 @@ public:
     int height;
     int width;
     bool highligh = false;
+    bool isWriting = false;
     Mode mode = COMMAND;
+
     LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target, bool hi)
         : lines(target), height(h), width(w), highligh(hi) {
         this->x = x;
@@ -35,6 +37,7 @@ public:
             lines->push_back("");
         }
     }
+
     LargeTextInput(int h, int w, std::vector<std::string>* target, bool hi)
         : lines(target), height(h), width(w), highligh(hi) {
         this->x = 0;
@@ -44,12 +47,15 @@ public:
             lines->push_back("");
         }
     }
+
     int GetWidth() const override {
         return width;
     }
+
     int GetHeight() const override {
         return height;
     }
+
     void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg) {
         std::string kwColor = "\033[38;2;0;0;255m";
         std::string funcColor = "\033[38;2;130;130;0m";
@@ -142,26 +148,18 @@ public:
             }
         }
     }
-    bool WantsRawInput() override { return focused; }
+
+    bool WantsRawInput() override { return isWriting; }
+
     void HandleRawInput() override {
         if (!lines || lines->empty()) return;
         cursorY = std::max(0, std::min(cursorY, (int)lines->size() - 1));
         cursorX = std::max(0, std::min(cursorX, (int)(*lines)[cursorY].size()));
         int key = readKey();
+
         if (mode == COMMAND) {
             if (key == '\r' || key == '\n' || key == 13) {
-                this->focused = false;
-                if (parent) {
-                    if (parent->focusedWidget >= 0 && parent->focusedWidget < (int)parent->widgets.size()) {
-                        Widget* root = parent->widgets[parent->focusedWidget].get();
-                        auto vc = dynamic_cast<VerticalContainer*>(root);
-                        if (vc) {
-                            vc->internalFocus = +1;
-                        } else {
-                            parent->focusedWidget = std::min((int)parent->widgets.size() - 1, parent->focusedWidget + 1);
-                        }
-                    }
-                }
+                isWriting = false;
                 return;
             }
             switch (key) {
@@ -208,6 +206,13 @@ public:
         if (cursorY < scroll) scroll = cursorY;
         if (cursorY >= scroll + height) scroll = cursorY - height + 1;
     }
+
+    void HandleInput(InputType input) override {
+        if (focused && input == InputType::Enter) {
+            isWriting = true;
+        }
+    }
+
     void Draw(std::ostream& buffer, int px, int py) override {
         if (!lines) return;
         int viewHeight = height - 1;
@@ -249,7 +254,7 @@ public:
                 if (highligh) {
                     HighlightLine(buffer, visible, textWidth, bg);
                 }
-                if (focused && lineIndex == cursorY) {
+                if (isWriting && lineIndex == cursorY) {
                     if (cursorX >= scrollX && cursorX < scrollX + textWidth) {
                         char ch = (cursorX < (int)fullLine.size())
                             ? fullLine[cursorX]
@@ -267,18 +272,15 @@ public:
             }
         }
         buffer << "\033[" << (py + y + viewHeight) << ";" << (px + x) << "H";
-        buffer << (mode == INSERT ? "-- INSERT --" : "-- COMMAND --");
-        int statusLen = 1 + (mode == INSERT ? 12 : 13);
+        if (isWriting) {
+            buffer << (mode == INSERT ? "-- INSERT --" : "-- COMMAND --");
+        }
+        else {
+            buffer << (focused ? "> [Press ENTER to edit]" : "  [Inactive]");
+        }
+
+        int statusLen = 1 + (isWriting ? (mode == INSERT ? 12 : 13) : 23);
         buffer << std::string(std::max(0, width - statusLen), ' ');
         buffer << "\033[0m";
-    }
-    void HandleInput(InputType input) override {
-        if (!focused) return;
-        if (mode == COMMAND && input == InputType::Enter) {
-            focused = false;
-            if (parent) {
-                parent->focusedWidget = std::min((int)parent->widgets.size() - 1, parent->focusedWidget + 1);
-            }
-        }
     }
 };
