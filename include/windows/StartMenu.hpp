@@ -18,6 +18,10 @@ public:
         this->staticWindow = true;
         this->visible = false;
     }
+    explicit StartMenuWindow(WindowManager* manager, WindowPalette& winpal) : Window("Start", 30, 10, winpal), wm(manager) {
+        this->staticWindow = true;
+        this->visible = false;
+    }
     template<typename T, typename... Args>
     void AddItem(const std::string& name, Args&&... args) {
         AddItem(name,
@@ -58,8 +62,7 @@ public:
     }
 };
 
-template<typename T>
-std::shared_ptr<T> startmenu(WindowManager* wm) {
-    auto start = std::make_shared<T>(wm);
-    return start;
+template<typename T, typename... Args>
+std::shared_ptr<T> startmenu(Args&&... args) {
+    return std::make_shared<T>(std::forward<Args>(args)...);
 }
