@@ -5,6 +5,7 @@
 #include <vector>
 #include <string>
 #include <algorithm>
+#include <unordered_set>
 #include <widgets/containers/VerticalContainer.hpp>
 
 #ifdef max
@@ -28,6 +29,14 @@ public:
     bool isWriting = false;
     Mode mode = COMMAND;
 
+    // Persisted across highlights
+    std::unordered_set<std::string> knownVariables;
+    std::unordered_set<std::string> knownTypes = {
+        "int", "void", "bool", "char", "double", "float", "long", "short",
+        "auto", "uint8_t", "uint16_t", "uint32_t", "uint64_t", "int32_t",
+        "int64_t", "string", "vector", "size_t"
+    };
+
     LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target, bool hi)
         : lines(target), height(h), width(w), highligh(hi) {
         this->x = x;
@@ -48,13 +57,8 @@ public:
         }
     }
 
-    int GetWidth() const override {
-        return width;
-    }
-
-    int GetHeight() const override {
-        return height;
-    }
+    int GetWidth() const override { return width; }
+    int GetHeight() const override { return height; }
 
     void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg) {
         std::string kwColor = "\033[38;2;0;0;255m";
@@ -63,6 +67,9 @@ public:
         std::string numColor = "\033[38;2;0;100;0m";
         std::string preColor = "\033[38;2;120;0;120m";
         std::string opColor = "\033[38;2;0;130;130m";
+        std::string varColor = "\033[38;2;220;120;40m";
+        std::string typeColor = "\033[38;2;40;180;180m";
+
         std::vector<std::string> keywords = {
             "int", "void", "bool", "char", "double", "float", "long", "short", "signed", "unsigned",
             "const", "static", "volatile", "mutable", "auto", "nullptr", "constexpr", "inline",
@@ -72,14 +79,19 @@ public:
             "break", "continue", "goto", "try", "catch", "throw", "noexcept",
             "and", "or", "not", "new", "delete", "sizeof", "decltype", "typeid",
             "static_cast", "dynamic_cast", "const_cast", "reinterpret_cast",
-            "using", "namespace", "import", "export", "module"
+            "using", "namespace", "import", "export", "module", "std", "string", "vector"
         };
+
+        std::string lastToken = "";
+        bool expectingTypeName = false;
+
         for (int col = 0; col < width; ++col) {
             if (col >= (int)line.size()) {
                 buffer << " ";
                 continue;
             }
             bool highlighted = false;
+
             if (line[col] == '"' || line[col] == '\'') {
                 char quote = line[col];
                 int end = col + 1;
@@ -91,49 +103,94 @@ public:
                 buffer << strColor << line.substr(col, end - col) << bg;
                 col = end - 1;
                 highlighted = true;
+                lastToken = "";
+                expectingTypeName = false;
             }
+
             else if (line[col] == '#') {
                 int end = col;
                 while (end < (int)line.size() && !isspace((unsigned char)line[end])) end++;
                 buffer << preColor << line.substr(col, end - col) << bg;
                 col = end - 1;
                 highlighted = true;
+                lastToken = "";
+                expectingTypeName = false;
             }
+
             else if (col + 1 < (int)line.size()) {
                 std::string duo = line.substr(col, 2);
                 if (duo == "<<" || duo == ">>" || duo == "::" || duo == "->" || duo == "==" || duo == "!=") {
                     buffer << opColor << duo << bg;
                     col += 1;
                     highlighted = true;
+                    lastToken = "";
+                    expectingTypeName = false;
                 }
             }
-            if (!highlighted && std::string("+-*/%=!<>|&").find(line[col]) != std::string::npos) {
+
+            if (!highlighted && std::string("+-*/%=!<>|&;{},()").find(line[col]) != std::string::npos) {
                 buffer << opColor << line[col] << bg;
                 highlighted = true;
+                if (line[col] == ';' || line[col] == '{' || line[col] == '}') {
+                    lastToken = "";
+                    expectingTypeName = false;
+                }
             }
-            if (!highlighted && isalpha((unsigned char)line[col])) {
+
+            if (!highlighted && (isalpha((unsigned char)line[col]) || line[col] == '_')) {
+                int start = col;
+                int end = col;
+                while (end < (int)line.size() && (isalnum((unsigned char)line[end]) || line[end] == '_')) {
+                    end++;
+                }
+                std::string identifier = line.substr(start, end - start);
+
+                bool isKw = false;
                 for (const auto& kw : keywords) {
-                    size_t kwLen = kw.size();
-                    if (col + kwLen <= line.size() && line.compare(col, kwLen, kw) == 0) {
-                        bool isStart = (col == 0 || !isalnum((unsigned char)line[col - 1]) && line[col - 1] != '_');
-                        bool isEnd = (col + kwLen == line.size() || !isalnum((unsigned char)line[col + kwLen]) && line[col + kwLen] != '_');
-                        if (isStart && isEnd) {
-                            buffer << kwColor << kw << bg;
-                            col += (int)kwLen - 1;
-                            highlighted = true;
-                            break;
-                        }
+                    if (identifier == kw) {
+                        isKw = true;
+                        break;
                     }
                 }
-                if (!highlighted) {
-                    int end = col;
-                    while (end < (int)line.size() && (isalnum((unsigned char)line[end]) || line[end] == '_')) end++;
-                    if (end < (int)line.size() && line[end] == '(') {
-                        buffer << funcColor << line.substr(col, end - col) << bg;
-                        col = end - 1;
-                        highlighted = true;
+                if (expectingTypeName) {
+                    knownTypes.insert(identifier);
+                    buffer << typeColor << identifier << bg;
+                    lastToken = identifier;
+                    expectingTypeName = false;
+                }
+                else if (identifier == "struct" || identifier == "class" || identifier == "enum" || identifier == "typename") {
+                    buffer << kwColor << identifier << bg;
+                    expectingTypeName = true;
+                    lastToken = identifier;
+                }
+                else if (isKw) {
+                    buffer << kwColor << identifier << bg;
+                    lastToken = identifier;
+                }
+                else if (end < (int)line.size() && line[end] == '(') {
+                    buffer << funcColor << identifier << bg;
+                    lastToken = "";
+                }
+                else if (knownTypes.find(identifier) != knownTypes.end()) {
+                    buffer << typeColor << identifier << bg;
+                    lastToken = identifier;
+                }
+                else {
+                    if (knownTypes.find(lastToken) != knownTypes.end()) {
+                        knownVariables.insert(identifier);
+                        lastToken = "";
+                    }
+
+                    if (knownVariables.find(identifier) != knownVariables.end()) {
+                        buffer << varColor << identifier << bg;
+                    }
+                    else {
+                        buffer << identifier;
                     }
                 }
+
+                col = end - 1;
+                highlighted = true;
             }
             else if (!highlighted && isdigit((unsigned char)line[col]) && (col == 0 || !isalnum((unsigned char)line[col - 1]))) {
                 int end = col;
@@ -141,6 +198,8 @@ public:
                 buffer << numColor << line.substr(col, end - col) << bg;
                 col = end - 1;
                 highlighted = true;
+                lastToken = "";
+                expectingTypeName = false;
             }
 
             if (!highlighted) {
