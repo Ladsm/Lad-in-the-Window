@@ -18,7 +18,7 @@ public:
         this->staticWindow = true;
         this->visible = false;
     }
-    explicit StartMenuWindow(WindowManager* manager, WindowPalette& winpal) : Window("Start", 30, 10, winpal), wm(manager) {
+    explicit StartMenuWindow(WindowManager* manager, const WindowPalette& winpal) : Window("Start", 30, 10, winpal), wm(manager) {
         this->staticWindow = true;
         this->visible = false;
     }
