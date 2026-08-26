@@ -29,7 +29,6 @@ public:
     bool isWriting = false;
     Mode mode = COMMAND;
 
-    // Persisted across highlights
     std::unordered_set<std::string> knownVariables;
     std::unordered_set<std::string> knownTypes = {
         "int", "void", "bool", "char", "double", "float", "long", "short",
