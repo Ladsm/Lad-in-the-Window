@@ -201,9 +201,12 @@ bool Window::ContainsPoint(int px, int py) const {
 }
 WindowManager::WindowManager(std::string deftitle) : WindowTitle(deftitle) {}
 WindowManager::WindowManager(std::string deftitle, WindowManagerPalette p) : WindowTitle(deftitle), Palette(p) {}
+WindowManager::WindowManager(std::string deftitle, WindowManagerPalette p, WindowPalette ap) : 
+    WindowTitle(deftitle), Palette(p), AlertPalette(ap) {}
 
 void WindowManager::Alert(std::string message) {
     auto alert = std::make_shared<AlertWindow>(message, this);
+    alert->Palette = AlertPalette;
     AddWindow(alert);
     alert->x = (getConsoleWidth() - alert->width) / 2;
     alert->y = (getConsoleHeight() - alert->height) / 2;

@@ -144,6 +144,7 @@ public:
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
+
 WindowPalette TestPalette = WindowPalette(
     "\033[1;2;0;0;0;48;2;255;128;227m", //Resize
     "\033[1;2;0;0;0;48;2;55;255;0m", //Move

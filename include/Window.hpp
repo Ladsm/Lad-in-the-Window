@@ -79,10 +79,12 @@ class WindowManager {
     std::shared_ptr<Window> startMenu = nullptr;
     std::string WindowTitle = "LITW title";
     WindowManagerPalette Palette;
+    WindowPalette AlertPalette;
 public:
     WindowManager() = default;
     WindowManager(std::string deftitle);
     WindowManager(std::string deftitle, WindowManagerPalette p);
+    WindowManager(std::string deftitle, WindowManagerPalette p, WindowPalette ap);
     void Alert(std::string message);
     void exit(int code);
     void SetStartMenu(std::shared_ptr<Window> sm);
