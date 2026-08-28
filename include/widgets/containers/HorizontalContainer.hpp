@@ -53,7 +53,7 @@ public:
     }
 
     Widget* GetActiveWidget() override {
-        if (internalFocus >= 0 && internalFocus < (int)children.size()) {
+        if (internalFocus >= 0 && internalFocus < static_cast<int>(children.size())) {
             return children[internalFocus]->GetActiveWidget();
         }
         return this;
@@ -88,10 +88,12 @@ public:
         Layout();
         int containerPx = px + x;
         int containerPy = py + y;
+
         for (size_t i = 0; i < children.size(); ++i) {
-            auto& child = children[i];
-            if (child->HandleMouseClick(mx, my, containerPx, containerPy)) {
-                if (child->focusable || child->IsContainer) {
+            if (i >= children.size()) break;
+
+            if (children[i]->HandleMouseClick(mx, my, containerPx, containerPy)) {
+                if (i < children.size() && (children[i]->focusable || children[i]->IsContainer)) {
                     internalFocus = static_cast<int>(i);
                 }
                 return true;
@@ -104,9 +106,8 @@ public:
         Layout();
         EnsureValidFocus();
         for (size_t i = 0; i < children.size(); i++) {
-            auto& child = children[i];
-            child->focused = (this->focused && (int)i == internalFocus);
-            child->Draw(buffer, px + x, py + y);
+            children[i]->focused = (this->focused && (int)i == internalFocus);
+            children[i]->Draw(buffer, px + x, py + y);
         }
     }
 
@@ -114,22 +115,30 @@ public:
         if (children.empty()) return;
         EnsureValidFocus();
         if (input == InputType::MoveRight) {
-            int start = internalFocus;
+            int start = internalFocus < 0 ? 0 : internalFocus;
+            int next = start;
             do {
-                internalFocus = (internalFocus + 1) % children.size();
-            } while (!children[internalFocus]->focusable && internalFocus != start);
+                next = (next + 1) % children.size();
+                if (children[next]->focusable) {
+                    internalFocus = next;
+                    return;
+                }
+            } while (next != start);
             return;
         }
         if (input == InputType::MoveLeft) {
-            int start = internalFocus;
+            int start = internalFocus < 0 ? 0 : internalFocus;
+            int next = start;
             do {
-                internalFocus--;
-                if (internalFocus < 0)
-                    internalFocus = (int)children.size() - 1;
-            } while (!children[internalFocus]->focusable && internalFocus != start);
+                next = (next - 1 + static_cast<int>(children.size())) % children.size();
+                if (children[next]->focusable) {
+                    internalFocus = next;
+                    return;
+                }
+            } while (next != start);
             return;
         }
-        if (internalFocus >= 0 && internalFocus < (int)children.size()) {
+        if (internalFocus >= 0 && internalFocus < static_cast<int>(children.size())) {
             children[internalFocus]->HandleInput(input);
         }
     }

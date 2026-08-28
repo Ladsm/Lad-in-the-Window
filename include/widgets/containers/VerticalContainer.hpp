@@ -54,7 +54,7 @@ public:
     }
 
     Widget* GetActiveWidget() override {
-        if (internalFocus >= 0 && internalFocus < (int)children.size()) {
+        if (internalFocus >= 0 && internalFocus < static_cast<int>(children.size())) {
             return children[internalFocus]->GetActiveWidget();
         }
         return this;
@@ -92,12 +92,15 @@ public:
         Layout();
         int containerPx = px + x;
         int containerPy = py + y;
+
         for (size_t i = 0; i < children.size(); ++i) {
-            auto& child = children[i];
-            int childPx = child->isSeparator ? px : containerPx;
+            if (i >= children.size()) break;
+
+            int childPx = children[i]->isSeparator ? px : containerPx;
             int childPy = containerPy;
-            if (child->HandleMouseClick(mx, my, childPx, childPy)) {
-                if (child->focusable || child->IsContainer) {
+
+            if (children[i]->HandleMouseClick(mx, my, childPx, childPy)) {
+                if (i < children.size() && (children[i]->focusable || children[i]->IsContainer)) {
                     internalFocus = static_cast<int>(i);
                 }
                 return true;
@@ -108,17 +111,15 @@ public:
 
     void Draw(std::ostream& buffer, int px, int py) override {
         Layout();
-        if (this->focused && (internalFocus < 0 || !children[internalFocus]->focusable)) {
-            EnsureValidFocus();
-        }
+        EnsureValidFocus();
+
         for (size_t i = 0; i < children.size(); i++) {
-            auto& child = children[i];
-            child->focused = (this->focused && (int)i == internalFocus);
-            if (child->isSeparator) {
-                child->Draw(buffer, px, py + y);
+            children[i]->focused = (this->focused && (int)i == internalFocus);
+            if (children[i]->isSeparator) {
+                children[i]->Draw(buffer, px, py + y);
             }
             else {
-                child->Draw(buffer, px + x, py + y);
+                children[i]->Draw(buffer, px + x, py + y);
             }
         }
     }
@@ -126,6 +127,7 @@ public:
     void HandleInput(InputType input) override {
         if (children.empty()) return;
         EnsureValidFocus();
+
         if (input == InputType::MoveDown) {
             int start = (internalFocus < 0) ? 0 : internalFocus;
             int next = start;
@@ -143,7 +145,7 @@ public:
             int start = (internalFocus < 0) ? 0 : internalFocus;
             int next = start;
             do {
-                next = (next - 1 + children.size()) % children.size();
+                next = (next - 1 + static_cast<int>(children.size())) % children.size();
                 if (children[next]->focusable) {
                     internalFocus = next;
                     return;
@@ -151,7 +153,8 @@ public:
             } while (next != start);
             return;
         }
-        if (internalFocus >= 0 && internalFocus < (int)children.size()) {
+
+        if (internalFocus >= 0 && internalFocus < static_cast<int>(children.size())) {
             children[internalFocus]->HandleInput(input);
         }
     }
