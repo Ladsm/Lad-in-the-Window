@@ -211,10 +211,50 @@ public:
 
     void HandleRawInput() override {
         if (!lines || lines->empty()) return;
+
         cursorY = std::max(0, std::min(cursorY, (int)lines->size() - 1));
         cursorX = std::max(0, std::min(cursorX, (int)(*lines)[cursorY].size()));
-        int key = readKey();
 
+        int key = readKey();
+        bool isUp = (key == 1072 || key == 1065);
+        bool isDown = (key == 1080 || key == 1066);
+        bool isRight = (key == 1077 || key == 1067);
+        bool isLeft = (key == 1075 || key == 1068);
+
+        if (isLeft) {
+            if (cursorX > 0) {
+                cursorX--;
+            }
+            else if (cursorY > 0) {
+                cursorY--;
+                cursorX = (*lines)[cursorY].size();
+            }
+            return;
+        }
+        if (isRight) {
+            if (cursorX < (int)(*lines)[cursorY].size()) {
+                cursorX++;
+            }
+            else if (cursorY < (int)lines->size() - 1) {
+                cursorY++;
+                cursorX = 0;
+            }
+            return;
+        }
+        if (isUp) {
+            if (cursorY > 0) {
+                cursorY--;
+                cursorX = std::min(cursorX, (int)(*lines)[cursorY].size());
+            }
+            return;
+        }
+        if (isDown) {
+            if (cursorY < (int)lines->size() - 1) {
+                cursorY++;
+                cursorX = std::min(cursorX, (int)(*lines)[cursorY].size());
+            }
+            return;
+        }
         if (mode == COMMAND) {
             if (key == '\r' || key == '\n' || key == 13) {
                 isWriting = false;
@@ -261,6 +301,7 @@ public:
         }
         cursorY = std::max(0, std::min(cursorY, (int)lines->size() - 1));
         cursorX = std::max(0, std::min(cursorX, (int)(*lines)[cursorY].size()));
+
         if (cursorY < scroll) scroll = cursorY;
         if (cursorY >= scroll + height) scroll = cursorY - height + 1;
     }
