@@ -287,11 +287,24 @@ public:
                 return;
             }
             if (key == '\n' || key == '\r') {
-                std::string remainder = (*lines)[cursorY].substr(cursorX);
-                (*lines)[cursorY] = (*lines)[cursorY].substr(0, cursorX);
-                lines->insert(lines->begin() + cursorY + 1, remainder);
+                const std::string& currentLine = (*lines)[cursorY];
+                size_t indentCount = 0;
+                while (indentCount < currentLine.size() &&
+                    (currentLine[indentCount] == ' ' || currentLine[indentCount] == '\t')) {
+                    indentCount++;
+                }
+                std::string indent = currentLine.substr(0, indentCount);
+                std::string remainder = currentLine.substr(cursorX);
+                (*lines)[cursorY] = currentLine.substr(0, cursorX);
+                lines->insert(lines->begin() + cursorY + 1, indent + remainder);
+
                 cursorY++;
-                cursorX = 0;
+                cursorX = (int)indent.size();
+                return;
+            }
+            if (key == '\t' || key == 9) {
+                (*lines)[cursorY].insert(cursorX, "    ");
+                cursorX += 4;
                 return;
             }
             if (key >= 32 && key <= 126) {
