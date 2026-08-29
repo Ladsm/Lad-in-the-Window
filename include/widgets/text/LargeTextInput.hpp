@@ -366,6 +366,14 @@ public:
                 if (highligh) {
                     HighlightLine(buffer, visible, textWidth, bg);
                 }
+                else {
+                    buffer << "\033[38;2;255;255;255m" << bg;
+                    std::string toRender = visible.substr(0, textWidth);
+                    buffer << toRender;
+                    if ((int)toRender.size() < textWidth) {
+                        buffer << std::string(textWidth - toRender.size(), ' ');
+                    }
+                }
                 if (isWriting && lineIndex == cursorY) {
                     if (cursorX >= scrollX && cursorX < scrollX + textWidth) {
                         char ch = (cursorX < (int)fullLine.size())
