@@ -59,7 +59,29 @@ public:
     int GetWidth() const override { return width; }
     int GetHeight() const override { return height; }
 
-    void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg) {
+    bool IsInMultiLineComment(int targetLine) {
+        if (!lines) return false;
+        bool inComment = false;
+        for (int i = 0; i <= targetLine && i < (int)lines->size(); ++i) {
+            const std::string& line = (*lines)[i];
+            for (size_t col = 0; col < line.size(); ++col) {
+                if (!inComment && col + 1 < line.size() && line[col] == '/' && line[col + 1] == '*') {
+                    inComment = true;
+                    col++;
+                }
+                else if (inComment && col + 1 < line.size() && line[col] == '*' && line[col + 1] == '/') {
+                    inComment = false;
+                    col++;
+                }
+                else if (!inComment && col + 1 < line.size() && line[col] == '/' && line[col + 1] == '/') {
+                    break;
+                }
+            }
+        }
+        return inComment;
+    }
+
+    void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg, bool& inMultiLineComment) {
         std::string kwColor = "\033[38;2;0;0;255m";
         std::string funcColor = "\033[38;2;130;130;0m";
         std::string strColor = "\033[38;2;180;0;0m";
@@ -68,6 +90,7 @@ public:
         std::string opColor = "\033[38;2;0;130;130m";
         std::string varColor = "\033[38;2;220;120;40m";
         std::string typeColor = "\033[38;2;40;180;180m";
+        std::string commentColor = "\033[38;2;100;100;100m";
 
         std::vector<std::string> keywords = {
             "int", "void", "bool", "char", "double", "float", "long", "short", "signed", "unsigned",
@@ -91,7 +114,50 @@ public:
             }
             bool highlighted = false;
 
-            if (line[col] == '"' || line[col] == '\'') {
+            if (inMultiLineComment) {
+                int end = col;
+                while (end < (int)line.size()) {
+                    if (end + 1 < (int)line.size() && line[end] == '*' && line[end + 1] == '/') {
+                        end += 2;
+                        inMultiLineComment = false;
+                        break;
+                    }
+                    end++;
+                }
+                buffer << commentColor << line.substr(col, end - col) << bg;
+                col = end - 1;
+                highlighted = true;
+                lastToken = "";
+                expectingTypeName = false;
+            }
+
+            else if (col + 1 < (int)line.size() && line[col] == '/' && line[col + 1] == '/') {
+                buffer << commentColor << line.substr(col) << bg;
+                col = width - 1;
+                highlighted = true;
+                lastToken = "";
+                expectingTypeName = false;
+            }
+
+            else if (col + 1 < (int)line.size() && line[col] == '/' && line[col + 1] == '*') {
+                inMultiLineComment = true;
+                int end = col + 2;
+                while (end < (int)line.size()) {
+                    if (end + 1 < (int)line.size() && line[end] == '*' && line[end + 1] == '/') {
+                        end += 2;
+                        inMultiLineComment = false;
+                        break;
+                    }
+                    end++;
+                }
+                buffer << commentColor << line.substr(col, end - col) << bg;
+                col = end - 1;
+                highlighted = true;
+                lastToken = "";
+                expectingTypeName = false;
+            }
+
+            else if (line[col] == '"' || line[col] == '\'') {
                 char quote = line[col];
                 int end = col + 1;
                 while (end < (int)line.size() && line[end] != quote) {
@@ -347,6 +413,9 @@ public:
             scrollX = cursorX - textWidth + 1;
         }
         scrollX = std::max(0, scrollX);
+
+        bool inMultiLineComment = IsInMultiLineComment(scroll - 1);
+
         for (int i = 0; i < viewHeight; ++i) {
             int lineIndex = scroll + i;
             buffer << "\033[" << (py + y + i) << ";" << (px + x) << "H" << bg;
@@ -364,7 +433,7 @@ public:
                     visible = "";
                 }
                 if (highligh) {
-                    HighlightLine(buffer, visible, textWidth, bg);
+                    HighlightLine(buffer, visible, textWidth, bg, inMultiLineComment);
                 }
                 else {
                     buffer << "\033[38;2;255;255;255m" << bg;
