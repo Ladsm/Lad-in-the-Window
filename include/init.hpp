@@ -42,11 +42,4 @@ inline void init() {
 	std::cout << "\033[?1049h";
 	std::cout << "\033[?25l";
 	std::cout.flush();
-	//wallpaper
-	std::cout << "\033[H";
-	std::cout << "\033[48;5;30m";
-	for (int i = 1; i <= getConsoleHeight(); i++) {
-		std::cout << "\033[" << i << ";1H" << std::string(getConsoleWidth(), ' ');
-	}
-	std::cout.flush();
 }

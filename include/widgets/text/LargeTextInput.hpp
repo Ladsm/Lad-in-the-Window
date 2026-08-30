@@ -82,26 +82,39 @@ public:
     }
 
     void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg, bool& inMultiLineComment) {
-        std::string kwColor = "\033[38;2;0;0;255m";
-        std::string funcColor = "\033[38;2;130;130;0m";
-        std::string strColor = "\033[38;2;180;0;0m";
-        std::string numColor = "\033[38;2;0;100;0m";
-        std::string preColor = "\033[38;2;120;0;120m";
-        std::string opColor = "\033[38;2;0;130;130m";
-        std::string varColor = "\033[38;2;220;120;40m";
-        std::string typeColor = "\033[38;2;40;180;180m";
-        std::string commentColor = "\033[38;2;100;100;100m";
+        std::string kwColor = "\033[38;2;128;220;250m";
+        std::string typeColor = "\033[38;2;53;132;215m";
+        std::string customType = "\033[38;2;40;180;180m";
+        std::string funcColor = "\033[38;2;220;220;130m";
+        std::string strColor = "\033[38;2;206;145;120m";
+        std::string numColor = "\033[38;2;181;206;168m";
+        std::string preColor = "\033[38;2;197;134;192m";
+        std::string opColor = "\033[38;2;212;212;212m";
+        std::string varColor = "\033[38;2;156;220;254m";
+        std::string commentColor = "\033[38;2;106;153;85m";
 
         std::vector<std::string> keywords = {
-            "int", "void", "bool", "char", "double", "float", "long", "short", "signed", "unsigned",
-            "const", "static", "volatile", "mutable", "auto", "nullptr", "constexpr", "inline",
+            "const", "static", "volatile", "mutable", "nullptr", "constexpr", "inline",
             "class", "struct", "union", "enum", "public", "private", "protected", "virtual",
             "override", "final", "friend", "explicit", "this", "operator", "typename", "template",
             "if", "else", "switch", "case", "default", "return", "for", "while", "do",
             "break", "continue", "goto", "try", "catch", "throw", "noexcept",
             "and", "or", "not", "new", "delete", "sizeof", "decltype", "typeid",
             "static_cast", "dynamic_cast", "const_cast", "reinterpret_cast",
-            "using", "namespace", "import", "export", "module", "std", "string", "vector"
+            "using", "namespace", "import", "export", "module", "std", "true", "false"
+        };
+
+        std::vector<std::string> types = {
+            "void", "std::nullptr_t", "bool", "char", "wchar_t",
+            "char16_t", "char32_t", "short", "int",
+            "long", "float", "double", "signed", "unsigned",
+            "int8_t", "int16_t", "int32_t", "int64_t",
+            "uint8_t", "uint16_t", "uint32_t", "uint64_t",
+            "int_least8_t", "int_least16_t", "int_least32_t", "int_least64_t",
+            "uint_least8_t", "uint_least16_t", "uint_least32_t", "uint_least64_t",
+            "int_fast8_t", "int_fast16_t", "int_fast32_t", "int_fast64_t",
+            "uint_fast8_t", "uint_fast16_t", "uint_fast32_t", "uint_fast64_t",
+            "intmax_t", "uintmax_t", "size_t", "string", "vector"
         };
 
         std::string lastToken = "";
@@ -173,8 +186,8 @@ public:
             }
 
             else if (line[col] == '#') {
-                int end = col;
-                while (end < (int)line.size() && !isspace((unsigned char)line[end])) end++;
+                int end = col + 1;
+                while (end < (int)line.size() && (isalnum((unsigned char)line[end]) || line[end] == '_')) end++;
                 buffer << preColor << line.substr(col, end - col) << bg;
                 col = end - 1;
                 highlighted = true;
@@ -184,7 +197,7 @@ public:
 
             else if (col + 1 < (int)line.size()) {
                 std::string duo = line.substr(col, 2);
-                if (duo == "<<" || duo == ">>" || duo == "::" || duo == "->" || duo == "==" || duo == "!=") {
+                if (duo == "<<" || duo == ">>" || duo == "::" || duo == "->" || duo == "==" || duo == "!=" || duo == "<=" || duo == ">=") {
                     buffer << opColor << duo << bg;
                     col += 1;
                     highlighted = true;
@@ -193,13 +206,29 @@ public:
                 }
             }
 
-            if (!highlighted && std::string("+-*/%=!<>|&;{},()").find(line[col]) != std::string::npos) {
+            if (!highlighted && std::string("+-*/%=!<>|&;{},().[]").find(line[col]) != std::string::npos) {
                 buffer << opColor << line[col] << bg;
                 highlighted = true;
                 if (line[col] == ';' || line[col] == '{' || line[col] == '}') {
                     lastToken = "";
                     expectingTypeName = false;
                 }
+            }
+
+            if (!highlighted && isdigit((unsigned char)line[col]) && (col == 0 || !isalnum((unsigned char)line[col - 1]))) {
+                int end = col;
+                if (line[col] == '0' && col + 1 < (int)line.size() && (line[col + 1] == 'x' || line[col + 1] == 'X')) {
+                    end += 2;
+                    while (end < (int)line.size() && isxdigit((unsigned char)line[end])) end++;
+                }
+                else {
+                    while (end < (int)line.size() && (isdigit((unsigned char)line[end]) || line[end] == '.' || line[end] == 'f' || line[end] == 'U' || line[end] == 'L')) end++;
+                }
+                buffer << numColor << line.substr(col, end - col) << bg;
+                col = end - 1;
+                highlighted = true;
+                lastToken = "";
+                expectingTypeName = false;
             }
 
             if (!highlighted && (isalpha((unsigned char)line[col]) || line[col] == '_')) {
@@ -210,16 +239,12 @@ public:
                 }
                 std::string identifier = line.substr(start, end - start);
 
-                bool isKw = false;
-                for (const auto& kw : keywords) {
-                    if (identifier == kw) {
-                        isKw = true;
-                        break;
-                    }
-                }
+                bool isKw = std::find(keywords.begin(), keywords.end(), identifier) != keywords.end();
+                bool isTy = std::find(types.begin(), types.end(), identifier) != types.end();
+
                 if (expectingTypeName) {
                     knownTypes.insert(identifier);
-                    buffer << typeColor << identifier << bg;
+                    buffer << customType << identifier << bg;
                     lastToken = identifier;
                     expectingTypeName = false;
                 }
@@ -232,16 +257,20 @@ public:
                     buffer << kwColor << identifier << bg;
                     lastToken = identifier;
                 }
+                else if (isTy) {
+                    buffer << typeColor << identifier << bg;
+                    lastToken = identifier;
+                }
                 else if (end < (int)line.size() && line[end] == '(') {
                     buffer << funcColor << identifier << bg;
                     lastToken = "";
                 }
                 else if (knownTypes.find(identifier) != knownTypes.end()) {
-                    buffer << typeColor << identifier << bg;
+                    buffer << customType << identifier << bg;
                     lastToken = identifier;
                 }
                 else {
-                    if (knownTypes.find(lastToken) != knownTypes.end()) {
+                    if (knownTypes.find(lastToken) != knownTypes.end() || std::find(types.begin(), types.end(), lastToken) != types.end()) {
                         knownVariables.insert(identifier);
                         lastToken = "";
                     }
@@ -257,16 +286,6 @@ public:
                 col = end - 1;
                 highlighted = true;
             }
-            else if (!highlighted && isdigit((unsigned char)line[col]) && (col == 0 || !isalnum((unsigned char)line[col - 1]))) {
-                int end = col;
-                while (end < (int)line.size() && isdigit((unsigned char)line[end])) end++;
-                buffer << numColor << line.substr(col, end - col) << bg;
-                col = end - 1;
-                highlighted = true;
-                lastToken = "";
-                expectingTypeName = false;
-            }
-
             if (!highlighted) {
                 buffer << line[col];
             }

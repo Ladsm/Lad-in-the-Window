@@ -91,7 +91,8 @@ class TextInputLargeDemo : public Window {
     std::vector<std::string> text = {
         "#include <iostream>",
         "int main() {",
-        "    std::cout << 123 << \"test\" << '\\n';",
+        "    int b = 123;",
+        "    std::cout << b << \"test\" << '\\n';",
         "}"
     };
 public:
