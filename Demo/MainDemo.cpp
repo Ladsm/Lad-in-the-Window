@@ -95,12 +95,23 @@ class TextInputLargeDemo : public Window {
         "    std::cout << b << \"test\" << '\\n';",
         "}"
     };
+    LargeTextInput* LTIWidght = nullptr;
 public:
-    TextInputLargeDemo() : Window("Text Input - Large", 50, 20, winpal) {
-        auto& vbox = Add<VerticalContainer>(2, 2, 0);
-        vbox.Add<LargeTextInput>(10, 45, &text, true);
+    TextInputLargeDemo() : Window("Text Input - Large", 50, 14, winpal) {
+        auto& vbox = Add<VerticalContainer>(2, 2, 1);
+        LTIWidght = &vbox.Add<LargeTextInput>(10, 45, &text, true);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
+    void Draw(std::ostream& buffer) override {
+        LTIWidght->height = height - 8;
+        LTIWidght->width = width - 5;
+        Window::Draw(buffer);
+    }
+    /*
+     * Window.Draw is a function that runs every frame that a window is on screen.
+     * You can use this to create dynamicly size changeing widgets like so.
+     * Just remember to call Window::Draw(buffer); at the end so it actualy draws.
+     */
 };
 class ContainerTest: public Window {
     std::string text = "Input Here!";
