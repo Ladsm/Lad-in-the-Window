@@ -71,6 +71,11 @@ cmake --build . --config Release
 |                                   | Tab                            | Scroll up                     |
 
 </div>
+
+#### Projects That Use LITW
+
+ - [Citaidel](https://github.com/Ladsm/Citaidel)
+
 <div align="center">
 	<h4>Links</h4>
 	<p>
