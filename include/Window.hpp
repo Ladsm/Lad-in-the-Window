@@ -26,7 +26,7 @@ public:
     int startWidth, startHeight;
     int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
     bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
-    bool staticWindow = false, decorated = true;
+    bool staticWindow = false, decorated = true, resizeable = true;
     int dragOffsetX = 0;
     int dragOffsetY = 0;
     enum ResizeFlag : int {

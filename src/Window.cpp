@@ -110,6 +110,7 @@ void Window::Draw(std::ostream& buffer) {
 
 void Window::Resize(int newW, int newH) {
     if (staticWindow) return;
+    if (!resizeable) return;
     this->width = newW;
     this->height = newH;
     for (auto& w : widgets) {
@@ -119,6 +120,7 @@ void Window::Resize(int newW, int newH) {
 
 void Window::ToggleMaximize(int screenWidth, int screenHeight) {
     if (staticWindow) return;
+    if (!resizeable) return;
     if (!isMaximized) {
         oldX = x;
         oldY = y;
@@ -464,7 +466,8 @@ void WindowManager::Run() {
                 else if (onRight) rf = Window::RF_Right;
                 else if (onTop) rf = Window::RF_Top;
                 else if (onBottom) rf = Window::RF_Bottom;
-                if (rf != Window::RF_None) {
+                if (w->staticWindow || !w->resizeable) { } 
+                else if (rf != Window::RF_None) {
                     w->isResizing = true;
                     w->resizeFlags = rf;
                     w->resizeStartMouseX = mx;
@@ -603,8 +606,7 @@ void WindowManager::Run() {
                     case InputType::MoveRight: top->x++; break;
                     case InputType::MoveLeft:  top->x--; break;
                     case InputType::R:
-                        if (top.get() != startMenu.get()) {
-                            top->isMoving = false;
+                        if (!top->isMaximized && !top->staticWindow && top->resizeable) {
                             top->isResizing = true;
                         }
                         break;

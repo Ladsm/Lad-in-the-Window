@@ -13,7 +13,7 @@ public:
     bool focusable = true;
     bool IsContainer = false;
     bool isSeparator = false;
-    Window* parent;
+    Window* parent = nullptr;
     virtual int GetWidth() const { return 10; }
     virtual int GetHeight() const { return 1; }
     virtual void Draw(std::ostream& buffer, int parentX, int parentY) = 0;

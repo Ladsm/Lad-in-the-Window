@@ -118,6 +118,7 @@ class ContainerTest: public Window {
     bool offon = false;
 public:
     ContainerTest() : Window("Container Test", 50, 10) {
+        resizeable = false;
         auto& vbox = Add<VerticalContainer>(2, 2, 0);
         vbox.Add<Label>("Settings");
         vbox.Add<Button>("Apply", [] {});
