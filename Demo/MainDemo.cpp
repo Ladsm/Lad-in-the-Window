@@ -90,6 +90,7 @@ WindowPalette winpal = WindowPalette(
 class TextInputLargeDemo : public Window {
     std::vector<std::string> text = {
         "#include <iostream>",
+        "",
         "int main() {",
         "    int b = 123;",
         "    std::cout << b << \"test\" << '\\n';",
@@ -97,7 +98,7 @@ class TextInputLargeDemo : public Window {
     };
     LargeTextInput* LTIWidght = nullptr;
 public:
-    TextInputLargeDemo() : Window("Text Input - Large", 50, 14, winpal) {
+    TextInputLargeDemo() : Window("Text Input - Large", 50, 20, winpal) {
         auto& vbox = Add<VerticalContainer>(2, 2, 1);
         LTIWidght = &vbox.Add<LargeTextInput>(10, 45, &text, true);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });

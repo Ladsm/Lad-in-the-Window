@@ -6,6 +6,7 @@
 #include <string>
 #include <algorithm>
 #include <unordered_set>
+#include "copyToClipboard.hpp"
 #include <widgets/containers/VerticalContainer.hpp>
 
 #ifdef max
@@ -17,12 +18,14 @@
 
 class LargeTextInput : public Widget {
 public:
-    enum Mode { COMMAND, INSERT };
+    enum Mode { COMMAND, INSERT, VISUAL };
     std::vector<std::string>* lines;
     int cursorX = 0;
     int cursorY = 0;
     int scroll = 0;
     int scrollX = 0;
+    int visualAnchorX = 0;
+    int visualAnchorY = 0;
     int height;
     int width;
     bool highligh = false;
@@ -345,12 +348,162 @@ public:
                 isWriting = false;
                 return;
             }
+
             switch (key) {
-            case 'i': mode = INSERT; return;
+            case 'v':
+                mode = VISUAL;
+                visualAnchorX = cursorX;
+                visualAnchorY = cursorY;
+                return;
+            case 'i':
+                mode = INSERT;
+                return;
+            case 'a':
+                mode = INSERT;
+                if (cursorX < (int)(*lines)[cursorY].size()) cursorX++;
+                return;
+            case 'A':
+                mode = INSERT;
+                cursorX = (int)(*lines)[cursorY].size();
+                return;
             case 'h': if (cursorX > 0) cursorX--; return;
             case 'l': if (cursorX < (int)(*lines)[cursorY].size()) cursorX++; return;
             case 'k': if (cursorY > 0) cursorY--; return;
             case 'j': if (cursorY < (int)lines->size() - 1) cursorY++; return;
+            case '0':
+                cursorX = 0;
+                return;
+            case '^': {
+                const std::string& line = (*lines)[cursorY];
+                cursorX = 0;
+                while (cursorX < (int)line.size() && (line[cursorX] == ' ' || line[cursorX] == '\t')) {
+                    cursorX++;
+                }
+                return;
+            }
+            case '$':
+                cursorX = std::max(0, (int)(*lines)[cursorY].size() - 1);
+                return;
+            case 'g':
+                if (readKey() == 'g') {
+                    cursorY = 0;
+                    cursorX = 0;
+                }
+                return;
+            case 'G':
+                cursorY = (int)lines->size() - 1;
+                cursorX = 0;
+                return;
+            case 'w': {
+                const std::string& line = (*lines)[cursorY];
+                while (cursorX < (int)line.size() && !isalnum(line[cursorX]) && line[cursorX] != '_') cursorX++;
+                while (cursorX < (int)line.size() && (isalnum(line[cursorX]) || line[cursorX] == '_')) cursorX++;
+                while (cursorX < (int)line.size() && line[cursorX] == ' ') cursorX++;
+                if (cursorX >= (int)line.size() && cursorY < (int)lines->size() - 1) {
+                    cursorY++;
+                    cursorX = 0;
+                }
+                return;
+            }
+            case 'b': {
+                if (cursorX == 0 && cursorY > 0) {
+                    cursorY--;
+                    cursorX = (*lines)[cursorY].size();
+                }
+                const std::string& line = (*lines)[cursorY];
+                while (cursorX > 0 && line[cursorX - 1] == ' ') cursorX--;
+                while (cursorX > 0 && (isalnum(line[cursorX - 1]) || line[cursorX - 1] == '_')) cursorX--;
+                return;
+            }
+            case 'x':
+                if (cursorX < (int)(*lines)[cursorY].size()) {
+                    (*lines)[cursorY].erase(cursorX, 1);
+                }
+                return;
+            case 'd':
+                if (readKey() == 'd') {
+                    copyToClipboard((*lines)[cursorY] + "\n");
+                    lines->erase(lines->begin() + cursorY);
+                    if (lines->empty()) lines->push_back("");
+                    cursorY = std::max(0, std::min(cursorY, (int)lines->size() - 1));
+                    cursorX = 0;
+                }
+                return;
+            case 'y':
+                if (readKey() == 'y') {
+                    copyToClipboard((*lines)[cursorY] + "\n");
+                }
+                return;
+            }
+        }
+        else if (mode == VISUAL) {
+            if (key == 27) {
+                mode = COMMAND;
+                return;
+            }
+            switch (key) {
+            case 'h': if (cursorX > 0) cursorX--; return;
+            case 'l': if (cursorX < (int)(*lines)[cursorY].size()) cursorX++; return;
+            case 'k': if (cursorY > 0) cursorY--; return;
+            case 'j': if (cursorY < (int)lines->size() - 1) cursorY++; return;
+            case '0': cursorX = 0; return;
+            case '$': cursorX = std::max(0, (int)(*lines)[cursorY].size()); return;
+            }
+            int startY = std::min(visualAnchorY, cursorY);
+            int endY = std::max(visualAnchorY, cursorY);
+            int startX = (visualAnchorY < cursorY) ? visualAnchorX : (visualAnchorY > cursorY ? cursorX : std::min(visualAnchorX, cursorX));
+            int endX = (visualAnchorY < cursorY) ? cursorX : (visualAnchorY > cursorY ? visualAnchorX : std::max(visualAnchorX, cursorX));
+            if (key == 'y') {
+                std::string selectedText = "";
+                for (int y = startY; y <= endY; ++y) {
+                    const std::string& line = (*lines)[y];
+                    int selStart = (y == startY) ? startX : 0;
+                    int selEnd = (y == endY) ? std::min(endX + 1, (int)line.size()) : (int)line.size();
+
+                    if (selStart < (int)line.size()) {
+                        selectedText += line.substr(selStart, selEnd - selStart);
+                    }
+                    if (y < endY) selectedText += "\n";
+                }
+                copyToClipboard(selectedText);
+                mode = COMMAND;
+                return;
+            }
+            if (key == 'd' || key == 'x') {
+                std::string selectedText = "";
+                for (int y = startY; y <= endY; ++y) {
+                    const std::string& line = (*lines)[y];
+                    int selStart = (y == startY) ? startX : 0;
+                    int selEnd = (y == endY) ? std::min(endX + 1, (int)line.size()) : (int)line.size();
+
+                    if (selStart < (int)line.size()) {
+                        selectedText += line.substr(selStart, selEnd - selStart);
+                    }
+                    if (y < endY) selectedText += "\n";
+                }
+                copyToClipboard(selectedText);
+
+                if (startY == endY) {
+                    std::string& line = (*lines)[startY];
+                    int deleteLen = std::min(endX + 1, (int)line.size()) - startX;
+                    if (startX < (int)line.size() && deleteLen > 0) {
+                        line.erase(startX, deleteLen);
+                    }
+                }
+                else {
+                    std::string startPrefix = (*lines)[startY].substr(0, startX);
+                    std::string endSuffix = (endX + 1 < (int)(*lines)[endY].size()) ? (*lines)[endY].substr(endX + 1) : "";
+
+                    (*lines)[startY] = startPrefix + endSuffix;
+                    lines->erase(lines->begin() + startY + 1, lines->begin() + endY + 1);
+                }
+
+                if (lines->empty()) lines->push_back("");
+
+                cursorY = startY;
+                cursorX = startX;
+                mode = COMMAND;
+                return;
             }
         }
         else if (mode == INSERT) {
@@ -421,6 +574,7 @@ public:
         }
         int maxScroll = std::max(0, (int)lines->size() - viewHeight);
         scroll = std::max(0, std::min(scroll, maxScroll));
+
         std::string bg = parent->Palette.Body;
         int totalLines = (int)lines->size();
         size_t lineNumberWidth = std::to_string(std::max(1, totalLines)).size() + 2;
@@ -434,27 +588,56 @@ public:
         scrollX = std::max(0, scrollX);
 
         bool inMultiLineComment = IsInMultiLineComment(scroll - 1);
+        int selStartY = std::min(visualAnchorY, cursorY);
+        int selEndY = std::max(visualAnchorY, cursorY);
+        int selStartX = (visualAnchorY < cursorY) ? visualAnchorX : (visualAnchorY > cursorY ? cursorX : std::min(visualAnchorX, cursorX));
+        int selEndX = (visualAnchorY < cursorY) ? cursorX : (visualAnchorY > cursorY ? visualAnchorX : std::max(visualAnchorX, cursorX));
 
         for (int i = 0; i < viewHeight; ++i) {
             int lineIndex = scroll + i;
             buffer << "\033[" << (py + y + i) << ";" << (px + x) << "H" << bg;
+
             if (lineIndex < totalLines) {
                 std::string lineNum = std::to_string(lineIndex + 1);
                 buffer << "\033[38;2;120;120;120m";
                 buffer << std::string(lineNumberWidth - lineNum.size(), ' ') << lineNum;
                 buffer << bg;
-                std::string visible;
+
                 const std::string& fullLine = (*lines)[lineIndex];
-                if ((int)fullLine.size() > scrollX) {
-                    visible = fullLine.substr(scrollX);
+
+                if (mode == VISUAL) {
+                    for (int col = 0; col < (int)textWidth; ++col) {
+                        int realCol = scrollX + col;
+
+                        if (realCol < (int)fullLine.size()) {
+                            char ch = fullLine[realCol];
+                            bool inVisualRange = (lineIndex > selStartY || (lineIndex == selStartY && realCol >= selStartX)) &&
+                                (lineIndex < selEndY || (lineIndex == selEndY && realCol <= selEndX));
+
+                            if (inVisualRange) {
+                                buffer << "\033[7m" << ch << "\033[27m" << bg;
+                            }
+                            else {
+                                buffer << "\033[38;2;255;255;255m" << ch;
+                            }
+                        }
+                        else {
+                            bool inVisualRange = (lineIndex >= selStartY && lineIndex < selEndY && realCol == (int)fullLine.size());
+                            if (inVisualRange) {
+                                buffer << "\033[7m \033[27m" << bg;
+                            }
+                            else {
+                                buffer << " ";
+                            }
+                        }
+                    }
                 }
-                else {
-                    visible = "";
-                }
-                if (highligh) {
+                else if (highligh) {
+                    std::string visible = (int)fullLine.size() > scrollX ? fullLine.substr(scrollX) : "";
                     HighlightLine(buffer, visible, textWidth, bg, inMultiLineComment);
                 }
                 else {
+                    std::string visible = (int)fullLine.size() > scrollX ? fullLine.substr(scrollX) : "";
                     buffer << "\033[38;2;255;255;255m" << bg;
                     std::string toRender = visible.substr(0, textWidth);
                     buffer << toRender;
@@ -462,15 +645,13 @@ public:
                         buffer << std::string(textWidth - toRender.size(), ' ');
                     }
                 }
-                if (isWriting && lineIndex == cursorY) {
+
+                if (isWriting && lineIndex == cursorY && mode != VISUAL) {
                     if (cursorX >= scrollX && cursorX < scrollX + textWidth) {
-                        char ch = (cursorX < (int)fullLine.size())
-                            ? fullLine[cursorX]
-                            : ' ';
+                        char ch = (cursorX < (int)fullLine.size()) ? fullLine[cursorX] : ' ';
                         buffer << "\033[" << (py + y + i) << ";"
                             << (px + x + lineNumberWidth + (cursorX - scrollX)) << "H";
-                        buffer << "\033[38;2;255;255;255;48;2;0;0;0m"
-                            << ch << bg;
+                        buffer << "\033[38;2;255;255;255;48;2;0;0;0m" << ch << bg;
                     }
                 }
             }
@@ -481,13 +662,15 @@ public:
         }
         buffer << "\033[" << (py + y + viewHeight) << ";" << (px + x) << "H";
         if (isWriting) {
-            buffer << (mode == INSERT ? "-- INSERT --" : "-- COMMAND --");
+            if (mode == INSERT) buffer << "-- INSERT --";
+            else if (mode == VISUAL) buffer << "-- VISUAL --";
+            else buffer << "-- COMMAND --";
         }
         else {
             buffer << (focused ? "> [Press ENTER to edit]" : "  [Inactive]");
         }
 
-        int statusLen = 1 + (isWriting ? (mode == INSERT ? 12 : 13) : 23);
+        int statusLen = 1 + (isWriting ? (mode == INSERT ? 12 : (mode == VISUAL ? 12 : 13)) : 23);
         buffer << std::string(std::max(0, width - statusLen), ' ');
         buffer << "\033[0m";
     }
