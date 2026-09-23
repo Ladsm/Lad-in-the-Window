@@ -2,7 +2,6 @@
 #include <iostream>
 #include <functional>
 #include <cstdlib>
-#include <memory>
 
 WindowManager wm("LITW demo");
 class Textinputer : public Window {
