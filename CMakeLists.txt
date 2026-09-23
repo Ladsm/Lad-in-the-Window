@@ -6,6 +6,7 @@ set(LIB_SOURCES
     src/userinput.cpp
     src/Window.cpp
     src/widgets/ShellWidget.cpp
+    src/widgets/text/LargeTextInput.cpp
 )
 add_library(LITW STATIC ${LIB_SOURCES})
 add_library(LITW::LITW ALIAS LITW)
