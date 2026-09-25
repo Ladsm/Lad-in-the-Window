@@ -26,12 +26,14 @@ public:
         }
     }
     int GetWidth() const override {
+        if (text.empty()) {
+            return 0;
+        }
         auto longest_it = std::max_element(text.begin(), text.end(),
             [](const std::string& a, const std::string& b) {
                 return a.size() < b.size();
             });
-        int returner = std::stoi(*longest_it);
-        return returner;
+        return static_cast<int>(longest_it->size());
     }
     int GetHeight() const override {
         return text.size();
