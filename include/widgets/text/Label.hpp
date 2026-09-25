@@ -28,16 +28,3 @@ public:
         buffer << parent->Palette.Body << text;
     }
 };
-class CenteredLabel : public Widget {
-public:
-    std::string text;
-    CenteredLabel(int y, std::string t) : text(t) {
-        this->y = y;
-        this->focusable = false;
-    }
-    void Draw(std::ostream& buffer, int px, int py) override {
-        int centerX = (parent->width / 2) - ((int)text.length() / 2);
-        buffer << "\033[" << (py + y) << ";" << (px + (centerX > 0 ? centerX : 1)) << "H";
-        buffer << parent->Palette.Body << text;
-    }
-};
