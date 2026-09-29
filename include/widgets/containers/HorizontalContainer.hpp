@@ -9,7 +9,7 @@ public:
     std::vector<std::unique_ptr<Widget>> children;
     int spacing = 2;
     int internalFocus = 0;
-
+    bool heightIsOne = false;
     HorizontalContainer(int x, int y) {
         this->x = x;
         this->y = y;
@@ -154,6 +154,7 @@ public:
     }
 
     int GetHeight() const override {
+        if (heightIsOne) return 1;
         int maxH = 0;
         for (const auto& c : children) {
             maxH = std::max(maxH, c->GetHeight());
