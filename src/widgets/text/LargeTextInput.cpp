@@ -497,8 +497,10 @@ void LargeTextInput::HandleRawInput() {
             return;
         }
         if (key == '\t' || key == 9) {
-            (*lines)[cursorY].insert(cursorX, "    ");
-            cursorX += 4;
+            if (!TryExpandSnippet()) {
+                (*lines)[cursorY].insert(cursorX, "    ");
+                cursorX += 4;
+            }
             return;
         }
         if (key >= 32 && key <= 126) {
@@ -629,4 +631,107 @@ void LargeTextInput::Draw(std::ostream& buffer, int px, int py) {
     int statusLen = 1 + (isWriting ? (mode == INSERT ? 12 : (mode == VISUAL ? 12 : 13)) : 23);
     buffer << std::string(std::max(0, width - statusLen), ' ');
     buffer << "\033[0m";
+}
+
+void LargeTextInput::RegisterSnippet(const std::string& trigger, const std::string& body) {
+    snippets[trigger] = body;
+}
+
+bool LargeTextInput::TryExpandSnippet() {
+    if (lines->empty() || cursorY >= lines->size()) return false;
+
+    std::string& currentLine = (*lines)[cursorY];
+    int startX = cursorX;
+    while (startX > 0 && (std::isalnum(currentLine[startX - 1]) || currentLine[startX - 1] == '#')) {
+        startX--;
+    }
+
+    if (startX == cursorX) return false;
+
+    std::string word = currentLine.substr(startX, cursorX - startX);
+    auto it = snippets.find(word);
+
+    if (it != snippets.end()) {
+        std::string body = it->second;
+        std::string suffix = currentLine.substr(cursorX);
+        currentLine.erase(startX);
+        size_t s1Pos = body.find("$1");
+        if (s1Pos != std::string::npos) {
+            body.replace(s1Pos, 2, "");
+        }
+        size_t s0Pos = body.find("$0");
+        int targetRelativeY = 0;
+        int targetRelativeX = 0;
+        if (s0Pos != std::string::npos) {
+            body.replace(s0Pos, 2, "");
+        }
+        std::vector<std::string> snippetLines;
+        size_t pos = 0;
+        size_t nextPos = 0;
+        while ((nextPos = body.find('\n', pos)) != std::string::npos) {
+            snippetLines.push_back(body.substr(pos, nextPos - pos));
+            pos = nextPos + 1;
+        }
+        snippetLines.push_back(body.substr(pos));
+
+        if (snippetLines.empty()) return false;
+        if (s0Pos != std::string::npos) {
+            size_t currentPos = 0;
+            for (size_t i = 0; i < snippetLines.size(); ++i) {
+            }
+        }
+        currentLine += snippetLines[0];
+        for (size_t i = 1; i < snippetLines.size(); ++i) {
+            lines->insert(lines->begin() + cursorY + i, snippetLines[i]);
+        }
+
+        if (!suffix.empty()) {
+            (*lines)[cursorY + snippetLines.size() - 1] += suffix;
+        }
+        if (s1Pos != std::string::npos) {
+            int lineOffset = 0;
+            int colOffset = startX;
+            for (size_t i = 0; i < s1Pos; ++i) {
+                if (body[i] == '\n') {
+                    lineOffset++;
+                    colOffset = 0;
+                }
+                else {
+                    colOffset++;
+                }
+            }
+            cursorY += lineOffset;
+            cursorX = colOffset;
+        }
+        else {
+            cursorY += snippetLines.size() - 1;
+            cursorX = (*lines)[cursorY].size() - suffix.size();
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+void LargeTextInput::createCppSnippets() {
+    RegisterSnippet("for", "for (int i = 0; i < $1; ++i) {\n    $0\n}");
+    RegisterSnippet("if", "if ($1) {\n    $0\n}");
+    RegisterSnippet("elseif", "else if ($1) {\n    $0\n}");
+    RegisterSnippet("else", "else {\n    $0\n}");
+    RegisterSnippet("while", "while ($1) {\n    $0\n}");
+    RegisterSnippet("try", "try {\n    $1\n} catch (const std::exception& e) {\n    std::cerr << e.what() << '\\n';\n    $0\n}");
+    RegisterSnippet("std", "std::$1");
+    RegisterSnippet("class", "class $1 {\npublic:\n    $1();\n    ~$1();\n\nprivate:\n    $0\n};");
+    RegisterSnippet("struct", "struct $1 {\npublic:\n    $0\n};");
+    RegisterSnippet("enum", "enum class $1 {\n    $0\n};");
+    RegisterSnippet("templ", "template <typename $1>");
+    RegisterSnippet("vfunc", "void $1() {\n    $0\n}");
+    RegisterSnippet("bfunc", "bool $1() {\n    return true;\n}");
+    RegisterSnippet("ifunc", "int $1() {\n    return 0;\n}");
+    RegisterSnippet("cfunc", "char $1() {\n    return \' \';\n}");
+    RegisterSnippet("strfunc", "std::string $1() {\n    return \"\";\n}");
+    RegisterSnippet("#def", "#define $1");
+    RegisterSnippet("#inc", "#include $1");
+    RegisterSnippet("#ifdef", "#ifdef $1\n$0\n#endif");
 }

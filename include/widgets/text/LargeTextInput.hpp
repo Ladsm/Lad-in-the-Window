@@ -6,6 +6,7 @@
 #include <string>
 #include <algorithm>
 #include <unordered_set>
+#include <unordered_map>
 #include "copyToClipboard.hpp"
 #include <widgets/containers/VerticalContainer.hpp>
 
@@ -19,6 +20,11 @@
 class LargeTextInput : public Widget {
 public:
     enum Mode { COMMAND, INSERT, VISUAL };
+    struct Snippet {
+        std::string trigger;
+        std::string body;
+    };
+    std::unordered_map<std::string, std::string> snippets;
     std::vector<std::string>* lines;
     int cursorX = 0;
     int cursorY = 0;
@@ -47,4 +53,7 @@ public:
     void HandleRawInput() override;
     void HandleInput(InputType input) override;
     void Draw(std::ostream& buffer, int px, int py) override;
+    void RegisterSnippet(const std::string& trigger, const std::string& body);
+    bool TryExpandSnippet();
+    void createCppSnippets();
 };

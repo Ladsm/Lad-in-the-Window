@@ -100,6 +100,7 @@ public:
     TextInputLargeDemo() : Window("Text Input - Large", 50, 20, winpal) {
         auto& vbox = Add<VerticalContainer>(2, 2, 1);
         LTIWidght = &vbox.Add<LargeTextInput>(10, 45, &text, true);
+        LTIWidght->createCppSnippets();
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
     void Draw(std::ostream& buffer) override {
