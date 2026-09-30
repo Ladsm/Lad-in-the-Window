@@ -90,11 +90,9 @@ public:
         outputBuffer << "\033[" << (py + y) << ";" << (px + x) << "H";
         if (isWriting) {
             outputBuffer << "\033[38;2;0;0;0;48;2;255;255;255m";
-            outputBuffer << "\033[?25h";
         }
         else {
             outputBuffer << parent->Palette.Body;
-            outputBuffer << "\033[?25l";
         }
         if (focused) {
             outputBuffer << '>' << buffer << " \033[0m";

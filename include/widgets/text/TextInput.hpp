@@ -53,11 +53,9 @@ public:
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
         if (isWriting) {
             buffer << "\033[38;2;0;0;0;48;2;255;255;255m";
-            buffer << "\033[?25h";
         }
         else {
             buffer << parent->Palette.Body;
-            buffer << "\033[?25l";
         }
         if (focused) {
             buffer << '>' << *target << " \033[0m";

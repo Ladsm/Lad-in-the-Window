@@ -177,7 +177,7 @@ public:
 };
 
 int main() {
-    auto startalert = mksharedWindow<StartAlert>();
+    auto startalert = makeSharedWindow<StartAlert>();
     auto start = startmenu<StartMenuWindow>(&wm);
     start->AddItem<README>("README");
     start->AddItem<MenuWindow>("Main Menu", "main menu");

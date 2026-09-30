@@ -715,23 +715,38 @@ bool LargeTextInput::TryExpandSnippet() {
 }
 
 void LargeTextInput::createCppSnippets() {
-    RegisterSnippet("for", "for (int i = 0; i < $1; ++i) {\n    $0\n}");
-    RegisterSnippet("if", "if ($1) {\n    $0\n}");
-    RegisterSnippet("elseif", "else if ($1) {\n    $0\n}");
-    RegisterSnippet("else", "else {\n    $0\n}");
-    RegisterSnippet("while", "while ($1) {\n    $0\n}");
-    RegisterSnippet("try", "try {\n    $1\n} catch (const std::exception& e) {\n    std::cerr << e.what() << '\\n';\n    $0\n}");
-    RegisterSnippet("std", "std::$1");
-    RegisterSnippet("class", "class $1 {\npublic:\n    $1();\n    ~$1();\n\nprivate:\n    $0\n};");
-    RegisterSnippet("struct", "struct $1 {\npublic:\n    $0\n};");
-    RegisterSnippet("enum", "enum class $1 {\n    $0\n};");
+    RegisterSnippet("for", "for (int i = 0; i < $1; ++i) {\n    \n}");
+    RegisterSnippet("if", "if ($1) {\n    \n}");
+    RegisterSnippet("elseif", "else if ($1) {\n    \n}");
+    RegisterSnippet("else", "else {\n    \n}");
+    RegisterSnippet("while", "while ($1) {\n    \n}");
+    RegisterSnippet("try", "try {\n    $1\n} catch (const std::exception& e) {\n    std::cerr << e.what() << '\\n';\n    \n}");
+    RegisterSnippet("switch", "switch ($1) {\n    default:\n    break;\n}");
+
+    RegisterSnippet("std", "std::$1"); 
+    RegisterSnippet("class", "class $1 {\nprivate:\n    \n};");
+    RegisterSnippet("struct", "struct $1 {\npublic:\n    \n};");
+    RegisterSnippet("enum", "enum class $1 {\n    \n};");
     RegisterSnippet("templ", "template <typename $1>");
-    RegisterSnippet("vfunc", "void $1() {\n    $0\n}");
+    RegisterSnippet("namespace", "namespace $1 {\n\n}");
+    RegisterSnippet("using", "using $1 = ;");
+
+    RegisterSnippet("bool", "bool $1 = true;");
+    RegisterSnippet("int", "int $1 = 0;");
+    RegisterSnippet("size", "size_t $1 = 0;");
+    RegisterSnippet("float", "float $1 = 0;");
+    RegisterSnippet("double", "double $1 = 0;");
+    RegisterSnippet("char", "char $1 = \'\';");
+    RegisterSnippet("str", "std::string $1 = \"\";");
+    RegisterSnippet("vector", "std::vector<$1> ;");
+
+    RegisterSnippet("vfunc", "void $1() {\n    \n}");
     RegisterSnippet("bfunc", "bool $1() {\n    return true;\n}");
     RegisterSnippet("ifunc", "int $1() {\n    return 0;\n}");
     RegisterSnippet("cfunc", "char $1() {\n    return \' \';\n}");
     RegisterSnippet("strfunc", "std::string $1() {\n    return \"\";\n}");
+
     RegisterSnippet("#def", "#define $1");
     RegisterSnippet("#inc", "#include $1");
-    RegisterSnippet("#ifdef", "#ifdef $1\n$0\n#endif");
+    RegisterSnippet("#ifdef", "#ifdef $1\n\n#endif");
 }

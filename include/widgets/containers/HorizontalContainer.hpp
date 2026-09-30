@@ -114,7 +114,7 @@ public:
     void HandleInput(InputType input) override {
         if (children.empty()) return;
         EnsureValidFocus();
-        if (input == InputType::MoveRight) {
+        if (input == InputType::ArrowRight) {
             int start = internalFocus < 0 ? 0 : internalFocus;
             int next = start;
             do {
@@ -126,7 +126,7 @@ public:
             } while (next != start);
             return;
         }
-        if (input == InputType::MoveLeft) {
+        if (input == InputType::ArrowLeft) {
             int start = internalFocus < 0 ? 0 : internalFocus;
             int next = start;
             do {

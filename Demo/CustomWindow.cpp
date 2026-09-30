@@ -11,7 +11,7 @@ public:
     }
 };
 int main() {
-    wm.AddWindow(mksharedWindow<TextWindow>("Hello World", "Hello World"));
+    wm.AddWindow(makeSharedWindow<TextWindow>("Hello World", "Hello World"));
     wm.Run();
     wm.exit(1);
     return 0;

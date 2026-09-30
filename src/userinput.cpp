@@ -46,7 +46,7 @@ InputType GetInput() {
                 if (ex == 133) return InputType::F11;
                 if (ex == 134) return InputType::F12;
             }
-            if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
+            if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Num0) + (ch - '0'));
             switch (ch) {
             case 'q': case 'Q': return InputType::Q;
             case 'w': case 'W': return InputType::W;
@@ -89,12 +89,12 @@ InputType GetInput() {
             if (ch == ' ') return InputType::Space;
             if (ch == 27) return InputType::Escape;
             switch (ke.wVirtualKeyCode) {
-            case VK_UP:    return InputType::MoveUp;
-            case VK_DOWN:  return InputType::MoveDown;
-            case VK_LEFT:  return InputType::MoveLeft;
-            case VK_RIGHT: return InputType::MoveRight;
+            case VK_UP:    return InputType::ArrowUp;
+            case VK_DOWN:  return InputType::ArrowDown;
+            case VK_LEFT:  return InputType::ArrowLeft;
+            case VK_RIGHT: return InputType::ArrowRight;
             }
-            if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
+            if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Num0) + (ch - '0'));
             switch (ch) {
             case 'q': case 'Q': return InputType::Q;
             case 'w': case 'W': return InputType::W;
@@ -190,10 +190,10 @@ InputType GetInput() {
                 }
             }
             else {
-                if (n2 == 'A') return InputType::MoveUp;
-                if (n2 == 'B') return InputType::MoveDown;
-                if (n2 == 'C') return InputType::MoveRight;
-                if (n2 == 'D') return InputType::MoveLeft;
+                if (n2 == 'A') return InputType::ArrowUp;
+                if (n2 == 'B') return InputType::ArrowDown;
+                if (n2 == 'C') return InputType::ArrowRight;
+                if (n2 == 'D') return InputType::ArrowLeft;
                 if (n2 >= '0' && n2 <= '9') {
                     int num = n2 - '0';
                     int next;
@@ -220,7 +220,7 @@ InputType GetInput() {
     }
     if (ch == 10 || ch == 13) return InputType::Enter;
     if (ch == ' ') return InputType::Space;
-    if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Top0) + (ch - '0'));
+    if (ch >= '0' && ch <= '9') return static_cast<InputType>(static_cast<int>(InputType::Num0) + (ch - '0'));
     switch (ch) {
     case 'q': case 'Q': return InputType::Q;
     case 'w': case 'W': return InputType::W;

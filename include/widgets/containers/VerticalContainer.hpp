@@ -128,7 +128,7 @@ public:
         if (children.empty()) return;
         EnsureValidFocus();
 
-        if (input == InputType::MoveDown) {
+        if (input == InputType::ArrowDown) {
             int start = (internalFocus < 0) ? 0 : internalFocus;
             int next = start;
             do {
@@ -141,7 +141,7 @@ public:
             return;
         }
 
-        if (input == InputType::MoveUp) {
+        if (input == InputType::ArrowUp) {
             int start = (internalFocus < 0) ? 0 : internalFocus;
             int next = start;
             do {

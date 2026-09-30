@@ -154,7 +154,7 @@ void Window::HandleInput(InputType input) {
                 return;
         }
     }
-    if (input == InputType::MoveDown) {
+    if (input == InputType::ArrowDown) {
         widgets[focusedWidget]->focused = false;
         int start = focusedWidget;
         do {
@@ -163,7 +163,7 @@ void Window::HandleInput(InputType input) {
         widgets[focusedWidget]->focused = true;
         return;
     }
-    if (input == InputType::MoveUp) {
+    if (input == InputType::ArrowUp) {
         widgets[focusedWidget]->focused = false;
         int start = focusedWidget;
         do {
@@ -582,10 +582,10 @@ void WindowManager::Run() {
             continue;
         }
         if (input == InputType::F12) { exit(0); }
-        if (input >= InputType::Top1 && input <= InputType::Top9) {
+        if (input >= InputType::Num1 && input <= InputType::Num9) {
             int targetIdx =
                 static_cast<int>(input) -
-                static_cast<int>(InputType::Top1);
+                static_cast<int>(InputType::Num1);
             if (targetIdx < (int)windows.size() &&
                 windows[targetIdx]->visible) {
                 windows[targetIdx]->isMinimized = false;
@@ -601,10 +601,10 @@ void WindowManager::Run() {
                 }
                 else {
                     switch (input) {
-                    case InputType::MoveUp:    top->y--; break;
-                    case InputType::MoveDown:  top->y++; break;
-                    case InputType::MoveRight: top->x++; break;
-                    case InputType::MoveLeft:  top->x--; break;
+                    case InputType::ArrowUp:    top->y--; break;
+                    case InputType::ArrowDown:  top->y++; break;
+                    case InputType::ArrowRight: top->x++; break;
+                    case InputType::ArrowLeft:  top->x--; break;
                     case InputType::R:
                         if (!top->isMaximized && !top->staticWindow && top->resizeable) {
                             top->isResizing = true;
@@ -635,18 +635,18 @@ void WindowManager::Run() {
                     if (maxHeight < minHeight) maxHeight = minHeight;
                     if (maxWidth < minWidth) maxWidth = minWidth;
                     switch (input) {
-                    case InputType::MoveUp:
+                    case InputType::ArrowUp:
                         if (top->height > top->startHeight) top->height--;
                         break;
-                    case InputType::MoveDown:
+                    case InputType::ArrowDown:
                         if (top->height < maxHeight) top->height++;
                         else top->height = maxHeight;
                         break;
-                    case InputType::MoveRight:
+                    case InputType::ArrowRight:
                         if (top->width < maxWidth) top->width++;
                         else top->width = maxWidth;
                         break;
-                    case InputType::MoveLeft:
+                    case InputType::ArrowLeft:
                         if (top->width > top->startWidth) top->width--;
                         break;
                     case InputType::R: case InputType::Enter:
@@ -689,4 +689,4 @@ void WindowManager::Run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(66));
     }
     exit(1);
-}
+} 

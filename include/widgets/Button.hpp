@@ -5,6 +5,7 @@ class Button : public Widget {
 public:
     std::string label;
     std::function<void()> onClick;
+    bool brackets = true;
     Button(int x, int y, std::string l, std::function<void()> cb) {
         this->x = x;
         this->y = y;
@@ -19,6 +20,14 @@ public:
         onClick = cb;
         this->focusable = true;
     }
+    Button(std::string l, std::function<void()> cb, bool brack) {
+        this->x = 0;
+        this->y = 0;
+        label = l;
+        onClick = cb;
+        brackets = brack;
+        this->focusable = true;
+    }
     int GetWidth() const override {
         return (int)label.length() + 4;
     }
@@ -29,10 +38,22 @@ public:
         std::string body = parent->Palette.Body;
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
         buffer << body;
-        if (focused)
-            buffer << ">[" << label << "]<";
-        else
-            buffer << " [" << label << "] ";
+        if (brackets) {
+            if (focused) {
+                buffer << ">[" << label << "]<";
+            }
+            else {
+                buffer << " [" << label << "] ";
+            }
+        }
+        else {
+            if (focused) {
+                buffer << ">" << label << "<";
+            }
+            else {
+                buffer << label;
+            }
+        }
     }
     void HandleInput(InputType input) override {
         if (input == InputType::Enter && onClick)

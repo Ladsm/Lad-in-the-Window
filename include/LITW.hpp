@@ -1,10 +1,9 @@
 #pragma once
 #define LITW
-#define LITWVERSIONMAIN 1
 #define LITWVERSIONMAJOR 1
-#define LITWVERSIONMINOR 8
+#define LITWVERSIONMINOR 9
 #define LITWVERSIONPATCH 0
-#define LITWVERSION_STRING "1.8.0"
+#define LITWVERSION_STRING "1.9.0"
 #include <Window.hpp>
 #include <Widget.hpp>
 #include <Palette.hpp>

@@ -26,10 +26,10 @@ public:
     void Draw(std::ostream& buffer, int px, int py) override {
         std::string visual;
         if (focused) {
-            visual = *state ? "> [X] < " : "> [ ] < ";
+            visual = *state ? ">  < " : ">  < ";
         }
         else {
-            visual = *state ? "  [X]   " : "  [ ]   ";
+            visual = *state ? "     " : "     ";
         }
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
         buffer << parent->Palette.Body << visual << text;
