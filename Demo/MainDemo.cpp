@@ -129,6 +129,7 @@ public:
         hbox.Add<Button>("No", [] {});
         hbox.Add<TextInput>(15, &text);
         vbox.Add<Toggle>("Toggle", offon);
+        Add<VerticalSeparator>(17);
     }
 };
 class StartAlert : public Window {
