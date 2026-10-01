@@ -30,7 +30,8 @@ public:
         this->focusable = true;
     }
     int GetWidth() const override {
-        return (int)label.length() + 4;
+        if (!brackets) return (int)label.length() + 4;
+        else return (int)label.length() + 2;
     }
     int GetHeight() const override {
         return 1;
