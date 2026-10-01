@@ -675,7 +675,7 @@ void WindowManager::Run() {
                     CycleWindow();
                     break;
                 case InputType::R:
-                    if (!top->isMaximized && !top->staticWindow) top->isResizing = true;
+                    if (!top->isMaximized && !top->staticWindow && top->resizeable) top->isResizing = true;
                     break;
                 case InputType::Z:
                     top->ToggleMaximize(sw, sh);
