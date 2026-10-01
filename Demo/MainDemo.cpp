@@ -183,7 +183,7 @@ int main() {
     start->AddItem<MenuWindow>("Main Menu", "main menu");
     start->AddItem<NumberInputWindow>("Number Input Demo");
     start->AddItem<Textinputer>("Text Input Demo");
-    start->AddItem<TextInputLargeDemo>("Text input demo - Large");
+    start->AddItem<TextInputLargeDemo>("Text Input Demo - Large");
     start->AddItem<Users>("Table of Users");
     start->AddItem("Terminal", &ShellWindow::Create);
     start->AddItem<ContainerTest>("Containers");

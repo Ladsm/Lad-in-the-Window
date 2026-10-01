@@ -45,7 +45,7 @@ public:
             [this, factory]() {
                 wm->AddWindow(factory());
                 visible = false;
-            }
+            }, false
         ));
     }
     void Draw(std::ostream& buffer) override {

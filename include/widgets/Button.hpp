@@ -6,11 +6,12 @@ public:
     std::string label;
     std::function<void()> onClick;
     bool brackets = true;
-    Button(int x, int y, std::string l, std::function<void()> cb) {
+    Button(int x, int y, std::string l, std::function<void()> cb, bool brack) {
         this->x = x;
         this->y = y;
         label = l;
         onClick = cb;
+        brackets = brack;
         this->focusable = true;
     }
     Button(std::string l, std::function<void()> cb) {
@@ -51,7 +52,7 @@ public:
                 buffer << ">" << label << "<";
             }
             else {
-                buffer << label;
+                buffer << " " << label << " ";
             }
         }
     }
