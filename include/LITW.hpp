@@ -2,8 +2,8 @@
 #define LITW
 #define LITWVERSIONMAJOR 1
 #define LITWVERSIONMINOR 9
-#define LITWVERSIONPATCH 1
-#define LITWVERSION_STRING "1.9.1"
+#define LITWVERSIONPATCH 2
+#define LITWVERSION_STRING "1.9.2"
 #include <Window.hpp>
 #include <Widget.hpp>
 #include <Palette.hpp>
