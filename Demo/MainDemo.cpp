@@ -151,11 +151,11 @@ public:
     }
 };
 class NumberInputWindow : public Window {
-    int number = 0;
+    float number = 0;
 public:
     NumberInputWindow() : Window("Number Input Demo", 31, 7) {
         auto& vbox = Add<VerticalContainer>(2, 2);
-        vbox.Add<NumberInput>(3, &number);
+        vbox.Add<NumberInput<float>>(7, &number);
         vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
