@@ -1,4 +1,4 @@
-#include "pch.h"
+#include <LITW.hpp>
 #include <math.h>
 #include <string>
 #include <vector>
@@ -73,7 +73,7 @@ public:
 
 int main() {
     auto start = startmenu<StartMenuWindow>(&wm);
-    start->AddItem<TringleSolver>("Hello world");
+    start->AddItem<TringleSolver>("Triangle Solver");
     wm.SetStartMenu(start);
     wm.AddWindow(start);
     wm.Run();
