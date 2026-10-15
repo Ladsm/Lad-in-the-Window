@@ -15,12 +15,10 @@ private:
     WindowManager* wm;
 public:
     explicit StartMenuWindow(WindowManager* manager) : Window("Start", 30, 10), wm(manager) {
-        this->decorated = false;
         this->staticWindow = true;
         this->visible = false;
     }
     explicit StartMenuWindow(WindowManager* manager, const WindowPalette& winpal) : Window("Start", 30, 10, winpal), wm(manager) {
-        this->decorated = false;
         this->staticWindow = true;
         this->visible = false;
     }
