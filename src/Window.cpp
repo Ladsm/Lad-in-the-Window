@@ -332,7 +332,7 @@ void WindowManager::Run() {
         std::string consoleTitle = WindowTitle;
         if (top) consoleTitle = top->title;
         std::cout << "\033]0;" << consoleTitle << "\007";
-        std::cout << frame.str() << std::flush;
+        std::cout << "\033[?2026h" << frame.str() << "\033[?2026l" << std::flush;
         if (top && top->focusedWidget >= 0 &&
             top->focusedWidget < (int)top->widgets.size()) {
             Widget* rootWidget = top->widgets[top->focusedWidget].get();
