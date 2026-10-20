@@ -306,10 +306,17 @@ void WindowManager::Run() {
         frame << "\033[" << sh << ";1H" << Palette.TaskBar << std::string(sw, ' ');
         frame << "\033[" << sh << ";1H Start(C) " + LITWOS;
         for (int i = 0; i < (int)windows.size(); i++) {
+            std::string taskbarTitle = "";
+            if (windows[i]->taskbarTitle == "") {
+                taskbarTitle = windows[i]->title;
+            }
+            else {
+                taskbarTitle = windows[i]->taskbarTitle;
+            }
             if (windows[i]->visible) {
                 std::string label =
                     std::to_string(i + 1) + ": " +
-                    windows[i]->title +
+                    taskbarTitle +
                     (windows[i]->isMinimized ? " (min)" : "");
                 if (windows[i]->focused)
                     frame << Palette.TaskBarFocusedWindow <<" [ " << label << " ] " << Palette.TaskBar;
@@ -433,8 +440,10 @@ void WindowManager::Run() {
                         continue;
                     }
                     else if (relx >= 0 && relx <= 2) {
-                        w->isMinimized = true;
-                        CycleWindow();
+                        if (w->minimizeable) {
+                            w->isMinimized = true;
+                            CycleWindow();
+                        }
                         continue;
                     }
                     else {
@@ -466,22 +475,26 @@ void WindowManager::Run() {
                 else if (onRight) rf = Window::RF_Right;
                 else if (onTop) rf = Window::RF_Top;
                 else if (onBottom) rf = Window::RF_Bottom;
-                if (w->staticWindow || !w->resizeable) { } 
+                if (w->staticWindow) { } 
                 else if (rf != Window::RF_None) {
-                    w->isResizing = true;
-                    w->resizeFlags = rf;
-                    w->resizeStartMouseX = mx;
-                    w->resizeStartMouseY = my;
-                    w->resizeStartWidth = w->width;
-                    w->resizeStartHeight = w->height;
-                    w->resizeStartX = w->x;
-                    w->resizeStartY = w->y;
+                    if (w->resizeable) {
+                        w->isResizing = true;
+                        w->resizeFlags = rf;
+                        w->resizeStartMouseX = mx;
+                        w->resizeStartMouseY = my;
+                        w->resizeStartWidth = w->width;
+                        w->resizeStartHeight = w->height;
+                        w->resizeStartX = w->x;
+                        w->resizeStartY = w->y;
+                    }
                     continue;
                 }
-                if (my == headerContentY && mx >= w->x && mx < w->x + w->width) {
-                    w->isMoving = true;
-                    w->dragOffsetX = mx - w->x;
-                    w->dragOffsetY = my - w->y;
+                else if (my == headerContentY && mx >= w->x && mx < w->x + w->width) {
+                    if (w->moveable) {
+                        w->isMoving = true;
+                        w->dragOffsetX = mx - w->x;
+                        w->dragOffsetY = my - w->y;
+                    }
                     continue;
                 }
                 w->HandleMouseClick(mx, my);
@@ -671,8 +684,10 @@ void WindowManager::Run() {
                     if (!top->isMaximized && !top->staticWindow) top->isMoving = true;
                     break;
                 case InputType::Q:
-                    top->isMinimized = true;
-                    CycleWindow();
+                    if (top->minimizeable) {
+                        top->isMinimized = true;
+                        CycleWindow();
+                    }
                     break;
                 case InputType::R:
                     if (!top->isMaximized && !top->staticWindow && top->resizeable) top->isResizing = true;

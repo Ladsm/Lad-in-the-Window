@@ -16,10 +16,14 @@ private:
 public:
     explicit StartMenuWindow(WindowManager* manager) : Window("Start", 30, 10), wm(manager) {
         this->staticWindow = true;
+        this->minimizeable = false;
+        this->moveable = true;
         this->visible = false;
     }
     explicit StartMenuWindow(WindowManager* manager, const WindowPalette& winpal) : Window("Start", 30, 10, winpal), wm(manager) {
         this->staticWindow = true;
+        this->minimizeable = false;
+        this->moveable = true;
         this->visible = false;
     }
     template<typename T, typename... Args>

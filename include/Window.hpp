@@ -21,12 +21,12 @@ public:
     WindowPalette Palette;
     int focusedWidget = -1;
     std::vector<std::unique_ptr<Widget>> widgets;
-    std::string title;
+    std::string title, taskbarTitle = "";
     int x, y, width, height;
     int startWidth, startHeight;
     int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
     bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
-    bool staticWindow = false, decorated = true, resizeable = true;
+    bool staticWindow = false, decorated = true, resizeable = true, minimizeable = true, moveable = true;
     int dragOffsetX = 0;
     int dragOffsetY = 0;
     enum ResizeFlag : int {
