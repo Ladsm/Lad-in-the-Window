@@ -1,4 +1,5 @@
 #include "widgets/text/LargeTextInput.hpp"
+#include <sstream>
 
 LargeTextInput::LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target, bool hi)
     : lines(target), height(h), width(w), highligh(hi) {
@@ -253,6 +254,43 @@ void LargeTextInput::HighlightLine(std::ostream& buffer, const std::string& line
 
 bool LargeTextInput::WantsRawInput() { return isWriting; }
 
+void LargeTextInput::UpdateSnippetPreview() {
+    if (lines->empty() || cursorY >= lines->size()) {
+        activeSnippetPreview = "";
+        return;
+    }
+
+    const std::string& currentLine = (*lines)[cursorY];
+    int startX = cursorX;
+    while (startX > 0 && (std::isalnum(currentLine[startX - 1]) || currentLine[startX - 1] == '#')) {
+        startX--;
+    }
+
+    if (startX == cursorX) {
+        activeSnippetPreview = "";
+        return;
+    }
+
+    std::string word = currentLine.substr(startX, cursorX - startX);
+    auto it = snippets.find(word);
+    if (it != snippets.end()) {
+        std::string preview = it->second;
+        size_t pos;
+        while ((pos = preview.find("$1")) != std::string::npos) preview.erase(pos, 2);
+        while ((pos = preview.find("$0")) != std::string::npos) preview.erase(pos, 2);
+        if (preview.rfind(word, 0) == 0) {
+            preview.erase(0, word.size());
+        }
+
+        activeSnippetPreview = preview;
+        snippetPreviewLine = cursorY;
+        snippetPreviewCol = cursorX;
+    }
+    else {
+        activeSnippetPreview = "";
+    }
+}
+
 void LargeTextInput::HandleRawInput() {
     if (!lines || lines->empty()) return;
 
@@ -497,7 +535,12 @@ void LargeTextInput::HandleRawInput() {
             return;
         }
         if (key == '\t' || key == 9) {
-            if (!TryExpandSnippet()) {
+            if (!activeSnippetPreview.empty()) {
+                TryExpandSnippet();
+                activeSnippetPreview = "";
+                return;
+            }
+            else if (!TryExpandSnippet()) {
                 (*lines)[cursorY].insert(cursorX, "    ");
                 cursorX += 4;
             }
@@ -506,6 +549,7 @@ void LargeTextInput::HandleRawInput() {
         if (key >= 32 && key <= 126) {
             (*lines)[cursorY].insert(cursorX, 1, (char)key);
             cursorX++;
+            UpdateSnippetPreview();
         }
     }
     cursorY = std::max(0, std::min(cursorY, (int)lines->size() - 1));
@@ -524,100 +568,130 @@ void LargeTextInput::HandleInput(InputType input) {
 void LargeTextInput::Draw(std::ostream& buffer, int px, int py) {
     if (!lines) return;
     int viewHeight = height - 1;
+    std::vector<std::string> pLines;
+    if (!activeSnippetPreview.empty()) {
+        std::stringstream ss(activeSnippetPreview);
+        std::string pl;
+        while (std::getline(ss, pl, '\n')) {
+            pLines.push_back(pl);
+        }
+    }
+    int extraLines = pLines.empty() ? 0 : (int)pLines.size() - 1;
+
     if (cursorY < scroll) {
         scroll = cursorY;
     }
     else if (cursorY >= scroll + viewHeight) {
         scroll = cursorY - viewHeight + 1;
     }
-    int maxScroll = std::max(0, (int)lines->size() - viewHeight);
-    scroll = std::max(0, std::min(scroll, maxScroll));
 
+    int maxScroll = std::max(0, (int)lines->size() + extraLines - viewHeight);
+    scroll = std::max(0, std::min(scroll, maxScroll));
     std::string bg = parent->Palette.Body;
     int totalLines = (int)lines->size();
-    size_t lineNumberWidth = std::to_string(std::max(1, totalLines)).size() + 2;
+    size_t lineNumberWidth = std::to_string(std::max(1, totalLines + extraLines)).size() + 2;
     size_t textWidth = width - lineNumberWidth;
+
     if (cursorX < scrollX) {
         scrollX = cursorX;
     }
     else if (cursorX >= scrollX + textWidth) {
         scrollX = cursorX - textWidth + 1;
     }
-    scrollX = std::max(0, scrollX);
 
+    scrollX = std::max(0, scrollX);
     bool inMultiLineComment = IsInMultiLineComment(scroll - 1);
     int selStartY = std::min(visualAnchorY, cursorY);
     int selEndY = std::max(visualAnchorY, cursorY);
     int selStartX = (visualAnchorY < cursorY) ? visualAnchorX : (visualAnchorY > cursorY ? cursorX : std::min(visualAnchorX, cursorX));
     int selEndX = (visualAnchorY < cursorY) ? cursorX : (visualAnchorY > cursorY ? visualAnchorX : std::max(visualAnchorX, cursorX));
+    std::string dimColor = "\033[38;2;110;110;110m";
 
     for (int i = 0; i < viewHeight; ++i) {
-        int lineIndex = scroll + i;
+        int screenRowIndex = scroll + i;
         buffer << "\033[" << (py + y + i) << ";" << (px + x) << "H" << bg;
-
-        if (lineIndex < totalLines) {
-            std::string lineNum = std::to_string(lineIndex + 1);
+        if (!activeSnippetPreview.empty() && screenRowIndex >= snippetPreviewLine && screenRowIndex <= snippetPreviewLine + extraLines) {
+            std::string lineNum = std::to_string(snippetPreviewLine + 1);
             buffer << "\033[38;2;120;120;120m";
             buffer << std::string(lineNumberWidth - lineNum.size(), ' ') << lineNum;
             buffer << bg;
+            int previewIdx = screenRowIndex - snippetPreviewLine;
+            std::string previewLineText = pLines[previewIdx];
+            if (previewIdx == 0) {
+                const std::string& fullLine = (*lines)[snippetPreviewLine];
+                std::string prefix = fullLine.substr(0, cursorX);
+                std::string suffix = fullLine.substr(cursorX);
+                buffer << "\033[38;2;255;255;255m" << prefix;
+                buffer << dimColor << previewLineText;
+                buffer << "\033[38;2;255;255;255m" << suffix << bg;
+            }
+            else {
+                buffer << dimColor << previewLineText << bg;
+            }
+        }
+        else {
+            int fileLineIndex = screenRowIndex;
+            if (!activeSnippetPreview.empty() && screenRowIndex > snippetPreviewLine + extraLines) {
+                fileLineIndex -= extraLines;
+            }
+            if (fileLineIndex < totalLines) {
+                std::string lineNum = std::to_string(fileLineIndex + 1);
+                buffer << "\033[38;2;120;120;120m";
+                buffer << std::string(lineNumberWidth - lineNum.size(), ' ') << lineNum;
+                buffer << bg;
 
-            const std::string& fullLine = (*lines)[lineIndex];
+                const std::string& fullLine = (*lines)[fileLineIndex];
 
-            if (mode == VISUAL) {
-                for (int col = 0; col < (int)textWidth; ++col) {
-                    int realCol = scrollX + col;
+                if (mode == VISUAL) {
+                    for (int col = 0; col < (int)textWidth; ++col) {
+                        int realCol = scrollX + col;
+                        if (realCol < (int)fullLine.size()) {
+                            char ch = fullLine[realCol];
+                            bool inVisualRange = (fileLineIndex > selStartY || (fileLineIndex == selStartY && realCol >= selStartX)) &&
+                                (fileLineIndex < selEndY || (fileLineIndex == selEndY && realCol <= selEndX));
 
-                    if (realCol < (int)fullLine.size()) {
-                        char ch = fullLine[realCol];
-                        bool inVisualRange = (lineIndex > selStartY || (lineIndex == selStartY && realCol >= selStartX)) &&
-                            (lineIndex < selEndY || (lineIndex == selEndY && realCol <= selEndX));
-
-                        if (inVisualRange) {
-                            buffer << "\033[7m" << ch << "\033[27m" << bg;
-                        }
-                        else {
-                            buffer << "\033[38;2;255;255;255m" << ch;
-                        }
-                    }
-                    else {
-                        bool inVisualRange = (lineIndex >= selStartY && lineIndex < selEndY && realCol == (int)fullLine.size());
-                        if (inVisualRange) {
-                            buffer << "\033[7m \033[27m" << bg;
+                            if (inVisualRange) {
+                                buffer << "\033[7m" << ch << "\033[27m" << bg;
+                            }
+                            else {
+                                buffer << "\033[38;2;255;255;255m" << ch;
+                            }
                         }
                         else {
                             buffer << " ";
                         }
                     }
                 }
-            }
-            else if (highligh) {
-                std::string visible = (int)fullLine.size() > scrollX ? fullLine.substr(scrollX) : "";
-                HighlightLine(buffer, visible, textWidth, bg, inMultiLineComment);
+                else if (highligh) {
+                    std::string visible = (int)fullLine.size() > scrollX ? fullLine.substr(scrollX) : "";
+                    HighlightLine(buffer, visible, textWidth, bg, inMultiLineComment);
+                }
+                else {
+                    std::string visible = (int)fullLine.size() > scrollX ? fullLine.substr(scrollX) : "";
+                    buffer << "\033[38;2;255;255;255m" << bg;
+                    std::string toRender = visible.substr(0, textWidth);
+                    buffer << toRender;
+                    if ((int)toRender.size() < textWidth) {
+                        buffer << std::string(textWidth - toRender.size(), ' ');
+                    }
+                }
+
+                if (isWriting && fileLineIndex == cursorY && mode != VISUAL && activeSnippetPreview.empty()) {
+                    if (cursorX >= scrollX && cursorX < scrollX + textWidth) {
+                        char ch = (cursorX < (int)fullLine.size()) ? fullLine[cursorX] : ' ';
+                        buffer << "\033[" << (py + y + i) << ";"
+                            << (px + x + lineNumberWidth + (cursorX - scrollX)) << "H";
+                        buffer << "\033[38;2;255;255;255;48;2;0;0;0m" << ch << bg;
+                    }
+                }
             }
             else {
-                std::string visible = (int)fullLine.size() > scrollX ? fullLine.substr(scrollX) : "";
-                buffer << "\033[38;2;255;255;255m" << bg;
-                std::string toRender = visible.substr(0, textWidth);
-                buffer << toRender;
-                if ((int)toRender.size() < textWidth) {
-                    buffer << std::string(textWidth - toRender.size(), ' ');
-                }
+                buffer << "\033[38;2;80;80;80m" << std::string(lineNumberWidth - 1, ' ') << "~" << bg;
+                buffer << std::string(textWidth, ' ');
             }
-
-            if (isWriting && lineIndex == cursorY && mode != VISUAL) {
-                if (cursorX >= scrollX && cursorX < scrollX + textWidth) {
-                    char ch = (cursorX < (int)fullLine.size()) ? fullLine[cursorX] : ' ';
-                    buffer << "\033[" << (py + y + i) << ";"
-                        << (px + x + lineNumberWidth + (cursorX - scrollX)) << "H";
-                    buffer << "\033[38;2;255;255;255;48;2;0;0;0m" << ch << bg;
-                }
-            }
-        }
-        else {
-            buffer << "\033[38;2;80;80;80m" << std::string(lineNumberWidth - 1, ' ') << "~" << bg;
-            buffer << std::string(textWidth, ' ');
         }
     }
+
     buffer << "\033[" << (py + y + viewHeight) << ";" << (px + x) << "H";
     if (isWriting) {
         if (mode == INSERT) buffer << "-- INSERT --";
@@ -631,6 +705,10 @@ void LargeTextInput::Draw(std::ostream& buffer, int px, int py) {
     int statusLen = 1 + (isWriting ? (mode == INSERT ? 12 : (mode == VISUAL ? 12 : 13)) : 23);
     buffer << std::string(std::max(0, width - statusLen), ' ');
     buffer << "\033[0m";
+    if (!lines) {}
+    else {
+        GenerateFunctionSnippets();
+    }
 }
 
 void LargeTextInput::RegisterSnippet(const std::string& trigger, const std::string& body) {
@@ -654,17 +732,28 @@ bool LargeTextInput::TryExpandSnippet() {
     if (it != snippets.end()) {
         std::string body = it->second;
         std::string suffix = currentLine.substr(cursorX);
+        size_t indentEnd = 0;
+        while (indentEnd < currentLine.size() && (currentLine[indentEnd] == '\t' || currentLine[indentEnd] == ' ')) {
+            if (currentLine[indentEnd] == ' ' || currentLine[indentEnd] == '\t' || (unsigned char)currentLine[indentEnd] == 0xA0) {
+                indentEnd++;
+            }
+            else {
+                break;
+            }
+        }
+        std::string lineIndent = currentLine.substr(0, indentEnd);
+
         currentLine.erase(startX);
+
         size_t s1Pos = body.find("$1");
         if (s1Pos != std::string::npos) {
             body.replace(s1Pos, 2, "");
         }
         size_t s0Pos = body.find("$0");
-        int targetRelativeY = 0;
-        int targetRelativeX = 0;
         if (s0Pos != std::string::npos) {
             body.replace(s0Pos, 2, "");
         }
+
         std::vector<std::string> snippetLines;
         size_t pos = 0;
         size_t nextPos = 0;
@@ -673,28 +762,23 @@ bool LargeTextInput::TryExpandSnippet() {
             pos = nextPos + 1;
         }
         snippetLines.push_back(body.substr(pos));
-
         if (snippetLines.empty()) return false;
-        if (s0Pos != std::string::npos) {
-            size_t currentPos = 0;
-            for (size_t i = 0; i < snippetLines.size(); ++i) {
-            }
-        }
         currentLine += snippetLines[0];
         for (size_t i = 1; i < snippetLines.size(); ++i) {
-            lines->insert(lines->begin() + cursorY + i, snippetLines[i]);
+            lines->insert(lines->begin() + cursorY + i, lineIndent + snippetLines[i]);
         }
 
         if (!suffix.empty()) {
             (*lines)[cursorY + snippetLines.size() - 1] += suffix;
         }
+
         if (s1Pos != std::string::npos) {
             int lineOffset = 0;
             int colOffset = startX;
             for (size_t i = 0; i < s1Pos; ++i) {
                 if (body[i] == '\n') {
                     lineOffset++;
-                    colOffset = 0;
+                    colOffset = lineIndent.size();
                 }
                 else {
                     colOffset++;
@@ -714,6 +798,38 @@ bool LargeTextInput::TryExpandSnippet() {
     return false;
 }
 
+void LargeTextInput::GenerateFunctionSnippets() {
+    if (!lines) return;
+    for (const std::string& line : *lines) {
+        size_t openParen = line.find('(');
+        size_t closeParen = line.rfind(')');
+        size_t semi = line.rfind(';');
+        size_t brace = line.rfind('{');
+        if (openParen == std::string::npos || closeParen == std::string::npos || openParen >= closeParen)
+            continue;
+        if (semi == std::string::npos && brace == std::string::npos)
+            continue;
+        std::string prefixPart = line.substr(0, openParen);
+        size_t endTrim = prefixPart.find_last_not_of(" \t");
+        if (endTrim == std::string::npos) continue;
+        prefixPart = prefixPart.substr(0, endTrim + 1);
+        size_t lastSpace = prefixPart.rfind(' ');
+        std::string funcName = "";
+
+        if (lastSpace == std::string::npos) {
+            funcName = prefixPart;
+        }
+        else {
+            funcName = prefixPart.substr(lastSpace + 1);
+        }
+        if (funcName.empty() || !isalpha(funcName[0])) continue;
+        if (funcName == "if" || funcName == "for" || funcName == "while" || funcName == "switch" || funcName == "catch")
+            continue;
+        std::string trigger = (funcName.length() > 3) ? funcName.substr(0, 3) : funcName;
+        std::string body = funcName + "($1);";
+        RegisterSnippet(trigger, body);
+    }
+}
 void LargeTextInput::createCppSnippets() {
     RegisterSnippet("for", "for (int i = 0; i < $1; ++i) {\n    \n}");
     RegisterSnippet("if", "if ($1) {\n    \n}");
@@ -724,8 +840,8 @@ void LargeTextInput::createCppSnippets() {
     RegisterSnippet("switch", "switch ($1) {\n    default:\n    break;\n}");
 
     RegisterSnippet("std", "std::$1"); 
-    RegisterSnippet("class", "class $1 {\nprivate:\n    \n};");
-    RegisterSnippet("struct", "struct $1 {\npublic:\n    \n};");
+    RegisterSnippet("class", "class $1 {\npublic:\n    \n};");
+    RegisterSnippet("struct", "struct $1 {\nprivate:\n    \n};");
     RegisterSnippet("enum", "enum class $1 {\n    \n};");
     RegisterSnippet("templ", "template <typename $1>");
     RegisterSnippet("namespace", "namespace $1 {\n\n}");

@@ -24,6 +24,7 @@ public:
         std::string trigger;
         std::string body;
     };
+    std::string activeSnippetPreview = "";
     std::unordered_map<std::string, std::string> snippets;
     std::vector<std::string>* lines;
     int cursorX = 0;
@@ -36,6 +37,8 @@ public:
     int width;
     bool highligh = false;
     bool isWriting = false;
+    int snippetPreviewLine = -1;
+    int snippetPreviewCol = -1;
     Mode mode = COMMAND;
     std::unordered_set<std::string> knownVariables;
     std::unordered_set<std::string> knownTypes = {
@@ -50,10 +53,12 @@ public:
     bool IsInMultiLineComment(int targetLine);
     void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg, bool& inMultiLineComment);
     bool WantsRawInput() override;
+    void UpdateSnippetPreview();
     void HandleRawInput() override;
     void HandleInput(InputType input) override;
     void Draw(std::ostream& buffer, int px, int py) override;
     void RegisterSnippet(const std::string& trigger, const std::string& body);
     bool TryExpandSnippet();
+    void GenerateFunctionSnippets();
     void createCppSnippets();
 };
