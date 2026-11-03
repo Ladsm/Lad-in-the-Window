@@ -22,9 +22,10 @@ public:
     void Draw(std::ostream& buffer, int px, int py) override {
         std::string body = parent->Palette.Body;
         buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
+        buffer << body << label << ":";
         if (focused) buffer << body << ">";
         else buffer << body << " ";
-        buffer << label << ": [" << (value ? "ON " : "OFF") << "]";
+        buffer << body << "[" << (value ? "ON " : "OFF") << "]";
         if (focused) buffer << "<";
         buffer << body;
     }
