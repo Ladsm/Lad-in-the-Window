@@ -177,6 +177,37 @@ public:
     }
 };
 
+class WindowWithSubwindow : public Window {
+    Label* BoolSomething = nullptr;
+    bool SubwindowBool = false;
+public:
+    WindowWithSubwindow() : Window("Subwindow Showcase", 40, 10) {
+        taskbarTitle = "Subwindows!";
+        auto& vbox = Add<VerticalContainer>(2, 2, 1);
+        vbox.Add<Button>("Open Subwindow", [this]() {
+            OpenSubwindow(wm, "Toggle Bool Subwindow", 35, 8, [this](Subwindow& sub) {
+                auto& subBox = sub.Add<VerticalContainer>(2, 2, 1);
+                subBox.Add<Button>("Toggle Bool", [this]() {
+                    SubwindowBool = !SubwindowBool;
+                    });
+                subBox.Add<Button>("Close", [&sub]() { sub.CloseWindow(wm); });
+                });
+            });
+
+        BoolSomething = &vbox.Add<Label>("");
+        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+    }
+    void Draw(std::ostream& buffer) override {
+        if (SubwindowBool) {
+            BoolSomething->text = "Its true!";
+        }
+        else {
+            BoolSomething->text = "Its (not)true!";
+        }
+        Window::Draw(buffer);
+    }
+};
+
 int main() {
     auto startalert = makeSharedWindow<StartAlert>();
     auto start = startmenu<StartMenuWindow>(&wm);
@@ -190,6 +221,7 @@ int main() {
     start->AddItem<ContainerTest>("Containers");
     start->AddItem<EyesWindow>("Eyes");
     start->AddItem<PaletteTest>("Palette Test");
+    start->AddItem<WindowWithSubwindow>("Subwindow showcase");
     wm.SetStartMenu(start);
     wm.AddWindow(start);
     wm.AddWindow(startalert);

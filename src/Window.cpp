@@ -10,6 +10,10 @@
 #include <memory>
 #include <functional>
 
+
+// ---------------------------------
+// Window
+// ---------------------------------
 Window::Window(std::string t, int w, int h) : title(t), width(w), height(h), startWidth(w), startHeight(h) {
     x = (getConsoleWidth() - w) / 2;
     y = (getConsoleHeight() - h) / 2;
@@ -201,10 +205,38 @@ bool Window::ContainsPoint(int px, int py) const {
     return px >= x && px < x + width &&
         py >= y && py < y + height;
 }
+
+std::shared_ptr<Subwindow> Window::CreateSubwindow(std::string title, int w, int h) {
+    auto sub = std::make_shared<Subwindow>(std::move(title), w, h, shared_from_this());
+    int offsetX = 5;
+    int offsetY = 3;
+    sub->x = this->x + offsetX;
+    sub->y = this->y + offsetY;
+    return sub;
+}
+
+void Window::CloseWindow(WindowManager& WM) {
+    WM.RemoveWindow(this);
+}
+
+// ---------------------------------
+// Window Manager
+// ---------------------------------
 WindowManager::WindowManager(std::string deftitle) : WindowTitle(deftitle) {}
 WindowManager::WindowManager(std::string deftitle, WindowManagerPalette p) : WindowTitle(deftitle), Palette(p) {}
 WindowManager::WindowManager(std::string deftitle, WindowManagerPalette p, WindowPalette ap) : 
     WindowTitle(deftitle), Palette(p), AlertPalette(ap) {}
+
+std::shared_ptr<Subwindow> WindowManager::FindSubwindow(Window* parent, const std::string& title) {
+    for (auto& win : windows) {
+        if (auto sub = std::dynamic_pointer_cast<Subwindow>(win)) {
+            if (sub->Parrent.lock().get() == parent && sub->title == title) {
+                return sub;
+            }
+        }
+    }
+    return nullptr;
+}
 
 void WindowManager::Alert(std::string message) {
     auto alert = std::make_shared<AlertWindow>(message, this);
@@ -235,21 +267,42 @@ void WindowManager::AddWindow(std::shared_ptr<Window> w) {
     windows.back()->focused = true;
     windowCount++;
 }
-void WindowManager::RemoveWindow(std::shared_ptr<Window> w) {
-    auto it = std::find(windows.begin(), windows.end(), w);
-    if (it != windows.end()) {
-        windows.erase(it);
-        windowCount--;
-    }
-}
+
 void WindowManager::RemoveWindow(Window* w) {
-    auto it = std::find_if(windows.begin(), windows.end(),
-        [w](const std::shared_ptr<Window>& ptr) { return ptr.get() == w; });
-    if (it != windows.end()) {
-        windows.erase(it);
-        windowCount--;
+    if (!w) return;
+    windows.erase(
+        std::remove_if(windows.begin(), windows.end(),
+            [w](const std::shared_ptr<Window>& ptr) { return ptr.get() == w; }),
+        windows.end()
+    );
+    bool removedAny = true;
+    while (removedAny) {
+        removedAny = false;
+        auto it = std::remove_if(windows.begin(), windows.end(),
+            [this](const std::shared_ptr<Window>& ptr) {
+                if (auto sub = std::dynamic_pointer_cast<Subwindow>(ptr)) {
+                    auto parent = sub->Parrent.lock();
+                    if (!parent) return true;
+                    bool parentStillOpen = std::any_of(windows.begin(), windows.end(),
+                        [&parent](const std::shared_ptr<Window>& win) {
+                            return win == parent;
+                        });
+                    return !parentStillOpen;
+                }
+                return false;
+            });
+        if (it != windows.end()) {
+            windows.erase(it, windows.end());
+            removedAny = true;
+        }
     }
+    windowCount = static_cast<int>(windows.size());
 }
+
+void WindowManager::RemoveWindow(std::shared_ptr<Window> w) {
+    RemoveWindow(w.get());
+}
+
 void WindowManager::CycleWindow() {
     if (windows.size() < 2) return;
     auto top = windows.back();
@@ -704,4 +757,4 @@ void WindowManager::Run() {
         std::this_thread::sleep_for(std::chrono::milliseconds(66));
     }
     exit(1);
-} 
+}
