@@ -83,13 +83,13 @@ std::shared_ptr<T> makeSharedWindow(Args&& ... args) {
 
 class Subwindow : public Window {
 public:
-    std::weak_ptr<Window> Parrent;
+    std::weak_ptr<Window> Parent;
     Subwindow(std::string t, int w, int h, std::shared_ptr<Window> p)
-        : Window(t, w, h, p->Palette), Parrent(p) {
+        : Window(t, w, h, p->Palette), Parent(p) {
         resizeable = false;
     }
     Subwindow(std::string t, int w, int h, std::shared_ptr<Window> p, std::function<void(Subwindow&)> setup)
-        : Window(t, w, h, p->Palette), Parrent(p) {
+        : Window(t, w, h, p->Palette), Parent(p) {
         resizeable = false;
         if (setup) setup(*this);
     }

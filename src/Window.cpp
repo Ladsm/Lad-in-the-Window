@@ -230,7 +230,7 @@ WindowManager::WindowManager(std::string deftitle, WindowManagerPalette p, Windo
 std::shared_ptr<Subwindow> WindowManager::FindSubwindow(Window* parent, const std::string& title) {
     for (auto& win : windows) {
         if (auto sub = std::dynamic_pointer_cast<Subwindow>(win)) {
-            if (sub->Parrent.lock().get() == parent && sub->title == title) {
+            if (sub->Parent.lock().get() == parent && sub->title == title) {
                 return sub;
             }
         }
@@ -281,7 +281,7 @@ void WindowManager::RemoveWindow(Window* w) {
         auto it = std::remove_if(windows.begin(), windows.end(),
             [this](const std::shared_ptr<Window>& ptr) {
                 if (auto sub = std::dynamic_pointer_cast<Subwindow>(ptr)) {
-                    auto parent = sub->Parrent.lock();
+                    auto parent = sub->Parent.lock();
                     if (!parent) return true;
                     bool parentStillOpen = std::any_of(windows.begin(), windows.end(),
                         [&parent](const std::shared_ptr<Window>& win) {
