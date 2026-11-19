@@ -1,0 +1,57 @@
+#include <widgets/Table.hpp>
+#include <Window.hpp>
+
+namespace litw {
+
+    Table::Table(int x, int y, std::vector<std::string> hdrs, std::vector<int> widths)
+        : headers(hdrs), colWidths(widths) {
+        this->x = x; this->y = y;
+        this->focusable = false;
+    }
+    Table::Table(std::vector<std::string> hdrs, std::vector<int> widths)
+        : headers(hdrs), colWidths(widths) {
+        this->x = 0;
+        this->y = 0;
+        this->focusable = false;
+    }
+    void Table::AddRow(std::vector<std::string> row) { rows.push_back(row); }
+    void Table::Draw(std::ostream& buffer, int px, int py) {
+        buffer << parent->Palette.Body;
+        int curY = py + y;
+        DrawLine(buffer, px + x, curY++, "╭", "┬", "╮", "─");
+        DrawDataRow(buffer, px + x, curY++, headers);
+        DrawLine(buffer, px + x, curY++, "├", "┼", "┤", "─");
+        for (const auto& row : rows) {
+            DrawDataRow(buffer, px + x, curY++, row);
+        }
+        DrawLine(buffer, px + x, curY, "╰", "┴", "╯", "─");
+    }
+    int Table::GetWidth() const {
+        int total = 0;
+        for (auto w : colWidths) total += w;
+        total += (int)colWidths.size() + 1;
+        return total;
+    }
+    int Table::GetHeight() const {
+        return 4 + (int)rows.size();
+    }
+
+    void Table::DrawLine(std::ostream& buf, int xPos, int yPos, const char* left, const char* mid, const char* right, const char* fill) {
+        buf << "\033[" << yPos << ";" << xPos << "H" << left;
+        for (size_t i = 0; i < colWidths.size(); ++i) {
+            for (int j = 0; j < colWidths[i]; ++j) buf << fill;
+            if (i < colWidths.size() - 1) buf << mid;
+        }
+        buf << right;
+    }
+    void Table::DrawDataRow(std::ostream& buf, int xPos, int yPos, const std::vector<std::string>& data) {
+        buf << "\033[" << yPos << ";" << xPos << "H│";
+        for (size_t i = 0; i < colWidths.size(); ++i) {
+            std::string cell = (i < data.size()) ? data[i] : "";
+            if (cell.length() > (size_t)colWidths[i]) cell = cell.substr(0, colWidths[i]);
+            buf << cell;
+            for (size_t j = cell.length(); j < (size_t)colWidths[i]; ++j) buf << " ";
+            buf << "│";
+        }
+    }
+}

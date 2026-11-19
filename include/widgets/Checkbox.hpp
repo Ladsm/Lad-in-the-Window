@@ -7,40 +7,12 @@ namespace litw {
     public:
         std::string text;
         bool* state;
-        CheckBox(int x, int y, std::string t, bool& isOn) {
-            this->x = x;
-            this->y = y;
-            this->text = t;
-            this->state = &isOn;
-        }
-        CheckBox(std::string t, bool& isOn) {
-            this->x = 0;
-            this->y = 0;
-            this->text = t;
-            this->state = &isOn;
-        }
-        int GetWidth() const override {
-            return text.size() + 8;
-        }
-        int GetHeight() const override {
-            return 1;
-        }
-        void Draw(std::ostream& buffer, int px, int py) override {
-            std::string visual;
-            if (focused) {
-                visual = *state ? ">  < " : ">  < ";
-            }
-            else {
-                visual = *state ? "     " : "     ";
-            }
-            buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
-            buffer << parent->Palette.Body << visual << text;
-        }
-        void HandleInput(InputType input) override {
-            if (input == InputType::Enter) {
-                *state = !(*state);
-            }
-        }
+        CheckBox(int x, int y, std::string t, bool& isOn);
+        CheckBox(std::string t, bool& isOn);
+        int GetWidth() const override;
+        int GetHeight() const override;
+        void Draw(std::ostream& buffer, int px, int py) override;
+        void HandleInput(InputType input) override;
     };
 
 }

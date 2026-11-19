@@ -6,7 +6,19 @@ set(LIB_SOURCES
     src/userinput.cpp
     src/Window.cpp
     src/widgets/ShellWidget.cpp
+    src/widgets/Button.cpp
+    src/widgets/Checkbox.cpp
+    src/widgets/Toggle.cpp
+    src/widgets/Separator.cpp
+    src/widgets/Table.cpp
+    src/widgets/EyesWidget.cpp
+    src/widgets/text/Label.cpp
+    src/widgets/text/Textbox.cpp
     src/widgets/text/LargeTextInput.cpp
+    src/widgets/text/TextInput.cpp
+    src/widgets/text/ScrollableTextBox.cpp
+    src/widgets/containers/VerticalContainer.cpp
+    src/widgets/containers/HorizontalContainer.cpp
 )
 add_library(LITW STATIC ${LIB_SOURCES})
 add_library(LITW::LITW ALIAS LITW)
