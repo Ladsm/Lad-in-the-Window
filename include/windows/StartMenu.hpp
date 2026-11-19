@@ -7,66 +7,69 @@
 #include <string>
 #include <tuple>
 #include <utility>
-
 class WindowManager;
 
-class StartMenuWindow : public Window {
-private:
-    WindowManager* wm;
-public:
-    explicit StartMenuWindow(WindowManager* manager) : Window("Start", 30, 10), wm(manager) {
-        this->staticWindow = true;
-        this->minimizeable = false;
-        this->moveable = true;
-        this->visible = false;
-    }
-    explicit StartMenuWindow(WindowManager* manager, const WindowPalette& winpal) : Window("Start", 30, 10, winpal), wm(manager) {
-        this->staticWindow = true;
-        this->minimizeable = false;
-        this->moveable = true;
-        this->visible = false;
-    }
-    template<typename T, typename... Args>
-    void AddItem(const std::string& name, Args&&... args) {
-        AddItem(name,
-            [argsTuple = std::make_tuple(std::forward<Args>(args)...)]() mutable {
-                return std::apply(
-                    [](auto&&... unpacked) {
-                        return std::make_shared<T>(
-                            std::forward<decltype(unpacked)>(unpacked)...
-                        );
-                    },
-                    std::move(argsTuple)
-                );
-            }
-        );
-    }
-    void AddItem(const std::string& name, std::function<std::shared_ptr<Window>()> factory) {
-        AddWidget(std::make_unique<Button>(
-            2,
-            1 + widgets.size(),
-            name,
-            [this, factory]() {
-                wm->AddWindow(factory());
-                visible = false;
-            }, false
-        ));
-    }
-    void Draw(std::ostream& buffer) override {
-        x = 0;
-        y = getConsoleHeight() - height - 1;
-        Window::Draw(buffer);
-    }
-    void HandleInput(InputType input) {
-        if (input == InputType::Escape) {
-            visible = false;
-            return;
-        }
-        Window::HandleInput(input);
-    }
-};
+namespace litw {
 
-template<typename T, typename... Args>
-std::shared_ptr<T> startmenu(Args&&... args) {
-    return std::make_shared<T>(std::forward<Args>(args)...);
+    class StartMenuWindow : public Window {
+    private:
+        WindowManager* wm;
+    public:
+        explicit StartMenuWindow(WindowManager* manager) : Window("Start", 30, 10), wm(manager) {
+            this->staticWindow = true;
+            this->minimizeable = false;
+            this->moveable = true;
+            this->visible = false;
+        }
+        explicit StartMenuWindow(WindowManager* manager, const WindowPalette& winpal) : Window("Start", 30, 10, winpal), wm(manager) {
+            this->staticWindow = true;
+            this->minimizeable = false;
+            this->moveable = true;
+            this->visible = false;
+        }
+        template<typename T, typename... Args>
+        void AddItem(const std::string& name, Args&&... args) {
+            AddItem(name,
+                [argsTuple = std::make_tuple(std::forward<Args>(args)...)]() mutable {
+                    return std::apply(
+                        [](auto&&... unpacked) {
+                            return std::make_shared<T>(
+                                std::forward<decltype(unpacked)>(unpacked)...
+                            );
+                        },
+                        std::move(argsTuple)
+                    );
+                }
+            );
+        }
+        void AddItem(const std::string& name, std::function<std::shared_ptr<Window>()> factory) {
+            AddWidget(std::make_unique<Button>(
+                2,
+                1 + widgets.size(),
+                name,
+                [this, factory]() {
+                    wm->AddWindow(factory());
+                    visible = false;
+                }, false
+            ));
+        }
+        void Draw(std::ostream& buffer) override {
+            x = 0;
+            y = getConsoleHeight() - height - 1;
+            Window::Draw(buffer);
+        }
+        void HandleInput(InputType input) {
+            if (input == InputType::Escape) {
+                visible = false;
+                return;
+            }
+            Window::HandleInput(input);
+        }
+    };
+
+    template<typename T, typename... Args>
+    std::shared_ptr<T> startmenu(Args&&... args) {
+        return std::make_shared<T>(std::forward<Args>(args)...);
+    }
+
 }

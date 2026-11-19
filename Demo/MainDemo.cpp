@@ -3,30 +3,30 @@
 #include <functional>
 #include <cstdlib>
 
-WindowManager wm("LITW demo");
-class Textinputer : public Window {
+litw::WindowManager wm("LITW demo");
+class Textinputer : public litw::Window {
     std::string text = "Text Entering Demo";
     bool checkbox = false;
 public:
-    Textinputer() : Window("Text Entering Demo", 47, 8) {
-        auto& vbox = Add<VerticalContainer>(2, 2, 0);
-        auto& hbox = vbox.Add<HorizontalContainer>();
-        hbox.Add<TextInput>(20, &text);
-        hbox.Add<CheckBox>("checkbox", checkbox);
-        vbox.Add<HorizontalSeparator>();
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+    Textinputer() : litw::Window("Text Entering Demo", 47, 8) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2, 0);
+        auto& hbox = vbox.Add<litw::HorizontalContainer>();
+        hbox.Add<litw::TextInput>(20, &text);
+        hbox.Add<litw::CheckBox>("checkbox", checkbox);
+        vbox.Add<litw::HorizontalSeparator>();
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
-class MenuWindow : public Window {
+class MenuWindow : public litw::Window {
 public:
-    MenuWindow(std::string title) : Window(title, 40, 10) {
-        auto& vbox = Add<VerticalContainer>(2, 2);
-        vbox.Add<Button>("Exit", []() {
+    MenuWindow(std::string title) : litw::Window(title, 40, 10) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2);
+        vbox.Add<litw::Button>("Exit", []() {
             wm.exit(0);
             });
     }
 };
-class README : public Window {
+class README : public litw::Window {
     std::vector<std::string> text = {
         "Lad in the Window, Ladsm 2026",
         "version : " LITWVERSION_STRING,
@@ -49,36 +49,36 @@ class README : public Window {
     };
 public:
     README() : Window("README", 60, 18) {
-        auto& vbox = Add<VerticalContainer>(2, 2);
-        vbox.Add<ScrollableTextBox>(10, 55, text);
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+        auto& vbox = Add<litw::VerticalContainer>(2, 2);
+        vbox.Add<litw::ScrollableTextBox>(10, 55, text);
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 
-class Users : public Window {
+class Users : public litw::Window {
 public:
-    Users() : Window("List of Users", 40, 12) {
-        auto& vbox = Add<VerticalContainer>(2, 2);
-        auto& table = vbox.Add<Table>(
+    Users() : litw::Window("List of Users", 40, 12) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2);
+        auto& table = vbox.Add<litw::Table>(
             std::vector<std::string>{"ID", "Name", "Status"},
             std::vector<int>{4, 15, 10}
         );
         table.AddRow({ "01", "Ladsm", "Online" });
         table.AddRow({ "02", "Guest", "Offline" });
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
-class ShellWindow : public Window {
+class ShellWindow : public litw::Window {
 public:
-    ShellWindow() : Window("Terminal", 80, 24) {}
+    ShellWindow() : litw::Window("Terminal", 80, 24) {}
     static std::shared_ptr<ShellWindow> Create() {
         auto win = std::make_shared<ShellWindow>();
-        win->Add<ShellWidget>(1, 1, win);
+        win->Add<litw::ShellWidget>(1, 1, win);
         return win;
     }
 };
 
-WindowPalette winpal = WindowPalette(
+litw::WindowPalette winpal = litw::WindowPalette(
     "\033[38;2;255;255;255;48;2;37;0;100m",
     "\033[38;2;255;255;255;48;2;102;49;0m",
     "\033[38;2;255;255;255;48;2;0;0;0m",
@@ -86,7 +86,7 @@ WindowPalette winpal = WindowPalette(
     "\033[38;2;255;255;255;48;2;18;18;18m",
     "\033[48;2;45;45;45m"
 );
-class TextInputLargeDemo : public Window {
+class TextInputLargeDemo : public litw::Window {
     std::vector<std::string> text = {
         "#include <iostream>",
         "",
@@ -95,72 +95,72 @@ class TextInputLargeDemo : public Window {
         "    std::cout << b << \"test\" << '\\n';",
         "}"
     };
-    LargeTextInput* LTIWidght = nullptr;
+    litw::LargeTextInput* LTIWidght = nullptr;
 public:
-    TextInputLargeDemo() : Window("Text Input - Large", 50, 20, winpal) {
-        auto& vbox = Add<VerticalContainer>(2, 2, 1);
-        LTIWidght = &vbox.Add<LargeTextInput>(10, 45, &text, true);
+    TextInputLargeDemo() : litw::Window("Text Input - Large", 50, 20, winpal) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2, 1);
+        LTIWidght = &vbox.Add<litw::LargeTextInput>(10, 45, &text, true);
         LTIWidght->createCppSnippets();
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
     void Draw(std::ostream& buffer) override {
         LTIWidght->height = height - 8;
         LTIWidght->width = width - 5;
-        Window::Draw(buffer);
+        litw::Window::Draw(buffer);
     }
     /*
-     * Window.Draw is a function that runs every frame that a window is on screen.
+     * litw::Window::Draw is a function that runs every frame that a window is on screen.
      * You can use this to create dynamicly size changeing widgets like so.
      * Just remember to call Window::Draw(buffer); at the end so it actualy draws.
      */
 };
-class ContainerTest: public Window {
+class ContainerTest: public litw::Window {
     std::string text = "Input Here!";
     bool offon = false;
 public:
-    ContainerTest() : Window("Container Test", 50, 10) {
+    ContainerTest() : litw::Window("Container Test", 50, 10) {
         resizeable = false;
-        auto& vbox = Add<VerticalContainer>(2, 2, 0);
-        vbox.Add<Label>("Settings");
-        vbox.Add<Button>("Apply", [] {});
-        auto& hbox = vbox.Add<HorizontalContainer>();
-        hbox.Add<Label>("Button example");
-        hbox.Add<Button>("Yes", [] {});
-        hbox.Add<Button>("No", [] {});
-        hbox.Add<TextInput>(15, &text);
-        vbox.Add<Toggle>("Toggle", offon);
-        Add<VerticalSeparator>(17);
+        auto& vbox = Add<litw::VerticalContainer>(2, 2, 0);
+        vbox.Add<litw::Label>("Settings");
+        vbox.Add<litw::Button>("Apply", [] {});
+        auto& hbox = vbox.Add<litw::HorizontalContainer>();
+        hbox.Add<litw::Label>("Button example");
+        hbox.Add<litw::Button>("Yes", [] {});
+        hbox.Add<litw::Button>("No", [] {});
+        hbox.Add<litw::TextInput>(15, &text);
+        vbox.Add<litw::Toggle>("Toggle", offon);
+        Add<litw::VerticalSeparator>(17);
     }
 };
-class StartAlert : public Window {
+class StartAlert : public litw::Window {
 public:
-    StartAlert() : Window("Start Alert", 40, 10) {
-        auto& vbox = Add<VerticalContainer>(1, 2);
-        vbox.Add<Label>("Welcome to the Lad in the Window demo!");
-        vbox.Add<HorizontalSeparator>();
-        vbox.Add<Label>("Check readme in the start menu for");
-        vbox.Add<Label>("more info.");
+    StartAlert() : litw::Window("Start Alert", 40, 10) {
+        auto& vbox = Add<litw::VerticalContainer>(1, 2);
+        vbox.Add<litw::Label>("Welcome to the Lad in the Window demo!");
+        vbox.Add<litw::HorizontalSeparator>();
+        vbox.Add<litw::Label>("Check readme in the start menu for");
+        vbox.Add<litw::Label>("more info.");
     }
 };
-class EyesWindow : public Window {
+class EyesWindow : public litw::Window {
 public:
-    EyesWindow() : Window("Eyes", 30, 11) {
-        auto& vbox = Add<VerticalContainer>(8, 2);
-        vbox.Add<EyesWidget>(15, 5);
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+    EyesWindow() : litw::Window("Eyes", 30, 11) {
+        auto& vbox = Add<litw::VerticalContainer>(8, 2);
+        vbox.Add<litw::EyesWidget>(15, 5);
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
-class NumberInputWindow : public Window {
+class NumberInputWindow : public litw::Window {
     float number = 0;
 public:
-    NumberInputWindow() : Window("Number Input Demo", 31, 7) {
-        auto& vbox = Add<VerticalContainer>(2, 2);
-        vbox.Add<NumberInput<float>>(7, &number);
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+    NumberInputWindow() : litw::Window("Number Input Demo", 31, 7) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2);
+        vbox.Add<litw::NumberInput<float>>(7, &number);
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 
-WindowPalette TestPalette = WindowPalette(
+litw::WindowPalette TestPalette = litw::WindowPalette(
     "\033[1;2;0;0;0;48;2;255;128;227m", //Resize
     "\033[1;2;0;0;0;48;2;55;255;0m", //Move
     "\033[38;2;255;0;0;48;2;255;255;255m", //Focused
@@ -169,33 +169,33 @@ WindowPalette TestPalette = WindowPalette(
     "\033[38;2;128;128;128;48;2;102;102;102m" //Shadow
 );
 
-class PaletteTest : public Window {
+class PaletteTest : public litw::Window {
 public:
-    PaletteTest() : Window("Palette Test", 30, 7, TestPalette) {
-        auto& vbox = Add<VerticalContainer>(2, 2);
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+    PaletteTest() : litw::Window("Palette Test", 30, 7, TestPalette) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2);
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 
-class WindowWithSubwindow : public Window {
-    Label* BoolSomething = nullptr;
+class WindowWithSubwindow : public litw::Window {
+    litw::Label* BoolSomething = nullptr;
     bool SubwindowBool = false;
 public:
-    WindowWithSubwindow() : Window("Subwindow Showcase", 40, 10) {
+    WindowWithSubwindow() : litw::Window("Subwindow Showcase", 40, 10) {
         taskbarTitle = "Subwindows!";
-        auto& vbox = Add<VerticalContainer>(2, 2, 1);
-        vbox.Add<Button>("Open Subwindow", [this]() {
-            OpenSubwindow(wm, "Toggle Bool Subwindow", 35, 8, [this](Subwindow& sub) {
-                auto& subBox = sub.Add<VerticalContainer>(2, 2, 1);
-                subBox.Add<Button>("Toggle Bool", [this]() {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2, 1);
+        vbox.Add<litw::Button>("Open Subwindow", [this]() {
+            OpenSubwindow(wm, "Toggle Bool Subwindow", 35, 8, [this](litw::Subwindow& sub) {
+                auto& subBox = sub.Add<litw::VerticalContainer>(2, 2, 1);
+                subBox.Add<litw::Button>("Toggle Bool", [this]() {
                     SubwindowBool = !SubwindowBool;
                     });
-                subBox.Add<Button>("Close", [&sub]() { sub.CloseWindow(wm); });
+                subBox.Add<litw::Button>("Close", [&sub]() { sub.CloseWindow(wm); });
                 });
             });
 
-        BoolSomething = &vbox.Add<Label>("");
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+        BoolSomething = &vbox.Add<litw::Label>("");
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
     void Draw(std::ostream& buffer) override {
         if (SubwindowBool) {
@@ -209,8 +209,8 @@ public:
 };
 
 int main() {
-    auto startalert = makeSharedWindow<StartAlert>();
-    auto start = startmenu<StartMenuWindow>(&wm);
+    auto startalert = litw::makeSharedWindow<StartAlert>();
+    auto start = startmenu<litw::StartMenuWindow>(&wm);
     start->AddItem<README>("README");
     start->AddItem<MenuWindow>("Main Menu", "main menu");
     start->AddItem<NumberInputWindow>("Number Input Demo");

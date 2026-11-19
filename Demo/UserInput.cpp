@@ -1,23 +1,23 @@
 #include <LITW.hpp>
 
-WindowManager wm;
+litw::WindowManager wm;
 
-class TextWindow : public Window {
+class TextWindow : public litw::Window {
     std::string text = "Lorem Ipsum";
     int number = 0;
 public:
     TextWindow(std::string title, std::string msg)
-        : Window(title, 40, 12) {
-        auto& vbox = Add<VerticalContainer>(2, 2, 1);
-        vbox.Add<Label>(msg);
-        vbox.Add<TextInput>(20, &text);
-        vbox.Add<NumberInput>(3, &number);
-        vbox.Add<Button>("Close", [this]() { wm.RemoveWindow(this); });
+        : litw::Window(title, 40, 12) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2, 1);
+        vbox.Add<litw::Label>(msg);
+        vbox.Add<litw::TextInput>(20, &text);
+        vbox.Add<litw::NumberInput<int>>(3, &number);
+        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
     }
 };
 
 int main() {
-    auto start = startmenu<StartMenuWindow>(&wm);
+    auto start = startmenu<litw::StartMenuWindow>(&wm);
     start->AddItem<TextWindow>("Hello world", "Hello world", "Hello world");
     wm.SetStartMenu(start);
     wm.AddWindow(start);

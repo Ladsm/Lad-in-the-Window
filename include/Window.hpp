@@ -15,116 +15,121 @@
 #ifdef max
 #undef max
 #endif
-class StartMenuWindow;
-class Subwindow;
-class WindowManager;
 
-class Window : public std::enable_shared_from_this<Window> {
-public:
-    WindowPalette Palette;
-    int focusedWidget = -1;
-    std::vector<std::unique_ptr<Widget>> widgets;
-    std::string title, taskbarTitle = "";
-    std::vector<std::unique_ptr<Subwindow>> Subwindows;
-    int x = 0, y = 0, width = 0, height = 0;
-    int startWidth = 0, startHeight = 0;
-    int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
-    bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
-    bool staticWindow = false, decorated = true, resizeable = true, minimizeable = true, moveable = true;
-    int dragOffsetX = 0;
-    int dragOffsetY = 0;
-    enum ResizeFlag : int {
-        RF_None = 0,
-        RF_Left = 1 << 0,
-        RF_Right = 1 << 1,
-        RF_Top = 1 << 2,
-        RF_Bottom = 1 << 3
+namespace litw {
+
+    class StartMenuWindow;
+    class Subwindow;
+    class WindowManager;
+
+    class Window : public std::enable_shared_from_this<Window> {
+    public:
+        WindowPalette Palette;
+        int focusedWidget = -1;
+        std::vector<std::unique_ptr<Widget>> widgets;
+        std::string title, taskbarTitle = "";
+        std::vector<std::unique_ptr<Subwindow>> Subwindows;
+        int x = 0, y = 0, width = 0, height = 0;
+        int startWidth = 0, startHeight = 0;
+        int oldX = x, oldY = y, oldWidth = width, oldHeight = height;
+        bool visible = true, focused = false, isMoving = false, isMinimized = false, isResizing = false, isMaximized = false;
+        bool staticWindow = false, decorated = true, resizeable = true, minimizeable = true, moveable = true;
+        int dragOffsetX = 0;
+        int dragOffsetY = 0;
+        enum ResizeFlag : int {
+            RF_None = 0,
+            RF_Left = 1 << 0,
+            RF_Right = 1 << 1,
+            RF_Top = 1 << 2,
+            RF_Bottom = 1 << 3
+        };
+        int resizeFlags = RF_None;
+        int resizeStartMouseX = 0;
+        int resizeStartMouseY = 0;
+        int resizeStartWidth = 0;
+        int resizeStartHeight = 0;
+        int resizeStartX = 0;
+        int resizeStartY = 0;
+        template<typename T, typename... Args>
+        T& Add(Args&&... args) {
+            auto widget = std::make_unique<T>(std::forward<Args>(args)...);
+            T& ref = *widget;
+            AddWidget(std::move(widget));
+            return ref;
+        }
+        Window(std::string t, int w, int h);
+        Window(std::string t, int w, int h, WindowPalette p);
+        void AddWidget(std::unique_ptr<Widget> w);
+        std::string headerColor();
+        virtual void Draw(std::ostream& buffer);
+        void HandleInput(InputType input);
+        bool HandleMouseClick(int mx, int my);
+        bool ContainsPoint(int px, int py) const;
+        std::shared_ptr<Subwindow> CreateSubwindow(std::string title, int w, int h);
+        template<typename SetupFunc>
+        std::shared_ptr<Subwindow> OpenSubwindow(WindowManager& WM, std::string title, int w, int h, SetupFunc&& setup);
+        void CloseWindow(WindowManager& WM);
+        void Resize(int newW, int newH);
+        void ToggleMaximize(int screenWidth, int screenHeight);
+        virtual ~Window() = default;
     };
-    int resizeFlags = RF_None;
-    int resizeStartMouseX = 0;
-    int resizeStartMouseY = 0;
-    int resizeStartWidth = 0;
-    int resizeStartHeight = 0;
-    int resizeStartX = 0;
-    int resizeStartY = 0;
+    template<typename T>
+    std::shared_ptr<T> makeSharedWindow() {
+        auto share = std::make_shared<T>();
+        return share;
+    }
     template<typename T, typename... Args>
-    T& Add(Args&&... args) {
-        auto widget = std::make_unique<T>(std::forward<Args>(args)...);
-        T& ref = *widget;
-        AddWidget(std::move(widget));
-        return ref;
+    std::shared_ptr<T> makeSharedWindow(Args&& ... args) {
+        auto share = std::make_shared<T>(std::forward<Args>(args)...);
+        return share;
     }
-    Window(std::string t, int w, int h);
-    Window(std::string t, int w, int h, WindowPalette p);
-    void AddWidget(std::unique_ptr<Widget> w);
-    std::string headerColor();
-    virtual void Draw(std::ostream& buffer);
-    void HandleInput(InputType input);
-    bool HandleMouseClick(int mx, int my);
-    bool ContainsPoint(int px, int py) const;
-    std::shared_ptr<Subwindow> CreateSubwindow(std::string title, int w, int h);
+
+    class Subwindow : public Window {
+    public:
+        std::weak_ptr<Window> Parent;
+        Subwindow(std::string t, int w, int h, std::shared_ptr<Window> p)
+            : Window(t, w, h, p->Palette), Parent(p) {
+            resizeable = false;
+        }
+        Subwindow(std::string t, int w, int h, std::shared_ptr<Window> p, std::function<void(Subwindow&)> setup)
+            : Window(t, w, h, p->Palette), Parent(p) {
+            resizeable = false;
+            if (setup) setup(*this);
+        }
+    };
+
+    class WindowManager {
+        std::vector<std::shared_ptr<Window>> windows;
+        int windowCount = 0;
+        std::shared_ptr<Window> startMenu = nullptr;
+        std::string WindowTitle = "LITW title";
+        WindowManagerPalette Palette;
+        WindowPalette AlertPalette;
+    public:
+        WindowManager() = default;
+        WindowManager(std::string deftitle);
+        WindowManager(std::string deftitle, WindowManagerPalette p);
+        WindowManager(std::string deftitle, WindowManagerPalette p, WindowPalette ap);
+        std::shared_ptr<Subwindow> FindSubwindow(Window* parent, const std::string& title);
+        void Alert(std::string message);
+        void exit(int code);
+        void SetStartMenu(std::shared_ptr<Window> sm);
+        void AddWindow(std::shared_ptr<Window> w);
+        void RemoveWindow(std::shared_ptr<Window> w);
+        void RemoveWindow(Window* w);
+        void CycleWindow();
+        void Run();
+    };
+
     template<typename SetupFunc>
-    std::shared_ptr<Subwindow> OpenSubwindow(WindowManager& WM, std::string title, int w, int h, SetupFunc&& setup);
-    void CloseWindow(WindowManager& WM);
-    void Resize(int newW, int newH);
-    void ToggleMaximize(int screenWidth, int screenHeight);
-    virtual ~Window() = default;
-};
-template<typename T>
-std::shared_ptr<T> makeSharedWindow() {
-    auto share = std::make_shared<T>();
-    return share;
-}
-template<typename T, typename... Args>
-std::shared_ptr<T> makeSharedWindow(Args&& ... args) {
-    auto share = std::make_shared<T>(std::forward<Args>(args)...);
-    return share;
-}
-
-class Subwindow : public Window {
-public:
-    std::weak_ptr<Window> Parent;
-    Subwindow(std::string t, int w, int h, std::shared_ptr<Window> p)
-        : Window(t, w, h, p->Palette), Parent(p) {
-        resizeable = false;
+    inline std::shared_ptr<Subwindow> Window::OpenSubwindow(WindowManager& WM, std::string title, int w, int h, SetupFunc&& setup) {
+        if (auto existing = WM.FindSubwindow(this, title)) {
+            return existing;
+        }
+        auto sub = CreateSubwindow(std::move(title), w, h);
+        setup(*sub);
+        WM.AddWindow(sub);
+        return sub;
     }
-    Subwindow(std::string t, int w, int h, std::shared_ptr<Window> p, std::function<void(Subwindow&)> setup)
-        : Window(t, w, h, p->Palette), Parent(p) {
-        resizeable = false;
-        if (setup) setup(*this);
-    }
-};
 
-class WindowManager {
-    std::vector<std::shared_ptr<Window>> windows;
-    int windowCount = 0;
-    std::shared_ptr<Window> startMenu = nullptr;
-    std::string WindowTitle = "LITW title";
-    WindowManagerPalette Palette;
-    WindowPalette AlertPalette;
-public:
-    WindowManager() = default;
-    WindowManager(std::string deftitle);
-    WindowManager(std::string deftitle, WindowManagerPalette p);
-    WindowManager(std::string deftitle, WindowManagerPalette p, WindowPalette ap);
-    std::shared_ptr<Subwindow> FindSubwindow(Window* parent, const std::string& title);
-    void Alert(std::string message);
-    void exit(int code);
-    void SetStartMenu(std::shared_ptr<Window> sm);
-    void AddWindow(std::shared_ptr<Window> w);
-    void RemoveWindow(std::shared_ptr<Window> w);
-    void RemoveWindow(Window* w);
-    void CycleWindow();
-    void Run();
-};
-
-template<typename SetupFunc>
-inline std::shared_ptr<Subwindow> Window::OpenSubwindow(WindowManager& WM, std::string title, int w, int h, SetupFunc&& setup) {
-    if (auto existing = WM.FindSubwindow(this, title)) {
-        return existing;
-    }
-    auto sub = CreateSubwindow(std::move(title), w, h);
-    setup(*sub);
-    WM.AddWindow(sub);
-    return sub;
 }

@@ -3,28 +3,28 @@
 #include <string>
 #include <vector>
 
-WindowManager wm;
+litw::WindowManager wm;
 
-class TringleSolver : public Window {
+class TringleSolver : public litw::Window {
     int lastHeightForTextBoxes = 2;
     double a = 0;
     double b = 0;
     double c = 0;
-    TextBox* NormalResult = nullptr;
-    TextBox* MissingAResult = nullptr;
+    litw::TextBox* NormalResult = nullptr;
+    litw::TextBox* MissingAResult = nullptr;
     std::vector<std::string> sad = { };
 
 public:
-    TringleSolver() : Window("Triangle Solver", 45, 14) {
-        auto& vbox = Add<VerticalContainer>(2, 2);
-        vbox.Add<Label>("Triangle Solver");
-        auto& hbox = vbox.Add<HorizontalContainer>();
-        vbox.Add<Label>("Normal:");
-        hbox.Add<Label>("A:");
-        hbox.Add<NumberInput<double>>(5, &a);
-        hbox.Add<Label>("B:");
-        hbox.Add<NumberInput<double>>(5, &b);
-        hbox.Add<Button>("Calculate", [this]() {
+    TringleSolver() : litw::Window("Triangle Solver", 45, 14) {
+        auto& vbox = Add<litw::VerticalContainer>(2, 2);
+        vbox.Add<litw::Label>("Triangle Solver");
+        auto& hbox = vbox.Add<litw::HorizontalContainer>();
+        vbox.Add<litw::Label>("Normal:");
+        hbox.Add<litw::Label>("A:");
+        hbox.Add<litw::NumberInput<double>>(5, &a);
+        hbox.Add<litw::Label>("B:");
+        hbox.Add<litw::NumberInput<double>>(5, &b);
+        hbox.Add<litw::Button>("Calculate", [this]() {
             NormalResult->text.clear();
             NormalResult->text.push_back(std::to_string(a) + "² + " + std::to_string(b) + "² = x²");
             double aSq = a * a;
@@ -35,15 +35,15 @@ public:
             double result = std::sqrt(sum);
             NormalResult->text.push_back("x = " + std::to_string(result));
             });
-        NormalResult = &vbox.Add<TextBox>(sad);
-        vbox.Add<HorizontalSeparator>();
-        vbox.Add<Label>("Missing A:");
-        auto& hbox2 = vbox.Add<HorizontalContainer>();
-        hbox2.Add<Label>("B:");
-        hbox2.Add<NumberInput<double>>(5, &b);
-        hbox2.Add<Label>("C:");
-        hbox2.Add<NumberInput<double>>(5, &c);
-        hbox2.Add<Button>("Calculate", [this]() {
+        NormalResult = &vbox.Add<litw::TextBox>(sad);
+        vbox.Add<litw::HorizontalSeparator>();
+        vbox.Add<litw::Label>("Missing A:");
+        auto& hbox2 = vbox.Add<litw::HorizontalContainer>();
+        hbox2.Add<litw::Label>("B:");
+        hbox2.Add<litw::NumberInput<double>>(5, &b);
+        hbox2.Add<litw::Label>("C:");
+        hbox2.Add<litw::NumberInput<double>>(5, &c);
+        hbox2.Add<litw::Button>("Calculate", [this]() {
             MissingAResult->text.clear();
             MissingAResult->text.push_back("x² + " + std::to_string(b) + "² = " + std::to_string(c) + "²");
             double bSq = b * b;
@@ -59,8 +59,8 @@ public:
                 MissingAResult->text.push_back("x = " + std::to_string(result));
             }
             });
-        MissingAResult = &vbox.Add<TextBox>(sad);
-        vbox.Add<Button>("Exit", [this]() {
+        MissingAResult = &vbox.Add<litw::TextBox>(sad);
+        vbox.Add<litw::Button>("Exit", [this]() {
             wm.exit(0);
             });
     }
@@ -72,7 +72,7 @@ public:
 };
 
 int main() {
-    auto start = startmenu<StartMenuWindow>(&wm);
+    auto start = startmenu<litw::StartMenuWindow>(&wm);
     start->AddItem<TringleSolver>("Triangle Solver");
     wm.SetStartMenu(start);
     wm.AddWindow(start);

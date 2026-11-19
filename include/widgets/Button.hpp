@@ -1,64 +1,69 @@
 #pragma once
 #include "Widget.hpp"
 #include <functional>
-class Button : public Widget {
-public:
-    std::string label;
-    std::function<void()> onClick;
-    bool brackets = true;
-    Button(int x, int y, std::string l, std::function<void()> cb, bool brack) {
-        this->x = x;
-        this->y = y;
-        label = l;
-        onClick = cb;
-        brackets = brack;
-        this->focusable = true;
-    }
-    Button(std::string l, std::function<void()> cb) {
-        this->x = 0;
-        this->y = 0;
-        label = l;
-        onClick = cb;
-        this->focusable = true;
-    }
-    Button(std::string l, std::function<void()> cb, bool brack) {
-        this->x = 0;
-        this->y = 0;
-        label = l;
-        onClick = cb;
-        brackets = brack;
-        this->focusable = true;
-    }
-    int GetWidth() const override {
-        if (!brackets) return (int)label.length() + 4;
-        else return (int)label.length() + 2;
-    }
-    int GetHeight() const override {
-        return 1;
-    }
-    void Draw(std::ostream& buffer, int px, int py) override {
-        std::string body = parent->Palette.Body;
-        buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
-        buffer << body;
-        if (brackets) {
-            if (focused) {
-                buffer << ">[" << label << "]<";
+
+namespace litw {
+
+    class Button : public Widget {
+    public:
+        std::string label;
+        std::function<void()> onClick;
+        bool brackets = true;
+        Button(int x, int y, std::string l, std::function<void()> cb, bool brack) {
+            this->x = x;
+            this->y = y;
+            label = l;
+            onClick = cb;
+            brackets = brack;
+            this->focusable = true;
+        }
+        Button(std::string l, std::function<void()> cb) {
+            this->x = 0;
+            this->y = 0;
+            label = l;
+            onClick = cb;
+            this->focusable = true;
+        }
+        Button(std::string l, std::function<void()> cb, bool brack) {
+            this->x = 0;
+            this->y = 0;
+            label = l;
+            onClick = cb;
+            brackets = brack;
+            this->focusable = true;
+        }
+        int GetWidth() const override {
+            if (!brackets) return (int)label.length() + 4;
+            else return (int)label.length() + 2;
+        }
+        int GetHeight() const override {
+            return 1;
+        }
+        void Draw(std::ostream& buffer, int px, int py) override {
+            std::string body = parent->Palette.Body;
+            buffer << "\033[" << (py + y) << ";" << (px + x) << "H";
+            buffer << body;
+            if (brackets) {
+                if (focused) {
+                    buffer << ">[" << label << "]<";
+                }
+                else {
+                    buffer << " [" << label << "] ";
+                }
             }
             else {
-                buffer << " [" << label << "] ";
+                if (focused) {
+                    buffer << ">" << label << "<";
+                }
+                else {
+                    buffer << " " << label << " ";
+                }
             }
         }
-        else {
-            if (focused) {
-                buffer << ">" << label << "<";
-            }
-            else {
-                buffer << " " << label << " ";
-            }
+        void HandleInput(InputType input) override {
+            if (input == InputType::Enter && onClick)
+                onClick();
         }
-    }
-    void HandleInput(InputType input) override {
-        if (input == InputType::Enter && onClick)
-            onClick();
-    }
-};
+    };
+
+}

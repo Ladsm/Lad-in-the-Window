@@ -17,48 +17,52 @@
 #undef min
 #endif
 
-class LargeTextInput : public Widget {
-public:
-    enum Mode { COMMAND, INSERT, VISUAL };
-    struct Snippet {
-        std::string trigger;
-        std::string body;
+namespace litw {
+
+    class LargeTextInput : public Widget {
+    public:
+        enum Mode { COMMAND, INSERT, VISUAL };
+        struct Snippet {
+            std::string trigger;
+            std::string body;
+        };
+        std::string activeSnippetPreview = "";
+        std::unordered_map<std::string, std::string> snippets;
+        std::vector<std::string>* lines;
+        int cursorX = 0;
+        int cursorY = 0;
+        int scroll = 0;
+        int scrollX = 0;
+        int visualAnchorX = 0;
+        int visualAnchorY = 0;
+        int height;
+        int width;
+        bool highligh = false;
+        bool isWriting = false;
+        int snippetPreviewLine = -1;
+        int snippetPreviewCol = -1;
+        Mode mode = COMMAND;
+        std::unordered_set<std::string> knownVariables;
+        std::unordered_set<std::string> knownTypes = {
+            "int", "void", "bool", "char", "double", "float", "long", "short",
+            "auto", "uint8_t", "uint16_t", "uint32_t", "uint64_t", "int32_t",
+            "int64_t", "string", "vector", "size_t"
+        };
+        LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target, bool hi);
+        LargeTextInput(int h, int w, std::vector<std::string>* target, bool hi);
+        int GetWidth() const override;
+        int GetHeight() const override;
+        bool IsInMultiLineComment(int targetLine);
+        void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg, bool& inMultiLineComment);
+        bool WantsRawInput() override;
+        void UpdateSnippetPreview();
+        void HandleRawInput() override;
+        void HandleInput(InputType input) override;
+        void Draw(std::ostream& buffer, int px, int py) override;
+        void RegisterSnippet(const std::string& trigger, const std::string& body);
+        bool TryExpandSnippet();
+        void GenerateFunctionSnippets();
+        void createCppSnippets();
     };
-    std::string activeSnippetPreview = "";
-    std::unordered_map<std::string, std::string> snippets;
-    std::vector<std::string>* lines;
-    int cursorX = 0;
-    int cursorY = 0;
-    int scroll = 0;
-    int scrollX = 0;
-    int visualAnchorX = 0;
-    int visualAnchorY = 0;
-    int height;
-    int width;
-    bool highligh = false;
-    bool isWriting = false;
-    int snippetPreviewLine = -1;
-    int snippetPreviewCol = -1;
-    Mode mode = COMMAND;
-    std::unordered_set<std::string> knownVariables;
-    std::unordered_set<std::string> knownTypes = {
-        "int", "void", "bool", "char", "double", "float", "long", "short",
-        "auto", "uint8_t", "uint16_t", "uint32_t", "uint64_t", "int32_t",
-        "int64_t", "string", "vector", "size_t"
-    };
-    LargeTextInput(int x, int y, int h, int w, std::vector<std::string>* target, bool hi);
-    LargeTextInput(int h, int w, std::vector<std::string>* target, bool hi);
-    int GetWidth() const override;
-    int GetHeight() const override;
-    bool IsInMultiLineComment(int targetLine);
-    void HighlightLine(std::ostream& buffer, const std::string& line, int width, const std::string& bg, bool& inMultiLineComment);
-    bool WantsRawInput() override;
-    void UpdateSnippetPreview();
-    void HandleRawInput() override;
-    void HandleInput(InputType input) override;
-    void Draw(std::ostream& buffer, int px, int py) override;
-    void RegisterSnippet(const std::string& trigger, const std::string& body);
-    bool TryExpandSnippet();
-    void GenerateFunctionSnippets();
-    void createCppSnippets();
-};
+
+}
