@@ -1,8 +1,8 @@
-#include <Window.hpp>
-#include <init.hpp>
-#include <windows/AlertWindow.hpp>
-#include <widgets/containers/VerticalContainer.hpp>
-#include <widgets/containers/HorizontalContainer.hpp>
+#include <LITW/Window.hpp>
+#include <LITW/init.hpp>
+#include <LITW/windows/AlertWindow.hpp>
+#include <LITW/widgets/containers/VerticalContainer.hpp>
+#include <LITW/widgets/containers/HorizontalContainer.hpp>
 #include <sstream>
 #include <ctime>
 #include <algorithm>

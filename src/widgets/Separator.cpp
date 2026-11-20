@@ -1,5 +1,5 @@
-#include <widgets/Separator.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/Separator.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
 

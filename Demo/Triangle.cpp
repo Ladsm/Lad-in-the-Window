@@ -1,4 +1,4 @@
-#include <LITW.hpp>
+#include <LITW/LITW.hpp>
 #include <math.h>
 #include <string>
 #include <vector>

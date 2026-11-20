@@ -2,7 +2,7 @@
 #include <iostream>
 #include <string>
 #include <ostream>
-#include "userinput.hpp"
+#include <LITW/userinput.hpp>
 
 namespace litw {
 

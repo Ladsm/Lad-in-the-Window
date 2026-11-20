@@ -1,4 +1,4 @@
-#include <LITW.hpp>
+#include <LITW/LITW.hpp>
 
 int main() {
     litw::WindowManager wm;

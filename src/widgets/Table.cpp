@@ -1,5 +1,5 @@
-#include <widgets/Table.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/Table.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
 

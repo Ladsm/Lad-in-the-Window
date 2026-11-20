@@ -1,8 +1,8 @@
 #pragma once
-#include "Window.hpp"
-#include "widgets/text/Label.hpp" 
-#include "widgets/Button.hpp"
-#include "widgets/containers/VerticalContainer.hpp"
+#include <LITW/Window.hpp>
+#include <LITW/widgets/text/Label.hpp>
+#include <LITW/widgets/Button.hpp>
+#include <LITW/widgets/containers/VerticalContainer.hpp>
 
 namespace litw {
 

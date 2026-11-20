@@ -1,5 +1,5 @@
-#include <widgets/Checkbox.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/Checkbox.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
 

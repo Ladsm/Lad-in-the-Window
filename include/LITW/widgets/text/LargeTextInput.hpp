@@ -1,14 +1,14 @@
 #pragma once
-#include <Widget.hpp>
-#include <Window.hpp>
-#include <userinput.hpp>
+#include <LITW/Widget.hpp>
+#include <LITW/Window.hpp>
+#include <LITW/userinput.hpp>
+#include <LITW/copyToClipboard.hpp>
+#include <LITW/widgets/containers/VerticalContainer.hpp>
 #include <vector>
 #include <string>
 #include <algorithm>
 #include <unordered_set>
 #include <unordered_map>
-#include "copyToClipboard.hpp"
-#include <widgets/containers/VerticalContainer.hpp>
 
 #ifdef max
 #undef max

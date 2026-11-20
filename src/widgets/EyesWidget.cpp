@@ -1,4 +1,4 @@
-#include <widgets/EyesWidget.hpp>
+#include <LITW/widgets/EyesWidget.hpp>
 #include <cmath>
 
 namespace litw {

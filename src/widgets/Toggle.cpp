@@ -1,5 +1,5 @@
-#include <widgets/Toggle.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/Toggle.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
 

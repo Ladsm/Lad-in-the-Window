@@ -1,8 +1,8 @@
 #pragma once
-#include "getwh.hpp"
-#include "userinput.hpp"
-#include "Widget.hpp"
-#include "Palette.hpp"
+#include <LITW/getwh.hpp>
+#include <LITW/userinput.hpp>
+#include <LITW/Widget.hpp>
+#include <LITW/Palette.hpp>
 #include <vector>
 #include <string>
 #include <iostream>

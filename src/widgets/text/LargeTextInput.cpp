@@ -1,4 +1,4 @@
-#include "widgets/text/LargeTextInput.hpp"
+#include <LITW/widgets/text/LargeTextInput.hpp>
 #include <sstream>
 
 namespace litw {

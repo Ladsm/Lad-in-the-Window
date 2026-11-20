@@ -1,6 +1,6 @@
 #pragma once
-#include "Widget.hpp"
-#include "Window.hpp"
+#include <LITW/Widget.hpp>
+#include <LITW/Window.hpp>
 #include <vector>
 #include <string>
 #include <memory>

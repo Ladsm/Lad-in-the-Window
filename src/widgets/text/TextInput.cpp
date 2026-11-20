@@ -1,5 +1,5 @@
-#include <widgets/text/TextInput.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/text/TextInput.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
 

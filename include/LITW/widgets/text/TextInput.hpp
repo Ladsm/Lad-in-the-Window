@@ -1,6 +1,6 @@
 #pragma once
-#include "Widget.hpp"
-#include "userinput.hpp"
+#include <LITW/Widget.hpp>
+#include <LITW/userinput.hpp>
 #include <ostream>
 #include <string>
 

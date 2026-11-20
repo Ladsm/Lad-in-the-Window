@@ -1,4 +1,4 @@
-#include <widgets/ShellWidget.hpp>
+#include <LITW/widgets/ShellWidget.hpp>
 #include <cstdio>
 #include <iostream>
 #include <sstream>

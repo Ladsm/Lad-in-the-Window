@@ -1,6 +1,6 @@
-#include <widgets/text/Textbox.hpp>
+#include <LITW/widgets/text/Textbox.hpp>
+#include <LITW/Window.hpp>
 #include <algorithm>
-#include <Window.hpp>
 
 namespace litw {
 

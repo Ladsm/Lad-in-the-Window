@@ -1,5 +1,5 @@
-#include <widgets/containers/VerticalContainer.hpp>
-#include <widgets/Separator.hpp>
+#include <LITW/widgets/containers/VerticalContainer.hpp>
+#include <LITW/widgets/Separator.hpp>
 #include <algorithm>
 
 namespace litw {

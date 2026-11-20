@@ -1,5 +1,5 @@
-#include <widgets/Button.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/Button.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
 

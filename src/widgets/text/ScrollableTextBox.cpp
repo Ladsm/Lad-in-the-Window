@@ -1,5 +1,5 @@
-#include <widgets/text/ScrollableTextBox.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/text/ScrollableTextBox.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
     

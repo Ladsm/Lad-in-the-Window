@@ -1,5 +1,5 @@
-#include <widgets/text/Label.hpp>
-#include <Window.hpp>
+#include <LITW/widgets/text/Label.hpp>
+#include <LITW/Window.hpp>
 
 namespace litw {
 

@@ -1,6 +1,5 @@
 #pragma once
-#include "Widget.hpp"
-#include <Window.hpp>
+#include <LITW/Widget.hpp>
 
 namespace litw {
 
