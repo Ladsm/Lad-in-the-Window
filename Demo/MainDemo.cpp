@@ -14,7 +14,7 @@ public:
         hbox.Add<litw::TextInput>(20, &text);
         hbox.Add<litw::CheckBox>("checkbox", checkbox);
         vbox.Add<litw::HorizontalSeparator>();
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
 };
 class MenuWindow : public litw::Window {
@@ -43,7 +43,7 @@ class README : public litw::Window {
         "F12: Exit LITW.",
         "---------------------------------------------------",
         "Hello, Ladsm here.",
-        "This program is a demo of the Lad in a Window TUI",
+        "This program is a demo of the Lad in the Window TUI",
         "framework. This TUI is made to look like",
         "a GUI."
     };
@@ -51,7 +51,7 @@ public:
     README() : Window("README", 60, 18) {
         auto& vbox = Add<litw::VerticalContainer>(2, 2);
         vbox.Add<litw::ScrollableTextBox>(10, 55, text);
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
 };
 
@@ -65,7 +65,7 @@ public:
         );
         table.AddRow({ "01", "Ladsm", "Online" });
         table.AddRow({ "02", "Guest", "Offline" });
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
 };
 class ShellWindow : public litw::Window {
@@ -101,7 +101,7 @@ public:
         auto& vbox = Add<litw::VerticalContainer>(2, 2, 1);
         LTIWidght = &vbox.Add<litw::LargeTextInput>(10, 45, &text, true);
         LTIWidght->createCppSnippets();
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
     void Draw(std::ostream& buffer) override {
         LTIWidght->height = height - 8;
@@ -140,6 +140,7 @@ public:
         vbox.Add<litw::HorizontalSeparator>();
         vbox.Add<litw::Label>("Check readme in the start menu for");
         vbox.Add<litw::Label>("more info.");
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
 };
 class EyesWindow : public litw::Window {
@@ -147,7 +148,7 @@ public:
     EyesWindow() : litw::Window("Eyes", 30, 11) {
         auto& vbox = Add<litw::VerticalContainer>(8, 2);
         vbox.Add<litw::EyesWidget>(15, 5);
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
 };
 class NumberInputWindow : public litw::Window {
@@ -156,7 +157,7 @@ public:
     NumberInputWindow() : litw::Window("Number Input Demo", 31, 7) {
         auto& vbox = Add<litw::VerticalContainer>(2, 2);
         vbox.Add<litw::NumberInput<float>>(7, &number);
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
 };
 
@@ -173,7 +174,7 @@ class PaletteTest : public litw::Window {
 public:
     PaletteTest() : litw::Window("Palette Test", 30, 7, TestPalette) {
         auto& vbox = Add<litw::VerticalContainer>(2, 2);
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
 };
 
@@ -195,7 +196,7 @@ public:
             });
 
         BoolSomething = &vbox.Add<litw::Label>("");
-        vbox.Add<litw::Button>("Close", [this]() { wm.RemoveWindow(this); });
+        vbox.Add<litw::Button>("Close", [this]() { CloseWindow(wm); });
     }
     void Draw(std::ostream& buffer) override {
         if (SubwindowBool) {
